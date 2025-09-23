@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Upload } from 'lucide-react';
+import { Loader2, Upload } from 'lucide-react';
 import Image from 'next/image';
 import { useAppContext } from '@/context/AppContext';
 
@@ -17,20 +17,42 @@ export default function BlogNewPage() {
   const [title, setTitle] = React.useState('');
   const [content, setContent] = React.useState('');
   const [coverImage, setCoverImage] = React.useState<string | null>(null);
+  const [isUploading, setIsUploading] = React.useState(false);
+
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleImageUploadClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setCoverImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      setIsUploading(true);
+      
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      try {
+        const response = await fetch('https://img.scdn.io/api.php', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        const result = await response.json();
+        
+        if (result.code === 200 && result.data && result.data.url) {
+          setCoverImage(result.data.url);
+        } else {
+          console.error('Image upload failed:', result.message);
+          alert(`Image upload failed: ${result.message}`);
+        }
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        alert('An error occurred while uploading the image.');
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
@@ -42,11 +64,11 @@ export default function BlogNewPage() {
 
     const newPost = {
       id: String(Date.now()),
-      slug: title.toLowerCase().replace(/\s+/g, '-'),
+      slug: title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, ''),
       title,
       content: `<p>${content.replace(/\n/g, '</p><p>')}</p>`,
       excerpt: content.slice(0, 150) + '...',
-      coverImage: coverImage || 'placeholder_blog_1', // Use a placeholder if no image is uploaded
+      coverImage: coverImage, 
       author: {
         name: 'Current User', // Replace with actual user data
         avatarUrl: 'placeholder_avatar_1',
@@ -67,10 +89,10 @@ export default function BlogNewPage() {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0">
         <Link href="/blog">
-          <Button variant="link" className="text-blue-500 text-[17px] p-0">Cancel</Button>
+          <Button variant="link" className="text-primary text-[17px] p-0">Cancel</Button>
         </Link>
         <h1 className="text-[17px] font-bold">New Blog</h1>
-        <Button variant="link" className="text-blue-500 text-[17px] font-bold p-0" onClick={handleSave}>Save</Button>
+        <Button variant="link" className="text-primary text-[17px] font-bold p-0" onClick={handleSave} disabled={isUploading}>Save</Button>
       </header>
 
       <main className="flex-grow px-5 py-4 flex flex-col gap-6">
@@ -82,11 +104,16 @@ export default function BlogNewPage() {
           className="hidden"
         />
         <div 
-          className="w-full h-[180px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer relative overflow-hidden"
+          className="w-full h-[180px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer relative overflow-hidden bg-secondary/50"
           onClick={handleImageUploadClick}
         >
           {coverImage ? (
             <Image src={coverImage} alt="Cover preview" fill className="object-cover" />
+          ) : isUploading ? (
+            <>
+              <Loader2 className="w-8 h-8 mb-2 animate-spin" />
+              <p>Uploading...</p>
+            </>
           ) : (
             <>
               <Upload className="w-8 h-8 mb-2" />

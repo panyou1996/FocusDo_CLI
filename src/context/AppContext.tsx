@@ -4,6 +4,7 @@
 import * as React from 'react';
 import type { Task, BlogPost } from '@/lib/types';
 import { tasks as initialTasks, blogPosts as initialBlogPosts } from '@/lib/data';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface AppContextType {
   tasks: Task[];
@@ -17,8 +18,8 @@ interface AppContextType {
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
-  const [blogPosts, setBlogPosts] = React.useState<BlogPost[]>(initialBlogPosts);
+  const [tasks, setTasks] = useLocalStorage<Task[]>('tasks', initialTasks);
+  const [blogPosts, setBlogPosts] = useLocalStorage<BlogPost[]>('blogPosts', initialBlogPosts);
 
   const addTask = (task: Task) => {
     setTasks(prevTasks => [task, ...prevTasks]);

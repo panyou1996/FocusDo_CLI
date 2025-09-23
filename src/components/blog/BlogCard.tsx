@@ -1,29 +1,38 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { BookText } from "lucide-react";
 
 interface BlogCardProps {
   post: BlogPost;
 }
 
 export function BlogCard({ post }: BlogCardProps) {
-  const coverImage = PlaceHolderImages.find(img => img.id === post.coverImage);
+  const placeholderImage = PlaceHolderImages.find(img => img.id === post.coverImage);
+  const imageUrl = post.coverImage && !placeholderImage ? post.coverImage : placeholderImage?.imageUrl;
 
   return (
     <Link href={`/blog/${post.slug}`}>
       <Card className="rounded-2xl shadow-soft border-none overflow-hidden">
-        {coverImage && (
+        {imageUrl ? (
           <CardHeader className="p-0">
             <div className="relative w-full h-[180px]">
               <Image
-                src={coverImage.imageUrl}
+                src={imageUrl}
                 alt={post.title}
                 fill
                 className="object-cover"
-                data-ai-hint={coverImage.imageHint}
+                data-ai-hint={placeholderImage?.imageHint}
               />
+            </div>
+          </CardHeader>
+        ) : (
+          <CardHeader className="p-0">
+            <div className="relative w-full h-[180px] bg-secondary flex items-center justify-center">
+              <BookText className="w-10 h-10 text-muted-foreground" />
             </div>
           </CardHeader>
         )}
