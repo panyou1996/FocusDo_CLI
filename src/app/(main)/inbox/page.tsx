@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -188,7 +187,7 @@ export default function InboxPage() {
         </TabsContent>
 
         <TabsContent value="calendar" className="mt-4">
-          <div className="px-2">
+          <div className="px-5">
               <Calendar
                 mode="single"
                 selected={date}
