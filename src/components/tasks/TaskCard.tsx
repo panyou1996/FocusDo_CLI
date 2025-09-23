@@ -31,6 +31,11 @@ export function TaskCard({ task, list, view }: TaskCardProps) {
     }
   };
 
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    // Add button specific logic here, e.g., starring, deleting
+  };
+
   const DetailRow = ({
     icon: Icon,
     label,
@@ -59,7 +64,12 @@ export function TaskCard({ task, list, view }: TaskCardProps) {
         <Checkbox
           id={`task-${task.id}`}
           checked={isCompleted}
-          onCheckedChange={() => setIsCompleted(!isCompleted)}
+          onCheckedChange={(checked) => {
+            // Prevent card expansion when clicking checkbox
+            window.event?.stopPropagation();
+            setIsCompleted(!!checked);
+          }}
+          onClick={(e) => e.stopPropagation()}
           className="w-6 h-6 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
         />
         <div className="flex-grow ml-3">
@@ -76,7 +86,7 @@ export function TaskCard({ task, list, view }: TaskCardProps) {
           )}
         </div>
         <div className="flex items-center gap-3 ml-2">
-          <button>
+          <button onClick={handleButtonClick}>
             <Star
               className={cn(
                 "w-5 h-5 text-muted-foreground transition-colors hover:text-yellow-500",
@@ -85,10 +95,10 @@ export function TaskCard({ task, list, view }: TaskCardProps) {
               strokeWidth={1.5}
             />
           </button>
-          <button>
+          <button onClick={handleButtonClick}>
             <Sun className="w-5 h-5 text-muted-foreground hover:text-orange-500" strokeWidth={1.5} />
           </button>
-          <button>
+          <button onClick={handleButtonClick}>
             <Trash2 className="w-5 h-5 text-muted-foreground hover:text-destructive" strokeWidth={1.5} />
           </button>
         </div>
