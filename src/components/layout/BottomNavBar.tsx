@@ -15,10 +15,15 @@ const navItems = [
 export function BottomNavBar() {
   const pathname = usePathname();
 
+  const isAddTaskPage = pathname === '/add-task';
+
   return (
-    <footer className="fixed bottom-0 left-0 right-0 h-[84px] bg-transparent z-50">
+    <footer className="fixed bottom-0 left-0 right-0 h-[84px] bg-transparent z-40">
       <div className="relative h-full w-full max-w-lg mx-auto">
-        <div className="absolute bottom-0 left-0 right-0 h-[84px] bg-card/80 backdrop-blur-lg rounded-t-[24px] shadow-[0px_-4px_10px_rgba(0,0,0,0.05)]">
+        <div className={cn(
+            "absolute bottom-0 left-0 right-0 h-[84px] bg-card/80 backdrop-blur-lg rounded-t-[24px] shadow-[0px_-4px_10px_rgba(0,0,0,0.05)] transition-transform duration-300",
+            isAddTaskPage && "translate-y-full"
+            )}>
           <nav className="flex items-center justify-around h-full pt-1 pb-[34px] px-5">
             {navItems.slice(0, 2).map((item) => {
               const isActive = pathname === item.href;
@@ -57,7 +62,10 @@ export function BottomNavBar() {
         </div>
         <Link
           href="/add-task"
-          className="absolute left-1/2 -translate-x-1/2 top-[-18px] w-[60px] h-[60px] bg-primary rounded-full flex items-center justify-center shadow-fab"
+          className={cn(
+            "absolute left-1/2 -translate-x-1/2 top-[-18px] w-[60px] h-[60px] bg-primary rounded-full flex items-center justify-center shadow-fab z-50 transition-transform duration-300",
+            isAddTaskPage && "scale-0"
+            )}
           aria-label="Add Task"
         >
           <Plus className="text-white" size={30} strokeWidth={2.5} />

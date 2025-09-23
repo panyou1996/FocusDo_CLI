@@ -2,7 +2,6 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,20 +52,18 @@ export default function AddTaskPage() {
         };
 
         addTask(newTask);
-        router.push('/today');
+        router.back();
     };
 
     return (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-end justify-center">
-            <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl">
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
+            <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
                 <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
                     <div className="w-10"></div>
                     <h1 className="text-[17px] font-bold">Add New Task</h1>
-                    <Link href="/today">
-                        <Button variant="ghost" size="icon" aria-label="Close">
-                            <X className="w-6 h-6" />
-                        </Button>
-                    </Link>
+                    <Button variant="ghost" size="icon" aria-label="Close" onClick={() => router.back()}>
+                        <X className="w-6 h-6" />
+                    </Button>
                 </header>
 
                 <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
