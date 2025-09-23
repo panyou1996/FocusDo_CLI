@@ -14,8 +14,6 @@ import { Label } from '@/components/ui/label';
 import { useTasks } from '@/context/TaskContext';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Slider } from '@/components/ui/slider';
 import { format } from 'date-fns';
 import type { Subtask } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -46,9 +44,6 @@ export default function AddTaskPage() {
     const [editingSubtaskId, setEditingSubtaskId] = React.useState<string | null>(null);
     const [editingSubtaskText, setEditingSubtaskText] = React.useState('');
 
-
-    const [isDurationOpen, setIsDurationOpen] = React.useState(false);
-    const [isStartTimeOpen, setIsStartTimeOpen] = React.useState(false);
 
     const handleSaveTask = () => {
         if (!title) {
@@ -193,15 +188,26 @@ export default function AddTaskPage() {
                         )}
                         <Separator/>
                         <AttributeRow icon={Hourglass} label="Duration">
-                            <Button variant="ghost" className="text-muted-foreground" onClick={() => setIsDurationOpen(true)}>
-                                {duration} min
-                            </Button>
+                             <div className="flex items-center gap-2">
+                                <Input 
+                                    type="number" 
+                                    value={duration}
+                                    onChange={(e) => setDuration(Number(e.target.value))}
+                                    className="w-20 h-8 text-right"
+                                    min="0"
+                                    step="5"
+                                />
+                                <span className="text-muted-foreground">min</span>
+                            </div>
                         </AttributeRow>
                         <Separator/>
                         <AttributeRow icon={Clock} label="Start Time">
-                            <Button variant="ghost" className="text-muted-foreground" onClick={() => setIsStartTimeOpen(true)}>
-                                {startTime || 'Set Time'}
-                            </Button>
+                           <Input 
+                                type="time"
+                                value={startTime}
+                                onChange={(e) => setStartTime(e.target.value)}
+                                className="w-32 h-8"
+                            />
                         </AttributeRow>
                         <Separator/>
                         <AttributeRow icon={Calendar} label="Deadline">
@@ -238,42 +244,6 @@ export default function AddTaskPage() {
                     <Button className="w-full h-[50px] text-[17px] font-bold rounded-md" onClick={handleSaveTask}>Save Task</Button>
                 </footer>
             </div>
-
-            {/* Duration Dialog */}
-            <Dialog open={isDurationOpen} onOpenChange={setIsDurationOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Set Duration</DialogTitle>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <div className="text-center text-2xl font-bold mb-4">{duration} minutes</div>
-                        <Slider
-                            defaultValue={[duration]}
-                            max={240}
-                            step={5}
-                            onValueChange={(value) => setDuration(value[0])}
-                        />
-                    </div>
-                    <DialogFooter>
-                        <Button onClick={() => setIsDurationOpen(false)}>Set</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-             {/* Start Time Dialog */}
-             <Dialog open={isStartTimeOpen} onOpenChange={setIsStartTimeOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Set Start Time</DialogTitle>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
-                    </div>
-                    <DialogFooter>
-                        <Button onClick={() => setIsStartTimeOpen(false)}>Set</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 }
