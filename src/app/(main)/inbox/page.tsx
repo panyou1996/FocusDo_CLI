@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { Inbox as InboxIcon, Filter, Plus, ChevronLeft, ChevronRight } from "lucide-react";
-import { tasks as initialTasks, lists } from "@/lib/data";
+import { lists } from "@/lib/data";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types";
+import { useTasks } from "@/context/TaskContext";
 
 interface GroupedTasks {
   expired: Task[];
@@ -36,7 +37,7 @@ const TaskGroup = ({ title, tasks, ...props }: { title: string, tasks: Task[], [
 
 
 export default function InboxPage() {
-  const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
+  const { tasks, updateTask, deleteTask } = useTasks();
   const [selectedList, setSelectedList] = React.useState(lists[0].id);
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });
@@ -47,34 +48,33 @@ export default function InboxPage() {
   }, []);
 
   const handleDeleteTask = (taskId: string) => {
-    setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+    deleteTask(taskId);
   };
 
   const handleToggleImportant = (taskId: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId ? { ...task, isImportant: !task.isImportant } : task
-      )
-    );
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      updateTask(taskId, { ...task, isImportant: !task.isImportant });
+    }
   };
   
   const handleToggleMyDay = (taskId: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId ? { ...task, isMyDay: !task.isMyDay } : task
-      )
-    );
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      updateTask(taskId, { ...task, isMyDay: !task.isMyDay });
+    }
   };
 
   const handleToggleCompleted = (taskId: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
-      )
-    );
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      updateTask(taskId, { ...task, isCompleted: !task.isCompleted });
+    }
   };
 
   React.useEffect(() => {
+    if(!isClient) return;
+
     const filteredTasks = tasks.filter(task => task.listId === selectedList);
 
     const groupAndSortTasks = (tasksToSort: Task[]) => {
