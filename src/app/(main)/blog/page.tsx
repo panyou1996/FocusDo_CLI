@@ -6,7 +6,7 @@ import { BookText, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/BlogCard";
-import { useAppContext } from "@/context/TaskContext";
+import { useAppContext } from "@/context/AppContext";
 
 export default function BlogPage() {
   const { blogPosts } = useAppContext();

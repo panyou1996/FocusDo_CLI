@@ -5,7 +5,7 @@ import * as React from 'react';
 import type { Task, BlogPost } from '@/lib/types';
 import { tasks as initialTasks, blogPosts as initialBlogPosts } from '@/lib/data';
 
-interface TaskContextType {
+interface AppContextType {
   tasks: Task[];
   addTask: (task: Task) => void;
   updateTask: (taskId: string, updatedTask: Partial<Task>) => void;
@@ -14,9 +14,9 @@ interface TaskContextType {
   addBlogPost: (post: BlogPost) => void;
 }
 
-const TaskContext = React.createContext<TaskContextType | undefined>(undefined);
+const AppContext = React.createContext<AppContextType | undefined>(undefined);
 
-export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
+export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
   const [blogPosts, setBlogPosts] = React.useState<BlogPost[]>(initialBlogPosts);
 
@@ -41,16 +41,16 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask, blogPosts, addBlogPost }}>
+    <AppContext.Provider value={{ tasks, addTask, updateTask, deleteTask, blogPosts, addBlogPost }}>
       {children}
-    </TaskContext.Provider>
+    </AppContext.Provider>
   );
 };
 
-export const useTasks = () => {
-  const context = React.useContext(TaskContext);
+export const useAppContext = () => {
+  const context = React.useContext(AppContext);
   if (context === undefined) {
-    throw new Error('useTasks must be used within a TaskProvider');
+    throw new Error('useAppContext must be used within a AppProvider');
   }
   return context;
 };

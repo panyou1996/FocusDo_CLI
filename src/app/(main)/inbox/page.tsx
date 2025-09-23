@@ -11,7 +11,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types";
-import { useTasks } from "@/context/TaskContext";
+import { useAppContext } from "@/context/AppContext";
 import { format } from 'date-fns';
 import { useRouter } from "next/navigation";
 
@@ -40,7 +40,7 @@ const TaskGroup = ({ title, tasks, ...props }: { title: string, tasks: Task[], [
 
 
 export default function InboxPage() {
-  const { tasks, updateTask, deleteTask } = useTasks();
+  const { tasks, updateTask, deleteTask } = useAppContext();
   const [selectedList, setSelectedList] = React.useState(lists[0].id);
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });

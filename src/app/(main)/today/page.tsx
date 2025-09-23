@@ -8,7 +8,7 @@ import { lists } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { Task } from "@/lib/types";
-import { useAppContext } from "@/context/TaskContext";
+import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 

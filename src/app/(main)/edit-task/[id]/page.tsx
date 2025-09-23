@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { useTasks } from '@/context/TaskContext';
+import { useAppContext } from '@/context/AppContext';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format, parseISO } from 'date-fns';
@@ -32,7 +32,7 @@ const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType
 export default function EditTaskPage() {
     const router = useRouter();
     const params = useParams();
-    const { tasks, updateTask, deleteTask } = useTasks();
+    const { tasks, updateTask, deleteTask } = useAppContext();
 
     const taskId = params.id as string;
     const taskToEdit = tasks.find(t => t.id === taskId);

@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Upload } from 'lucide-react';
 import Image from 'next/image';
-import { useAppContext } from '@/context/TaskContext';
+import { useAppContext } from '@/context/AppContext';
 
 export default function BlogNewPage() {
   const router = useRouter();

@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Share2 } from "lucide-react";
-import { useAppContext } from "@/context/TaskContext";
+import { useAppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";

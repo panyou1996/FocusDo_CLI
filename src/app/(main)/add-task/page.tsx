@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { useTasks } from '@/context/TaskContext';
+import { useAppContext } from '@/context/AppContext';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
@@ -30,7 +30,7 @@ const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType
 
 export default function AddTaskPage() {
     const router = useRouter();
-    const { addTask } = useTasks();
+    const { addTask } = useAppContext();
 
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
