@@ -190,7 +190,7 @@ export default function AddTaskPage() {
                         )}
                         <Separator/>
                         <AttributeRow icon={Hourglass} label="Duration">
-                             <div className="flex items-center gap-2">
+                             <div className="flex items-center gap-1">
                                 <Input 
                                     type="number" 
                                     value={duration}
