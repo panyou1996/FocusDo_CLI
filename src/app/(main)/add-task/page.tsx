@@ -43,6 +43,9 @@ export default function AddTaskPage() {
     const [subtasks, setSubtasks] = React.useState<Subtask[]>([]);
     const [newSubtask, setNewSubtask] = React.useState('');
     const [isAddingSubtask, setIsAddingSubtask] = React.useState(false);
+    const [editingSubtaskId, setEditingSubtaskId] = React.useState<string | null>(null);
+    const [editingSubtaskText, setEditingSubtaskText] = React.useState('');
+
 
     const [isDurationOpen, setIsDurationOpen] = React.useState(false);
     const [isStartTimeOpen, setIsStartTimeOpen] = React.useState(false);
@@ -87,6 +90,24 @@ export default function AddTaskPage() {
     const toggleSubtaskCompletion = (id: string) => {
         setSubtasks(subtasks.map(sub => sub.id === id ? { ...sub, isCompleted: !sub.isCompleted } : sub));
     };
+
+    const startEditingSubtask = (subtask: Subtask) => {
+        setEditingSubtaskId(subtask.id);
+        setEditingSubtaskText(subtask.title);
+    };
+
+    const saveSubtaskEdit = (id: string) => {
+        setSubtasks(subtasks.map(sub => sub.id === id ? { ...sub, title: editingSubtaskText } : sub));
+        setEditingSubtaskId(null);
+        setEditingSubtaskText('');
+    };
+
+    const handleSubtaskEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string) => {
+        if (e.key === 'Enter') {
+            saveSubtaskEdit(id);
+        }
+    };
+
 
     return (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
@@ -134,7 +155,24 @@ export default function AddTaskPage() {
                                             onCheckedChange={() => toggleSubtaskCompletion(sub.id)}
                                             className="w-5 h-5 rounded-full"
                                         />
-                                        <label htmlFor={`subtask-${sub.id}`} className="flex-grow text-sm">{sub.title}</label>
+                                        {editingSubtaskId === sub.id ? (
+                                            <Input
+                                                value={editingSubtaskText}
+                                                onChange={(e) => setEditingSubtaskText(e.target.value)}
+                                                onBlur={() => saveSubtaskEdit(sub.id)}
+                                                onKeyDown={(e) => handleSubtaskEditKeyDown(e, sub.id)}
+                                                className="h-9 flex-grow"
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            <label 
+                                                htmlFor={`subtask-${sub.id}`} 
+                                                className="flex-grow text-sm"
+                                                onClick={() => startEditingSubtask(sub)}
+                                            >
+                                                {sub.title}
+                                            </label>
+                                        )}
                                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeSubtask(sub.id)}>
                                             <Trash2 className="w-4 h-4 text-destructive" />
                                         </Button>
