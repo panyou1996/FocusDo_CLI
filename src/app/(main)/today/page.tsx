@@ -144,7 +144,7 @@ export default function TodayPage() {
 
   return (
     <div className="px-5">
-      <header className="pt-10 pb-4 h-[100px] flex justify-between items-center">
+      <header className="pt-10 pb-4 h-[100px] flex justify-between items-center relative">
         <div className="flex items-center gap-3">
           <Sun className="w-7 h-7 text-orange-400" strokeWidth={2} />
           <div>
@@ -152,38 +152,42 @@ export default function TodayPage() {
             <p className="text-sm text-muted-foreground">{`${dateString}, ${dayString}`}</p>
           </div>
         </div>
-        <div className="flex items-center justify-center gap-2">
-            <div className="flex bg-secondary p-1 rounded-md">
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "h-8 w-8",
-                  view === "compact" && "bg-card shadow-sm"
-                )}
-                onClick={() => setView("compact")}
-              >
-                <LayoutGrid className="w-5 h-5" strokeWidth={1.5} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "h-8 w-8",
-                  view === "detail" && "bg-card shadow-sm"
-                )}
-                onClick={() => setView("detail")}
-              >
-                <List className="w-5 h-5" strokeWidth={1.5} />
-              </Button>
-            </div>
-             <Button variant="ghost" size="icon" className="h-8 w-8 bg-secondary">
-              <SlidersHorizontal className="w-5 h-5" strokeWidth={1.5} />
+        
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mt-3">
+          <div className="flex bg-secondary p-1 rounded-md">
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-8 w-8",
+                view === "compact" && "bg-card shadow-sm"
+              )}
+              onClick={() => setView("compact")}
+            >
+              <LayoutGrid className="w-5 h-5" strokeWidth={1.5} />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 bg-secondary">
-              <Wand2 className="w-5 h-5 text-primary" strokeWidth={1.5} />
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-8 w-8",
+                view === "detail" && "bg-card shadow-sm"
+              )}
+              onClick={() => setView("detail")}
+            >
+              <List className="w-5 h-5" strokeWidth={1.5} />
             </Button>
           </div>
+        </div>
+        
+        <div className="flex items-center gap-2">
+           <Button variant="ghost" size="icon" className="h-8 w-8 bg-secondary">
+            <SlidersHorizontal className="w-5 h-5" strokeWidth={1.5} />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8 bg-secondary">
+            <Wand2 className="w-5 h-5 text-primary" strokeWidth={1.5} />
+          </Button>
+        </div>
       </header>
 
       <div className="space-y-6">
