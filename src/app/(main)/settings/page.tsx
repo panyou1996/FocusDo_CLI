@@ -21,8 +21,8 @@ const SettingsItem = ({ icon: Icon, label, color, action }: { icon: React.Elemen
 export default function SettingsPage() {
   return (
     <div className="">
-      <header className="px-5 pt-10 pb-4">
-        <h1 className="text-[34px] font-bold text-foreground">Settings</h1>
+      <header className="px-5 pt-10 pb-4 h-[100px] flex justify-between items-center">
+        <h1 className="text-[28px] font-bold text-foreground">Settings</h1>
       </header>
 
       <div className="px-5">
