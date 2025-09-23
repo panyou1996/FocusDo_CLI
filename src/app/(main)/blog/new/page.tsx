@@ -25,14 +25,16 @@ export default function BlogNewPage() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Simulate image upload by using a placeholder image service
-      // This avoids CORS issues with the previous API
-      const randomId = Math.floor(Math.random() * 1000);
-      const placeholderUrl = `https://picsum.photos/seed/${randomId}/600/400`;
-      setCoverImage(placeholderUrl);
+      setIsUploading(true);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverImage(reader.result as string);
+        setIsUploading(false);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -92,7 +94,7 @@ export default function BlogNewPage() {
           ) : isUploading ? (
             <>
               <Loader2 className="w-8 h-8 mb-2 animate-spin" />
-              <p>Uploading...</p>
+              <p>Processing...</p>
             </>
           ) : (
             <>
