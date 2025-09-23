@@ -1,7 +1,7 @@
 
 "use client";
 
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Share2 } from "lucide-react";
@@ -10,9 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
-export default function BlogDetailPage({ params }: { params: { slug: string } }) {
+export default function BlogDetailPage() {
+  const params = useParams();
+  const slug = params.slug as string;
   const { blogPosts } = useAppContext();
-  const post = blogPosts.find((p) => p.slug === params.slug);
+  const post = blogPosts.find((p) => p.slug === slug);
 
   if (!post) {
     notFound();
