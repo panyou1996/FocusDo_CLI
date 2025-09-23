@@ -21,7 +21,7 @@ const TaskGroup = ({ title, tasks, ...props }: { title: string; tasks: Task[]; [
   if (tasks.length === 0) return null;
   return (
     <div>
-      <h2 className="text-lg font-semibold text-muted-foreground mb-2 px-1">{title}</h2>
+      <h2 class="text-lg font-semibold text-muted-foreground mb-2 px-1">{title}</h2>
       <div className="space-y-3">
         {tasks.map((task) => {
           const list = lists.find((l) => l.id === task.listId);
@@ -152,7 +152,7 @@ export default function TodayPage() {
             <p className="text-sm text-muted-foreground">{`${dateString}, ${dayString}`}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2">
             <div className="flex bg-secondary p-1 rounded-md">
               <Button
                 variant="ghost"
