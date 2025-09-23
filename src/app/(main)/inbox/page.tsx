@@ -187,7 +187,7 @@ export default function InboxPage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="calendar" className="mt-4 px-2">
+        <TabsContent value="calendar" className="mt-4">
             <div className="w-full flex justify-center">
               <Calendar
                 mode="single"
