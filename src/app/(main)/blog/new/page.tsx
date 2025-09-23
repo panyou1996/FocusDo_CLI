@@ -64,7 +64,7 @@ export default function BlogNewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col w-full max-w-lg mx-auto">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0">
         <Link href="/blog">
           <Button variant="link" className="text-blue-500 text-[17px] p-0">Cancel</Button>
