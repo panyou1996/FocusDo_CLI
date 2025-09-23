@@ -141,9 +141,14 @@ export default function AddTaskPage() {
 
                     <Card className="rounded-2xl shadow-soft border-none overflow-hidden">
                         <AttributeRow icon={ListTree} label="Subtasks">
-                            <Button variant="ghost" size="sm" className="text-primary" onClick={() => setIsAddingSubtask(true)}>
-                                {subtasks.length > 0 ? `${subtasks.length} subtasks` : 'Add'}
-                            </Button>
+                            <div className="flex items-center gap-2">
+                                {subtasks.length > 0 && (
+                                    <span className="text-sm text-muted-foreground">{subtasks.length} subtasks</span>
+                                )}
+                                <Button variant="ghost" size="sm" className="text-primary" onClick={() => setIsAddingSubtask(true)}>
+                                    Add
+                                </Button>
+                            </div>
                         </AttributeRow>
                         { (subtasks.length > 0 || isAddingSubtask) && (
                             <div className="px-4 py-2 space-y-2">
