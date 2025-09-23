@@ -1,3 +1,28 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "placeholder_blog_1",
+      "description": "A person writing in a notebook at a sunlit desk.",
+      "imageUrl": "https://images.unsplash.com/photo-1594997652537-2e2dce4ebf28?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d3JpdGluZyUyMG5vdGVib29rfGVufDB8fHx8MTc1ODU4NTMyMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "writing notebook"
+    },
+    {
+      "id": "placeholder_blog_2",
+      "description": "A minimalist workspace with a laptop and a single plant.",
+      "imageUrl": "https://images.unsplash.com/photo-1587522630593-3b9e5f3255f2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtaW5pbWFsaXN0JTIwd29ya3NwYWNlfGVufDB8fHx8MTc1ODYwODg5M3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "minimalist workspace"
+    },
+    {
+      "id": "placeholder_avatar_1",
+      "description": "A portrait of a smiling woman.",
+      "imageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1NTQwNjF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "placeholder_avatar_2",
+      "description": "A portrait of a man with glasses.",
+      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man portrait"
+    }
+  ]
 }
