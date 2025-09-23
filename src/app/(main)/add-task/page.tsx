@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Slider } from '@/components/ui/slider';
 import { format } from 'date-fns';
 import type { Subtask } from '@/lib/types';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
     <div className="flex items-center h-[50px] px-4">
@@ -41,8 +42,8 @@ export default function AddTaskPage() {
     const [duration, setDuration] = React.useState(30);
     const [subtasks, setSubtasks] = React.useState<Subtask[]>([]);
     const [newSubtask, setNewSubtask] = React.useState('');
+    const [isAddingSubtask, setIsAddingSubtask] = React.useState(false);
 
-    const [isSubtaskOpen, setIsSubtaskOpen] = React.useState(false);
     const [isDurationOpen, setIsDurationOpen] = React.useState(false);
     const [isStartTimeOpen, setIsStartTimeOpen] = React.useState(false);
 
@@ -75,6 +76,7 @@ export default function AddTaskPage() {
         if (newSubtask.trim()) {
             setSubtasks([...subtasks, { id: `sub-${Date.now()}`, title: newSubtask, isCompleted: false }]);
             setNewSubtask('');
+            setIsAddingSubtask(false);
         }
     };
 
@@ -82,6 +84,9 @@ export default function AddTaskPage() {
         setSubtasks(subtasks.filter(sub => sub.id !== id));
     };
 
+    const toggleSubtaskCompletion = (id: string) => {
+        setSubtasks(subtasks.map(sub => sub.id === id ? { ...sub, isCompleted: !sub.isCompleted } : sub));
+    };
 
     return (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
@@ -115,10 +120,34 @@ export default function AddTaskPage() {
 
                     <Card className="rounded-2xl shadow-soft border-none overflow-hidden">
                         <AttributeRow icon={ListTree} label="Subtasks">
-                            <Button variant="ghost" size="sm" className="text-primary" onClick={() => setIsSubtaskOpen(true)}>
+                            <Button variant="ghost" size="sm" className="text-primary" onClick={() => setIsAddingSubtask(true)}>
                                 {subtasks.length > 0 ? `${subtasks.length} subtasks` : 'Add'}
                             </Button>
                         </AttributeRow>
+                        { (subtasks.length > 0 || isAddingSubtask) && (
+                            <div className="px-4 py-2 space-y-2">
+                                {subtasks.map(sub => (
+                                    <div key={sub.id} className="flex items-center gap-2">
+                                        <Checkbox 
+                                            id={`subtask-${sub.id}`}
+                                            checked={sub.isCompleted} 
+                                            onCheckedChange={() => toggleSubtaskCompletion(sub.id)}
+                                            className="w-5 h-5 rounded-full"
+                                        />
+                                        <label htmlFor={`subtask-${sub.id}`} className="flex-grow text-sm">{sub.title}</label>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeSubtask(sub.id)}>
+                                            <Trash2 className="w-4 h-4 text-destructive" />
+                                        </Button>
+                                    </div>
+                                ))}
+                                {isAddingSubtask && (
+                                    <div className="flex gap-2">
+                                        <Input value={newSubtask} onChange={(e) => setNewSubtask(e.target.value)} placeholder="Add a subtask..." className="h-9" />
+                                        <Button size="sm" onClick={addSubtask}>Add</Button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <Separator/>
                         <AttributeRow icon={Hourglass} label="Duration">
                             <Button variant="ghost" className="text-muted-foreground" onClick={() => setIsDurationOpen(true)}>
@@ -167,29 +196,6 @@ export default function AddTaskPage() {
                 </footer>
             </div>
 
-            {/* Subtasks Dialog */}
-            <Dialog open={isSubtaskOpen} onOpenChange={setIsSubtaskOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Subtasks</DialogTitle>
-                    </DialogHeader>
-                    <div className="flex gap-2">
-                        <Input value={newSubtask} onChange={(e) => setNewSubtask(e.target.value)} placeholder="Add a subtask..." />
-                        <Button onClick={addSubtask}><Plus className="w-4 h-4 mr-2" />Add</Button>
-                    </div>
-                    <div className="space-y-2 mt-4 max-h-60 overflow-y-auto">
-                        {subtasks.map(sub => (
-                            <div key={sub.id} className="flex items-center justify-between bg-secondary p-2 rounded-md">
-                                <span>{sub.title}</span>
-                                <Button variant="ghost" size="icon" onClick={() => removeSubtask(sub.id)}>
-                                    <Trash2 className="w-4 h-4 text-destructive" />
-                                </Button>
-                            </div>
-                        ))}
-                    </div>
-                </DialogContent>
-            </Dialog>
-
             {/* Duration Dialog */}
             <Dialog open={isDurationOpen} onOpenChange={setIsDurationOpen}>
                 <DialogContent>
@@ -227,5 +233,4 @@ export default function AddTaskPage() {
             </Dialog>
         </div>
     );
-
-    
+}
