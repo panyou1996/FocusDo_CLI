@@ -21,8 +21,10 @@ export default function BlogDetailPage() {
   React.useEffect(() => {
     // This effect runs when the component mounts and whenever blogPosts or slug changes.
     // This ensures that we have the latest data from the context before trying to find the post.
-    const foundPost = blogPosts.find((p) => p.slug === slug);
-    setPost(foundPost || null); // Set to the found post, or null if not found
+    if (blogPosts.length > 0) {
+        const foundPost = blogPosts.find((p) => p.slug === slug);
+        setPost(foundPost || null); // Set to the found post, or null if not found
+    }
   }, [blogPosts, slug]);
 
   // Handle loading state

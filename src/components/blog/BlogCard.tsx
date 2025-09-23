@@ -11,8 +11,10 @@ interface BlogCardProps {
 }
 
 export function BlogCard({ post }: BlogCardProps) {
-  const placeholderImage = PlaceHolderImages.find(img => img.id === post.coverImage);
-  const imageUrl = post.coverImage && !placeholderImage ? post.coverImage : placeholderImage?.imageUrl;
+  // Check if coverImage is a placeholder ID or a Base64 string
+  const isBase64 = post.coverImage?.startsWith('data:');
+  const placeholderImage = !isBase64 ? PlaceHolderImages.find(img => img.id === post.coverImage) : null;
+  const imageUrl = isBase64 ? post.coverImage : placeholderImage?.imageUrl;
 
   return (
     <Link href={`/blog/${post.slug}`}>
