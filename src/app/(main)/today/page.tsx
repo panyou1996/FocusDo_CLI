@@ -3,15 +3,30 @@
 import * as React from "react";
 import { Sun, LayoutGrid, List, SlidersHorizontal, Wand2 } from "lucide-react";
 import { TaskCard } from "@/components/tasks/TaskCard";
-import { tasks, lists } from "@/lib/data";
+import { tasks as initialTasks, lists } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import type { Task } from "@/lib/types";
+
 
 export default function TodayPage() {
   const [view, setView] = React.useState<"compact" | "detail">("compact");
+  const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
   const today = new Date();
   const dateString = today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
-  const dayString = today.toLocaleDateString('en-US', { weekday: 'short' });
+  const dayString = today.toLocaleDateString('en-US', { weekday: 'short' }).replace('.', '');
+
+  const handleDeleteTask = (taskId: string) => {
+    setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+  };
+
+  const handleToggleImportant = (taskId: string) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId ? { ...task, isImportant: !task.isImportant } : task
+      )
+    );
+  };
 
   return (
     <div className="px-5">
@@ -61,7 +76,7 @@ export default function TodayPage() {
         {tasks.map((task) => {
           const list = lists.find((l) => l.id === task.listId);
           if (!list) return null;
-          return <TaskCard key={task.id} task={task} list={list} view={view} />;
+          return <TaskCard key={task.id} task={task} list={list} view={view} onDelete={handleDeleteTask} onToggleImportant={handleToggleImportant} />;
         })}
       </div>
     </div>

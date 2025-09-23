@@ -2,17 +2,31 @@
 
 import * as React from "react";
 import { Inbox as InboxIcon, Filter, Plus, ChevronLeft, ChevronRight } from "lucide-react";
-import { tasks, lists } from "@/lib/data";
+import { tasks as initialTasks, lists } from "@/lib/data";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import type { Task } from "@/lib/types";
 
 export default function InboxPage() {
+  const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
   const [selectedList, setSelectedList] = React.useState(lists[0].id);
   const [date, setDate] = React.useState<Date | undefined>(new Date());
+
+  const handleDeleteTask = (taskId: string) => {
+    setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+  };
+
+  const handleToggleImportant = (taskId: string) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId ? { ...task, isImportant: !task.isImportant } : task
+      )
+    );
+  };
   
   const filteredTasks = tasks.filter(task => task.listId === selectedList);
 
@@ -68,7 +82,7 @@ export default function InboxPage() {
             {filteredTasks.map((task) => {
               const list = lists.find((l) => l.id === task.listId);
               if (!list) return null;
-              return <TaskCard key={task.id} task={task} list={list} view="compact" />;
+              return <TaskCard key={task.id} task={task} list={list} view="compact" onDelete={handleDeleteTask} onToggleImportant={handleToggleImportant} />;
             })}
           </div>
         </TabsContent>
@@ -89,7 +103,7 @@ export default function InboxPage() {
             {tasks.slice(0, 2).map((task) => {
               const list = lists.find((l) => l.id === task.listId);
               if (!list) return null;
-              return <TaskCard key={task.id} task={task} list={list} view="compact" />;
+              return <TaskCard key={task.id} task={task} list={list} view="compact" onDelete={handleDeleteTask} onToggleImportant={handleToggleImportant} />;
             })}
           </div>
         </TabsContent>

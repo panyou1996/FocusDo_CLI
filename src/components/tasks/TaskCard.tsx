@@ -19,9 +19,11 @@ interface TaskCardProps {
   task: Task;
   list: TaskList;
   view: "compact" | "detail";
+  onDelete: (taskId: string) => void;
+  onToggleImportant: (taskId: string) => void;
 }
 
-export function TaskCard({ task, list, view }: TaskCardProps) {
+export function TaskCard({ task, list, view, onDelete, onToggleImportant }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
   const [isCompleted, setIsCompleted] = React.useState(task.isCompleted);
 
@@ -31,9 +33,20 @@ export function TaskCard({ task, list, view }: TaskCardProps) {
     }
   };
 
-  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleToggleImportantClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    // Add button specific logic here, e.g., starring, deleting
+    onToggleImportant(task.id);
+  };
+  
+  const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onDelete(task.id);
+  };
+
+  const handleSunClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    // Logic for "Add to My Day" will be implemented later
+    console.log("Add to My Day clicked");
   };
 
   const DetailRow = ({
@@ -51,6 +64,10 @@ export function TaskCard({ task, list, view }: TaskCardProps) {
     </div>
   );
 
+  React.useEffect(() => {
+    setIsExpanded(view === "detail");
+  }, [view]);
+
   return (
     <div
       className="bg-card rounded-2xl shadow-soft transition-all duration-300 ease-in-out"
@@ -65,7 +82,6 @@ export function TaskCard({ task, list, view }: TaskCardProps) {
           id={`task-${task.id}`}
           checked={isCompleted}
           onCheckedChange={(checked) => {
-            // Prevent card expansion when clicking checkbox
             window.event?.stopPropagation();
             setIsCompleted(!!checked);
           }}
@@ -86,7 +102,7 @@ export function TaskCard({ task, list, view }: TaskCardProps) {
           )}
         </div>
         <div className="flex items-center gap-3 ml-2">
-          <button onClick={handleButtonClick}>
+          <button onClick={handleToggleImportantClick}>
             <Star
               className={cn(
                 "w-5 h-5 text-muted-foreground transition-colors hover:text-yellow-500",
@@ -95,10 +111,10 @@ export function TaskCard({ task, list, view }: TaskCardProps) {
               strokeWidth={1.5}
             />
           </button>
-          <button onClick={handleButtonClick}>
+          <button onClick={handleSunClick}>
             <Sun className="w-5 h-5 text-muted-foreground hover:text-orange-500" strokeWidth={1.5} />
           </button>
-          <button onClick={handleButtonClick}>
+          <button onClick={handleDeleteClick}>
             <Trash2 className="w-5 h-5 text-muted-foreground hover:text-destructive" strokeWidth={1.5} />
           </button>
         </div>
