@@ -165,7 +165,7 @@ export default function TodayPage() {
       </header>
 
       <div className="flex justify-center mb-4">
-        <Tabs value={view} onValueChange={(value) => setView(value as "compact" | "detail")} className="w-full max-w-xs">
+        <Tabs value={view} onValueChange={(value) => setView(value as "compact" | "detail")} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="compact">Compact</TabsTrigger>
             <TabsTrigger value="detail">Detail</TabsTrigger>
