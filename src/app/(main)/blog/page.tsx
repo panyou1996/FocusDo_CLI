@@ -27,13 +27,10 @@ export default function BlogPage() {
         </Link>
       </div>
 
-      <div>
-        <h2 className="text-[22px] font-bold mb-4">Choice for you</h2>
-        <div className="space-y-4">
-          {blogPosts.map((post) => (
-            <BlogCard key={post.id} post={post} />
-          ))}
-        </div>
+      <div className="space-y-4">
+        {blogPosts.map((post) => (
+          <BlogCard key={post.id} post={post} />
+        ))}
       </div>
     </div>
   );
