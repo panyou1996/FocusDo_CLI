@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { X, ListTree, Hourglass, Clock, Calendar, Star, Pin, Plus, Trash2 } from 'lucide-react';
+import { X, ListTree, Hourglass, Clock, Calendar, Star, Pin, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
@@ -138,7 +138,7 @@ export default function AddTaskPage() {
                         <AttributeRow icon={ListTree} label="Subtasks">
                             <div className="flex items-center gap-2">
                                 {subtasks.length > 0 && (
-                                    <span className="text-sm text-muted-foreground">{subtasks.length} subtasks</span>
+                                    <span className="text-sm text-muted-foreground">{subtasks.filter(s => s.isCompleted).length}/{subtasks.length}</span>
                                 )}
                                 <Button variant="ghost" size="sm" className="text-primary" onClick={() => setIsAddingSubtask(true)}>
                                     Add
@@ -167,7 +167,7 @@ export default function AddTaskPage() {
                                         ) : (
                                             <label 
                                                 htmlFor={`subtask-${sub.id}`} 
-                                                className="flex-grow text-sm"
+                                                className="flex-grow text-sm cursor-text"
                                                 onClick={() => startEditingSubtask(sub)}
                                             >
                                                 {sub.title}
@@ -207,13 +207,14 @@ export default function AddTaskPage() {
                                 value={startTime}
                                 onChange={(e) => setStartTime(e.target.value)}
                                 className="w-32 h-8"
+                                pattern="[0-9]{2}:[0-9]{2}"
                             />
                         </AttributeRow>
                         <Separator/>
                         <AttributeRow icon={Calendar} label="Deadline">
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="ghost" className="text-muted-foreground">
+                                    <Button variant="ghost" size="sm" className="text-primary">
                                         {dueDate ? format(dueDate, 'PPP') : 'Set Date'}
                                     </Button>
                                 </PopoverTrigger>
@@ -246,4 +247,5 @@ export default function AddTaskPage() {
             </div>
         </div>
     );
-}
+
+    
