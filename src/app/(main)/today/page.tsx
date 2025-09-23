@@ -10,8 +10,8 @@ import { Button } from "@/components/ui/button";
 export default function TodayPage() {
   const [view, setView] = React.useState<"compact" | "detail">("compact");
   const today = new Date();
-  const dateString = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-  const dayString = today.toLocaleDateString('en-US', { weekday: 'long' });
+  const dateString = today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
+  const dayString = today.toLocaleDateString('en-US', { weekday: 'short' });
 
   return (
     <div className="px-5">
