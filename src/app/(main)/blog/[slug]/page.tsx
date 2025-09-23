@@ -42,7 +42,7 @@ export default function BlogDetailPage({ params }: { params: { slug: string } })
         </div>
         
         <div 
-            className="prose prose-lg max-w-none text-foreground/80 prose-p:text-[17px] prose-p:leading-relaxed prose-img:rounded-2xl"
+            className="prose prose-lg max-w-none text-foreground/80 prose-p:text-[17px] prose-p:leading-relaxed prose-p:mb-4 prose-img:rounded-2xl prose-img:my-6"
             dangerouslySetInnerHTML={{ __html: post.content }}
          />
 
