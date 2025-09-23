@@ -161,7 +161,7 @@ export default function AddTaskPage() {
                                                 onChange={(e) => setEditingSubtaskText(e.target.value)}
                                                 onBlur={() => saveSubtaskEdit(sub.id)}
                                                 onKeyDown={(e) => handleSubtaskEditKeyDown(e, sub.id)}
-                                                className="h-9 flex-grow"
+                                                className="h-9 flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0"
                                                 autoFocus
                                             />
                                         ) : (
@@ -180,7 +180,7 @@ export default function AddTaskPage() {
                                 ))}
                                 {isAddingSubtask && (
                                     <div className="flex gap-2">
-                                        <Input value={newSubtask} onChange={(e) => setNewSubtask(e.target.value)} placeholder="Add a subtask..." className="h-9" />
+                                        <Input value={newSubtask} onChange={(e) => setNewSubtask(e.target.value)} placeholder="Add a subtask..." className="h-9 border-none focus-visible:ring-0 focus-visible:ring-offset-0" />
                                         <Button size="sm" onClick={addSubtask}>Add</Button>
                                     </div>
                                 )}
@@ -193,7 +193,7 @@ export default function AddTaskPage() {
                                     type="number" 
                                     value={duration}
                                     onChange={(e) => setDuration(Number(e.target.value))}
-                                    className="w-20 h-8 text-right"
+                                    className="w-20 h-8 text-right border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
                                     min="0"
                                     step="5"
                                 />
@@ -206,7 +206,7 @@ export default function AddTaskPage() {
                                 type="time"
                                 value={startTime}
                                 onChange={(e) => setStartTime(e.target.value)}
-                                className="w-32 h-8"
+                                className="w-32 h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
                                 pattern="[0-9]{2}:[0-9]{2}"
                             />
                         </AttributeRow>
@@ -247,5 +247,4 @@ export default function AddTaskPage() {
             </div>
         </div>
     );
-
-    
+}
