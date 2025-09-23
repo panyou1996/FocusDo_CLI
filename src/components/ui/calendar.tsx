@@ -1,18 +1,25 @@
+
 "use client"
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker } from "react-day-picker"
+import { DayPicker, DropdownProps } from "react-day-picker"
+import { format } from "date-fns"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import { ScrollArea } from "./scroll-area"
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  tasksPerDay?: { [key: string]: number };
+};
+
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  tasksPerDay = {},
   ...props
 }: CalendarProps) {
   return (
@@ -60,6 +67,24 @@ function Calendar({
         IconRight: ({ className, ...props }) => (
           <ChevronRight className={cn("h-4 w-4", className)} {...props} />
         ),
+        DayContent: (dayProps) => {
+          const date = dayProps.date;
+          const formattedDate = format(date, 'yyyy-MM-dd');
+          const taskCount = tasksPerDay[formattedDate];
+          
+          return (
+            <div className="relative h-full w-full flex items-center justify-center">
+              <span>{dayProps.date.getDate()}</span>
+              {taskCount > 0 && (
+                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex space-x-0.5">
+                  {Array.from({ length: Math.min(taskCount, 3) }).map((_, i) => (
+                    <div key={i} className="h-1 w-1 rounded-full bg-primary" />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        },
       }}
       {...props}
     />

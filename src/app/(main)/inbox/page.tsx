@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -11,6 +12,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types";
 import { useTasks } from "@/context/TaskContext";
+import { format } from 'date-fns';
+
 
 interface GroupedTasks {
   expired: Task[];
@@ -41,6 +44,23 @@ export default function InboxPage() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });
   const [isClient, setIsClient] = React.useState(false);
+  
+  const tasksForSelectedDate = React.useMemo(() => {
+    if (!date) return [];
+    const formattedDate = format(date, 'yyyy-MM-dd');
+    return tasks.filter(task => task.dueDate === formattedDate);
+  }, [date, tasks]);
+
+  const tasksPerDay = React.useMemo(() => {
+    const counts: { [key: string]: number } = {};
+    tasks.forEach(task => {
+      if (task.dueDate) {
+        counts[task.dueDate] = (counts[task.dueDate] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [tasks]);
+
 
   React.useEffect(() => {
     setIsClient(true);
@@ -123,7 +143,7 @@ export default function InboxPage() {
   const { expired, upcoming, done } = groupedTasks;
 
   const cardProps = {
-    view: "compact",
+    view: "compact" as const,
     onDelete: handleDeleteTask,
     onToggleImportant: handleToggleImportant,
     onToggleMyDay: handleToggleMyDay,
@@ -193,30 +213,26 @@ export default function InboxPage() {
                 selected={date}
                 onSelect={setDate}
                 className="rounded-md border shadow-soft w-full"
+                tasksPerDay={tasksPerDay}
                 components={{
                   IconLeft: () => <ChevronLeft className="h-4 w-4" />,
                   IconRight: () => <ChevronRight className="h-4 w-4" />,
                 }}
               />
             </div>
-          <div className="space-y-3 px-3 mt-4">
-            <h2 className="font-bold text-lg">Tasks for {date?.toLocaleDateString() ?? 'selected date'}</h2>
-            {tasks.slice(0, 2).map((task) => {
-              const list = lists.find((l) => l.id === task.listId);
-              if (!list) return null;
-              return (
-                <TaskCard 
-                  key={task.id} 
-                  task={task} 
-                  list={list} 
-                  view="compact" 
-                  onDelete={handleDeleteTask} 
-                  onToggleImportant={handleToggleImportant}
-                  onToggleMyDay={handleToggleMyDay}
-                  onToggleCompleted={handleToggleCompleted}
-                />
-              );
-            })}
+            <div className="space-y-3 px-5 mt-4">
+            <h2 className="font-bold text-lg">
+              Tasks for {date ? format(date, 'PPP') : 'selected date'}
+            </h2>
+            {tasksForSelectedDate.length > 0 ? (
+              tasksForSelectedDate.map((task) => {
+                const list = lists.find((l) => l.id === task.listId);
+                if (!list) return null;
+                return <TaskCard key={task.id} task={task} list={list} {...cardProps} />;
+              })
+            ) : (
+              <p className="text-muted-foreground text-center py-4">No tasks for this day.</p>
+            )}
           </div>
         </TabsContent>
       </Tabs>
