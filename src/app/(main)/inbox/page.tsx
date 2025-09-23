@@ -188,12 +188,12 @@ export default function InboxPage() {
         </TabsContent>
 
         <TabsContent value="calendar" className="mt-4">
-            <div className="w-full flex justify-center">
+          <div className="px-2">
               <Calendar
                 mode="single"
                 selected={date}
                 onSelect={setDate}
-                className="rounded-md border shadow-soft"
+                className="rounded-md border shadow-soft w-full"
                 components={{
                   IconLeft: () => <ChevronLeft className="h-4 w-4" />,
                   IconRight: () => <ChevronRight className="h-4 w-4" />,
