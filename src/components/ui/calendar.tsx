@@ -46,7 +46,7 @@ function Calendar({
         cell: "h-9 flex-1 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
+          "h-9 w-full p-0 font-normal aria-selected:opacity-100"
         ),
         day_range_end: "day-range-end",
         day_selected:
@@ -71,14 +71,22 @@ function Calendar({
           const date = dayProps.date;
           const formattedDate = format(date, 'yyyy-MM-dd');
           const taskCount = tasksPerDay[formattedDate];
-          
+          const isSelected = cn(props.selected).includes(cn(date));
+          const isToday = format(new Date(), 'yyyy-MM-dd') === formattedDate;
+
           return (
             <div className="relative h-full w-full flex items-center justify-center">
               <span>{dayProps.date.getDate()}</span>
               {taskCount > 0 && (
                 <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex space-x-0.5">
                   {Array.from({ length: Math.min(taskCount, 3) }).map((_, i) => (
-                    <div key={i} className="h-1 w-1 rounded-full bg-primary" />
+                    <div
+                      key={i}
+                      className={cn(
+                        "h-1 w-1 rounded-full",
+                        (isSelected || isToday) ? "bg-primary-foreground" : "bg-primary"
+                      )}
+                    />
                   ))}
                 </div>
               )}
