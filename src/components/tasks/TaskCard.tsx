@@ -21,11 +21,11 @@ interface TaskCardProps {
   onDelete: (taskId: string) => void;
   onToggleImportant: (taskId: string) => void;
   onToggleMyDay: (taskId: string) => void;
+  onToggleCompleted: (taskId: string) => void;
 }
 
-export function TaskCard({ task, list, view, onDelete, onToggleImportant, onToggleMyDay }: TaskCardProps) {
+export function TaskCard({ task, list, view, onDelete, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
-  const [isCompleted, setIsCompleted] = React.useState(task.isCompleted);
 
   const handleToggleExpand = () => {
     if (view === "compact") {
@@ -35,7 +35,7 @@ export function TaskCard({ task, list, view, onDelete, onToggleImportant, onTogg
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsCompleted(!isCompleted);
+    onToggleCompleted(task.id);
   };
   
   const handleToggleImportantClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -84,8 +84,8 @@ export function TaskCard({ task, list, view, onDelete, onToggleImportant, onTogg
         ></div>
         <Checkbox
           id={`task-${task.id}`}
-          checked={isCompleted}
-          onCheckedChange={() => setIsCompleted(!isCompleted)}
+          checked={task.isCompleted}
+          onCheckedChange={() => onToggleCompleted(task.id)}
           onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
           className="w-6 h-6 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
         />
@@ -93,7 +93,7 @@ export function TaskCard({ task, list, view, onDelete, onToggleImportant, onTogg
           <p
             className={cn(
               "text-[17px] font-medium text-foreground",
-              isCompleted && "line-through text-muted-foreground"
+              task.isCompleted && "line-through text-muted-foreground"
             )}
           >
             {task.title}

@@ -52,6 +52,14 @@ export default function TodayPage() {
     );
   };
 
+  const handleToggleCompleted = (taskId: string) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
+      )
+    );
+  };
+
   const myDayTasks = tasks.filter(task => task.isMyDay);
   
   const groupAndSortTasks = (tasksToSort: Task[]) => {
@@ -100,7 +108,8 @@ export default function TodayPage() {
     view,
     onDelete: handleDeleteTask,
     onToggleImportant: handleToggleImportant,
-    onToggleMyDay: handleToggleMyDay
+    onToggleMyDay: handleToggleMyDay,
+    onToggleCompleted: handleToggleCompleted
   };
 
   return (
@@ -109,7 +118,7 @@ export default function TodayPage() {
         <div className="flex items-center gap-3">
           <Sun className="w-7 h-7 text-orange-400" strokeWidth={2} />
           <div>
-            <h1 className="text-2xl font-bold text-foreground">My Day</h1>
+            <h1 className="text-[28px] font-bold text-foreground">My Day</h1>
             <p className="text-sm text-muted-foreground">{`${dateString}, ${dayString}`}</p>
           </div>
         </div>

@@ -54,6 +54,14 @@ export default function InboxPage() {
     );
   };
 
+  const handleToggleCompleted = (taskId: string) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
+      )
+    );
+  };
+
   const filteredTasks = tasks.filter(task => task.listId === selectedList);
 
   const groupAndSortTasks = (tasksToSort: Task[]) => {
@@ -102,7 +110,8 @@ export default function InboxPage() {
     view: "compact",
     onDelete: handleDeleteTask,
     onToggleImportant: handleToggleImportant,
-    onToggleMyDay: handleToggleMyDay
+    onToggleMyDay: handleToggleMyDay,
+    onToggleCompleted: handleToggleCompleted,
   };
 
 
@@ -111,7 +120,7 @@ export default function InboxPage() {
       <header className="px-5 pt-10 pb-4 h-[100px] flex justify-between items-center">
         <div className="flex items-center gap-2">
           <InboxIcon className="w-7 h-7" strokeWidth={2} />
-          <h1 className="text-2xl font-bold text-foreground">Inbox</h1>
+          <h1 className="text-[28px] font-bold text-foreground">Inbox</h1>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon">
@@ -186,6 +195,7 @@ export default function InboxPage() {
                   onDelete={handleDeleteTask} 
                   onToggleImportant={handleToggleImportant}
                   onToggleMyDay={handleToggleMyDay}
+                  onToggleCompleted={handleToggleCompleted}
                 />
               );
             })}
