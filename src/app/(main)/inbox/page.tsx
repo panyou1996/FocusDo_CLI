@@ -14,6 +14,7 @@ import type { Task } from "@/lib/types";
 import { useAppContext } from "@/context/AppContext";
 import { format } from 'date-fns';
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 interface GroupedTasks {
@@ -47,13 +48,18 @@ export default function InboxPage() {
   const [isClient, setIsClient] = React.useState(false);
   const router = useRouter();
   
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
   const tasksForSelectedDate = React.useMemo(() => {
-    if (!date) return [];
+    if (!date || !isClient) return [];
     const formattedDate = format(date, 'yyyy-MM-dd');
     return tasks.filter(task => task.dueDate === formattedDate);
-  }, [date, tasks]);
+  }, [date, tasks, isClient]);
 
   const tasksPerDay = React.useMemo(() => {
+    if (!isClient) return {};
     const counts: { [key: string]: number } = {};
     tasks.forEach(task => {
       if (task.dueDate) {
@@ -61,12 +67,8 @@ export default function InboxPage() {
       }
     });
     return counts;
-  }, [tasks]);
+  }, [tasks, isClient]);
 
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleDeleteTask = (taskId: string) => {
     deleteTask(taskId);
@@ -162,6 +164,30 @@ export default function InboxPage() {
     onToggleMyDay: handleToggleMyDay,
     onToggleCompleted: handleToggleCompleted,
   };
+  
+  const renderListContent = () => {
+    if (!isClient) {
+      return (
+        <div className="space-y-4 px-5 mt-4">
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+        </div>
+      );
+    }
+
+    if (tasks.filter(t => t.listId === selectedList).length === 0) {
+        return <p className="text-muted-foreground text-center py-10">No tasks in this list.</p>;
+    }
+
+    return (
+      <div className="space-y-6 px-5 mt-4">
+        <TaskGroup title="Expired" tasks={expired} {...cardProps} />
+        <TaskGroup title="Upcoming" tasks={upcoming} {...cardProps} />
+        <TaskGroup title="Done" tasks={done} {...cardProps} />
+      </div>
+    );
+  };
 
 
   return (
@@ -212,11 +238,7 @@ export default function InboxPage() {
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
-          <div className="space-y-6 px-5 mt-4">
-            <TaskGroup title="Expired" tasks={expired} {...cardProps} />
-            <TaskGroup title="Upcoming" tasks={upcoming} {...cardProps} />
-            <TaskGroup title="Done" tasks={done} {...cardProps} />
-          </div>
+          {renderListContent()}
         </TabsContent>
 
         <TabsContent value="calendar" className="mt-4">
@@ -231,13 +253,18 @@ export default function InboxPage() {
                   IconLeft: () => <ChevronLeft className="h-4 w-4" />,
                   IconRight: () => <ChevronRight className="h-4 w-4" />,
                 }}
+                disabled={!isClient}
               />
             </div>
             <div className="space-y-3 px-5 mt-4">
             <h2 className="font-bold text-lg">
               Tasks for {date ? format(date, 'PPP') : 'selected date'}
             </h2>
-            {tasksForSelectedDate.length > 0 ? (
+             {!isClient ? (
+              <div className="space-y-3">
+                <Skeleton className="h-20 w-full" />
+              </div>
+            ) : tasksForSelectedDate.length > 0 ? (
               tasksForSelectedDate.map((task) => {
                 const list = lists.find((l) => l.id === task.listId);
                 if (!list) return null;

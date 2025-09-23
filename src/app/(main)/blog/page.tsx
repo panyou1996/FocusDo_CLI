@@ -1,15 +1,24 @@
 
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { BookText, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { useAppContext } from "@/context/AppContext";
+import { Skeleton } from "@/components/ui/skeleton";
+
 
 export default function BlogPage() {
   const { blogPosts } = useAppContext();
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
 
   return (
     <div className="px-5">
@@ -33,9 +42,18 @@ export default function BlogPage() {
       </div>
 
       <div className="space-y-4">
-        {blogPosts.map((post) => (
-          <BlogCard key={post.id} post={post} />
-        ))}
+        {!isClient ? (
+            <>
+              <Skeleton className="h-[320px] w-full rounded-2xl" />
+              <Skeleton className="h-[320px] w-full rounded-2xl" />
+            </>
+        ) : blogPosts.length > 0 ? (
+          blogPosts.map((post) => (
+            <BlogCard key={post.id} post={post} />
+          ))
+        ) : (
+          <p className="text-muted-foreground text-center py-10">No blog posts yet. Create one!</p>
+        )}
       </div>
     </div>
   );

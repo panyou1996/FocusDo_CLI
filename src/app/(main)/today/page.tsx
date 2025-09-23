@@ -11,6 +11,7 @@ import type { Task } from "@/lib/types";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface GroupedTasks {
   expired: Task[];
@@ -142,6 +143,31 @@ export default function TodayPage() {
     onToggleMyDay: handleToggleMyDay,
     onToggleCompleted: handleToggleCompleted
   };
+  
+  const renderContent = () => {
+    if (!isClient) {
+      return (
+        <div className="space-y-4">
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+        </div>
+      );
+    }
+
+    if (tasks.filter(t => t.isMyDay).length === 0) {
+        return <p className="text-muted-foreground text-center py-10">No tasks for today. Add some!</p>;
+    }
+
+    return (
+      <div className="space-y-6">
+         <TaskGroup title="Expired" tasks={expired} {...cardProps} />
+         <TaskGroup title="Upcoming" tasks={upcoming} {...cardProps} />
+         <TaskGroup title="Done" tasks={done} {...cardProps} />
+      </div>
+    );
+  };
+
 
   return (
     <div className="px-5">
@@ -172,12 +198,8 @@ export default function TodayPage() {
           </TabsList>
         </Tabs>
       </div>
-
-      <div className="space-y-6">
-         <TaskGroup title="Expired" tasks={expired} {...cardProps} />
-         <TaskGroup title="Upcoming" tasks={upcoming} {...cardProps} />
-         <TaskGroup title="Done" tasks={done} {...cardProps} />
-      </div>
+      
+      {renderContent()}
     </div>
   );
 }
