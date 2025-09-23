@@ -9,15 +9,39 @@ import { useAppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import * as React from "react";
 
 export default function BlogDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
   const { blogPosts } = useAppContext();
-  const post = blogPosts.find((p) => p.slug === slug);
+  const [post, setPost] = React.useState(blogPosts.find((p) => p.slug === slug));
+
+  React.useEffect(() => {
+    if (!post) {
+      // Temporary fix: If post is not found immediately,
+      // it might be because the context is not updated yet.
+      // We'll try to find it again from the latest blogPosts state.
+      const foundPost = blogPosts.find((p) => p.slug === slug);
+      if (foundPost) {
+        setPost(foundPost);
+      }
+    }
+  }, [blogPosts, post, slug]);
 
   if (!post) {
-    notFound();
+    // Still not found after effect, render loading or temp message
+    // before throwing 404, giving context time to update.
+    // In a real app, you might fetch this from a server.
+    const foundPost = blogPosts.find((p) => p.slug === slug);
+     if (!foundPost) {
+      // If we are sure it's not there, then 404.
+      // Note: This check might run before context update on direct navigation.
+      // A more robust solution involves a proper data fetching strategy.
+       notFound();
+     }
+     setPost(foundPost);
+     return null; // Render nothing while post is being set
   }
 
   const authorAvatar = PlaceHolderImages.find(img => img.id === post.author.avatarUrl);
