@@ -12,6 +12,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types";
 
+interface GroupedTasks {
+  expired: Task[];
+  upcoming: Task[];
+  done: Task[];
+}
+
 const TaskGroup = ({ title, tasks, ...props }: { title: string, tasks: Task[], [key: string]: any }) => {
   if (tasks.length === 0) return null;
   return (
@@ -33,6 +39,12 @@ export default function InboxPage() {
   const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
   const [selectedList, setSelectedList] = React.useState(lists[0].id);
   const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleDeleteTask = (taskId: string) => {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
@@ -62,49 +74,54 @@ export default function InboxPage() {
     );
   };
 
-  const filteredTasks = tasks.filter(task => task.listId === selectedList);
+  React.useEffect(() => {
+    const filteredTasks = tasks.filter(task => task.listId === selectedList);
 
-  const groupAndSortTasks = (tasksToSort: Task[]) => {
-    const now = new Date();
-    const done: Task[] = [];
-    const expired: Task[] = [];
-    const upcoming: Task[] = [];
+    const groupAndSortTasks = (tasksToSort: Task[]) => {
+      const now = new Date();
+      const done: Task[] = [];
+      const expired: Task[] = [];
+      const upcoming: Task[] = [];
 
-    tasksToSort.forEach(task => {
-      if (task.isCompleted) {
-        done.push(task);
-        return;
-      }
-      
-      if (task.startTime) {
-        const [hours, minutes] = task.startTime.split(':').map(Number);
-        const taskEndTime = new Date(now);
-        taskEndTime.setHours(hours, minutes + (task.duration || 0), 0, 0);
+      tasksToSort.forEach(task => {
+        if (task.isCompleted) {
+          done.push(task);
+          return;
+        }
+        
+        if (task.startTime) {
+          const [hours, minutes] = task.startTime.split(':').map(Number);
+          const taskEndTime = new Date(now);
+          taskEndTime.setHours(hours, minutes + (task.duration || 0), 0, 0);
 
-        if (taskEndTime < now) {
-          expired.push(task);
+          if (taskEndTime < now) {
+            expired.push(task);
+          } else {
+            upcoming.push(task);
+          }
         } else {
           upcoming.push(task);
         }
-      } else {
-        upcoming.push(task);
-      }
-    });
+      });
 
-    const sortFn = (a: Task, b: Task) => {
-      if (!a.startTime) return 1;
-      if (!b.startTime) return -1;
-      return a.startTime.localeCompare(b.startTime);
+      const sortFn = (a: Task, b: Task) => {
+        if (!a.startTime) return 1;
+        if (!b.startTime) return -1;
+        return a.startTime.localeCompare(b.startTime);
+      };
+
+      return {
+        expired: expired.sort(sortFn),
+        upcoming: upcoming.sort(sortFn),
+        done: done.sort(sortFn)
+      };
     };
 
-    return {
-      expired: expired.sort(sortFn),
-      upcoming: upcoming.sort(sortFn),
-      done: done.sort(sortFn)
-    };
-  };
+    setGroupedTasks(groupAndSortTasks(filteredTasks));
+  }, [tasks, selectedList, isClient]);
+  
 
-  const { expired, upcoming, done } = groupAndSortTasks(filteredTasks);
+  const { expired, upcoming, done } = groupedTasks;
 
   const cardProps = {
     view: "compact",
