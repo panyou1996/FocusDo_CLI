@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -10,6 +11,23 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import type { Task } from "@/lib/types";
+
+const TaskGroup = ({ title, tasks, ...props }: { title: string, tasks: Task[], [key: string]: any }) => {
+  if (tasks.length === 0) return null;
+  return (
+    <div>
+      <h2 className="text-lg font-semibold text-muted-foreground mb-2 px-1">{title}</h2>
+      <div className="space-y-3">
+        {tasks.map((task) => {
+          const list = lists.find((l) => l.id === task.listId);
+          if (!list) return null;
+          return <TaskCard key={task.id} task={task} list={list} {...props} />;
+        })}
+      </div>
+    </div>
+  );
+};
+
 
 export default function InboxPage() {
   const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
@@ -37,6 +55,56 @@ export default function InboxPage() {
   };
 
   const filteredTasks = tasks.filter(task => task.listId === selectedList);
+
+  const groupAndSortTasks = (tasksToSort: Task[]) => {
+    const now = new Date();
+    const done: Task[] = [];
+    const expired: Task[] = [];
+    const upcoming: Task[] = [];
+
+    tasksToSort.forEach(task => {
+      if (task.isCompleted) {
+        done.push(task);
+        return;
+      }
+      
+      if (task.startTime) {
+        const [hours, minutes] = task.startTime.split(':').map(Number);
+        const taskEndTime = new Date(now);
+        taskEndTime.setHours(hours, minutes + (task.duration || 0), 0, 0);
+
+        if (taskEndTime < now) {
+          expired.push(task);
+        } else {
+          upcoming.push(task);
+        }
+      } else {
+        upcoming.push(task);
+      }
+    });
+
+    const sortFn = (a: Task, b: Task) => {
+      if (!a.startTime) return 1;
+      if (!b.startTime) return -1;
+      return a.startTime.localeCompare(b.startTime);
+    };
+
+    return {
+      expired: expired.sort(sortFn),
+      upcoming: upcoming.sort(sortFn),
+      done: done.sort(sortFn)
+    };
+  };
+
+  const { expired, upcoming, done } = groupAndSortTasks(filteredTasks);
+
+  const cardProps = {
+    view: "compact",
+    onDelete: handleDeleteTask,
+    onToggleImportant: handleToggleImportant,
+    onToggleMyDay: handleToggleMyDay
+  };
+
 
   return (
     <div className="">
@@ -86,22 +154,10 @@ export default function InboxPage() {
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
-          <div className="space-y-3 px-5 mt-4">
-            {filteredTasks.map((task) => {
-              const list = lists.find((l) => l.id === task.listId);
-              if (!list) return null;
-              return (
-                <TaskCard 
-                  key={task.id} 
-                  task={task} 
-                  list={list} 
-                  view="compact" 
-                  onDelete={handleDeleteTask} 
-                  onToggleImportant={handleToggleImportant}
-                  onToggleMyDay={handleToggleMyDay} 
-                />
-              );
-            })}
+          <div className="space-y-6 px-5 mt-4">
+            <TaskGroup title="Expired" tasks={expired} {...cardProps} />
+            <TaskGroup title="Upcoming" tasks={upcoming} {...cardProps} />
+            <TaskGroup title="Done" tasks={done} {...cardProps} />
           </div>
         </TabsContent>
 
