@@ -188,16 +188,18 @@ export default function InboxPage() {
         </TabsContent>
 
         <TabsContent value="calendar" className="mt-4 px-2">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="rounded-md"
-              components={{
-                IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-                IconRight: () => <ChevronRight className="h-4 w-4" />,
-              }}
-            />
+            <div className="w-full flex justify-center">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                className="rounded-md border shadow-soft"
+                components={{
+                  IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+                  IconRight: () => <ChevronRight className="h-4 w-4" />,
+                }}
+              />
+            </div>
           <div className="space-y-3 px-3 mt-4">
             <h2 className="font-bold text-lg">Tasks for {date?.toLocaleDateString() ?? 'selected date'}</h2>
             {tasks.slice(0, 2).map((task) => {
