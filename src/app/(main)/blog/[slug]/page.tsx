@@ -14,14 +14,13 @@ import type { BlogPost } from "@/lib/types";
 
 export default function BlogDetailPage() {
   const params = useParams();
-  const slug = params.slug as string;
+  const slug = params ? (params.slug as string) : undefined;
   const { blogPosts } = useAppContext();
   const [post, setPost] = React.useState<BlogPost | undefined | null>(undefined); // undefined: loading, null: not found
 
   React.useEffect(() => {
-    // This effect runs when the component mounts and whenever blogPosts or slug changes.
-    // This ensures that we have the latest data from the context before trying to find the post.
-    if (blogPosts.length > 0) {
+    // Only proceed if blogPosts have been loaded from localStorage and slug is available from URL
+    if (blogPosts.length > 0 && slug) {
         const foundPost = blogPosts.find((p) => p.slug === slug);
         setPost(foundPost || null); // Set to the found post, or null if not found
     }
@@ -29,7 +28,11 @@ export default function BlogDetailPage() {
 
   // Handle loading state
   if (post === undefined) {
-    return <div>Loading...</div>; // Or a proper skeleton loader
+    return (
+        <div className="flex justify-center items-center h-screen">
+            <p>Loading...</p>
+        </div>
+    );
   }
 
   // Handle not found state
