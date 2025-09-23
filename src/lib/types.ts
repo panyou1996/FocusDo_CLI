@@ -35,7 +35,7 @@ export type BlogPost = {
   slug: string;
   title: string;
   excerpt: string;
-  coverImage: string;
+  coverImage: string | null;
   author: Author;
   date: string;
   readingTime: number; // in minutes
