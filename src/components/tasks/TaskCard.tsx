@@ -13,7 +13,6 @@ import {
   Hourglass,
   ListTree,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 interface TaskCardProps {
   task: Task;
@@ -21,9 +20,10 @@ interface TaskCardProps {
   view: "compact" | "detail";
   onDelete: (taskId: string) => void;
   onToggleImportant: (taskId: string) => void;
+  onToggleMyDay: (taskId: string) => void;
 }
 
-export function TaskCard({ task, list, view, onDelete, onToggleImportant }: TaskCardProps) {
+export function TaskCard({ task, list, view, onDelete, onToggleImportant, onToggleMyDay }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
   const [isCompleted, setIsCompleted] = React.useState(task.isCompleted);
 
@@ -33,6 +33,11 @@ export function TaskCard({ task, list, view, onDelete, onToggleImportant }: Task
     }
   };
 
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsCompleted(!isCompleted);
+  };
+  
   const handleToggleImportantClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     onToggleImportant(task.id);
@@ -45,8 +50,7 @@ export function TaskCard({ task, list, view, onDelete, onToggleImportant }: Task
 
   const handleSunClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    // Logic for "Add to My Day" will be implemented later
-    console.log("Add to My Day clicked");
+    onToggleMyDay(task.id);
   };
 
   const DetailRow = ({
@@ -81,11 +85,8 @@ export function TaskCard({ task, list, view, onDelete, onToggleImportant }: Task
         <Checkbox
           id={`task-${task.id}`}
           checked={isCompleted}
-          onCheckedChange={(checked) => {
-            window.event?.stopPropagation();
-            setIsCompleted(!!checked);
-          }}
-          onClick={(e) => e.stopPropagation()}
+          onCheckedChange={() => setIsCompleted(!isCompleted)}
+          onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
           className="w-6 h-6 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
         />
         <div className="flex-grow ml-3">
@@ -112,7 +113,13 @@ export function TaskCard({ task, list, view, onDelete, onToggleImportant }: Task
             />
           </button>
           <button onClick={handleSunClick}>
-            <Sun className="w-5 h-5 text-muted-foreground hover:text-orange-500" strokeWidth={1.5} />
+            <Sun 
+              className={cn(
+                "w-5 h-5 text-muted-foreground hover:text-orange-500 transition-colors",
+                task.isMyDay && "fill-orange-400 text-orange-500"
+              )} 
+              strokeWidth={1.5} 
+            />
           </button>
           <button onClick={handleDeleteClick}>
             <Trash2 className="w-5 h-5 text-muted-foreground hover:text-destructive" strokeWidth={1.5} />

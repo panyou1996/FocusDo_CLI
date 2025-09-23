@@ -16,6 +16,7 @@ export const tasks: Task[] = [
     dueDate: '2025-09-26',
     duration: 60,
     isImportant: true,
+    isMyDay: true,
     subtasks: [
       { id: 'sub1-1', title: 'Review data', isCompleted: true },
       { id: 'sub1-2', title: 'Write summary', isCompleted: false },
@@ -28,6 +29,7 @@ export const tasks: Task[] = [
     isCompleted: false,
     startTime: '17:00',
     isImportant: false,
+    isMyDay: true,
   },
   {
     id: '3',
@@ -44,6 +46,7 @@ export const tasks: Task[] = [
     startTime: '14:00',
     duration: 30,
     isImportant: true,
+    isMyDay: true,
   },
   {
     id: '5',

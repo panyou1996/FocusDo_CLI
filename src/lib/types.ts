@@ -7,6 +7,7 @@ export type Task = {
   dueDate?: string;
   duration?: number; // in minutes
   isImportant: boolean;
+  isMyDay?: boolean;
   isFixed?: boolean;
   subtasks?: Subtask[];
   description?: string;

@@ -8,7 +8,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { Task } from "@/lib/types";
 
-
 export default function TodayPage() {
   const [view, setView] = React.useState<"compact" | "detail">("compact");
   const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
@@ -27,6 +26,16 @@ export default function TodayPage() {
       )
     );
   };
+  
+  const handleToggleMyDay = (taskId: string) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
+        task.id === taskId ? { ...task, isMyDay: !task.isMyDay } : task
+      )
+    );
+  };
+
+  const myDayTasks = tasks.filter(task => task.isMyDay);
 
   return (
     <div className="px-5">
@@ -34,8 +43,8 @@ export default function TodayPage() {
         <div className="flex items-center gap-3">
           <Sun className="w-7 h-7 text-orange-400" strokeWidth={2} />
           <div>
-            <h1 className="text-[28px] font-bold text-foreground">My Day</h1>
-            <p className="text-[15px] text-muted-foreground">{`${dateString}, ${dayString}`}</p>
+            <h1 className="text-2xl font-bold text-foreground">My Day</h1>
+            <p className="text-sm text-muted-foreground">{`${dateString}, ${dayString}`}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -73,10 +82,20 @@ export default function TodayPage() {
       </header>
 
       <div className="space-y-3">
-        {tasks.map((task) => {
+        {myDayTasks.map((task) => {
           const list = lists.find((l) => l.id === task.listId);
           if (!list) return null;
-          return <TaskCard key={task.id} task={task} list={list} view={view} onDelete={handleDeleteTask} onToggleImportant={handleToggleImportant} />;
+          return (
+            <TaskCard 
+              key={task.id} 
+              task={task} 
+              list={list} 
+              view={view} 
+              onDelete={handleDeleteTask} 
+              onToggleImportant={handleToggleImportant}
+              onToggleMyDay={handleToggleMyDay}
+            />
+          );
         })}
       </div>
     </div>
