@@ -22,7 +22,9 @@ const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType
     <div className="flex items-center h-[50px] px-4">
         <Icon className="w-6 h-6 text-muted-foreground mr-4" strokeWidth={1.5} />
         <Label className="text-[17px] flex-grow">{label}</Label>
-        {children}
+        <div className="flex justify-end items-center min-w-[120px]">
+            {children}
+        </div>
     </div>
 );
 
@@ -206,7 +208,7 @@ export default function AddTaskPage() {
                                 type="time"
                                 value={startTime}
                                 onChange={(e) => setStartTime(e.target.value)}
-                                className="w-32 h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
+                                className="w-auto h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
                                 pattern="[0-9]{2}:[0-9]{2}"
                             />
                         </AttributeRow>
