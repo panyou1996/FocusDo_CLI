@@ -1,13 +1,17 @@
+
 "use client";
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import type { Task, TaskList } from "@/lib/types";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Star,
   Sun,
   Trash2,
+  Pencil,
   Clock,
   Calendar,
   Hourglass,
@@ -19,13 +23,19 @@ interface TaskCardProps {
   list: TaskList;
   view: "compact" | "detail";
   onDelete: (taskId: string) => void;
+  onEdit: (taskId: string) => void;
+  onUpdate: (taskId: string, updatedTask: Partial<Task>) => void;
   onToggleImportant: (taskId: string) => void;
   onToggleMyDay: (taskId: string) => void;
   onToggleCompleted: (taskId: string) => void;
 }
 
-export function TaskCard({ task, list, view, onDelete, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
+export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
+  const [isEditingTitle, setIsEditingTitle] = React.useState(false);
+  const [editingTitle, setEditingTitle] = React.useState(task.title);
+  const [isEditingDesc, setIsEditingDesc] = React.useState(false);
+  const [editingDesc, setEditingDesc] = React.useState(task.description || "");
 
   const handleToggleExpand = () => {
     if (view === "compact") {
@@ -48,28 +58,86 @@ export function TaskCard({ task, list, view, onDelete, onToggleImportant, onTogg
     onDelete(task.id);
   };
 
+  const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onEdit(task.id);
+  };
+
   const handleSunClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     onToggleMyDay(task.id);
   };
 
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditingTitle(e.target.value);
+  };
+
+  const handleTitleBlur = () => {
+    onUpdate(task.id, { title: editingTitle });
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleTitleBlur();
+    }
+  };
+  
+  const handleDescChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEditingDesc(e.target.value);
+  };
+
+  const handleDescBlur = () => {
+    onUpdate(task.id, { description: editingDesc });
+    setIsEditingDesc(false);
+  };
+
+
   const DetailRow = ({
     icon: Icon,
     label,
     value,
+    onClick,
+    isEditing,
+    onEditChange,
+    onEditBlur,
+    editValue,
   }: {
     icon: React.ElementType;
     label: string;
     value: React.ReactNode;
+    onClick?: () => void;
+    isEditing?: boolean;
+    onEditChange?: (e: any) => void;
+    onEditBlur?: () => void;
+    editValue?: string;
   }) => (
-    <div className="flex items-center text-sm text-gray-600">
-      <Icon className="w-4 h-4 mr-2" strokeWidth={1.5} />
-      <span>{label}: {value}</span>
+    <div className="flex items-start text-sm text-gray-600">
+      <Icon className="w-4 h-4 mr-2 mt-1" strokeWidth={1.5} />
+      <span className="font-medium w-20">{label}:</span>
+      {isEditing ? (
+         <Textarea
+          value={editValue}
+          onChange={onEditChange}
+          onBlur={onEditBlur}
+          className="h-auto flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm"
+          autoFocus
+        />
+      ) : (
+        <span onClick={onClick} className="flex-grow cursor-text">{value}</span>
+      )}
     </div>
   );
 
   React.useEffect(() => {
     setIsExpanded(view === "detail");
+  }, [view]);
+  
+  React.useEffect(() => {
+    if (view !== 'detail') {
+        setIsEditingTitle(false);
+        setIsEditingDesc(false);
+    }
   }, [view]);
 
   return (
@@ -90,19 +158,36 @@ export function TaskCard({ task, list, view, onDelete, onToggleImportant, onTogg
           className="w-6 h-6 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
         />
         <div className="flex-grow ml-3">
-          <p
-            className={cn(
-              "text-[17px] font-medium text-foreground",
-              task.isCompleted && "line-through text-muted-foreground"
-            )}
-          >
-            {task.title}
-          </p>
-          {task.startTime && (
+          { isEditingTitle && view === 'detail' ? (
+              <Input
+                value={editingTitle}
+                onChange={handleTitleChange}
+                onBlur={handleTitleBlur}
+                onKeyDown={handleTitleKeyDown}
+                className="h-7 p-0 text-[17px] font-medium border-none focus-visible:ring-0"
+                autoFocus
+              />
+          ) : (
+            <p
+              className={cn(
+                "text-[17px] font-medium text-foreground",
+                task.isCompleted && "line-through text-muted-foreground",
+                view === 'detail' && "cursor-text"
+              )}
+              onClick={() => view === 'detail' && setIsEditingTitle(true)}
+            >
+              {task.title}
+            </p>
+          )}
+
+          {task.startTime && !isEditingTitle && (
             <p className="text-[13px] text-muted-foreground">{task.startTime}</p>
           )}
         </div>
-        <div className="flex items-center gap-3 ml-2">
+        <div className="flex items-center gap-2 ml-2">
+          <button onClick={handleEditClick}>
+            <Pencil className="w-5 h-5 text-muted-foreground hover:text-primary" strokeWidth={1.5} />
+          </button>
           <button onClick={handleToggleImportantClick}>
             <Star
               className={cn(
@@ -127,11 +212,20 @@ export function TaskCard({ task, list, view, onDelete, onToggleImportant, onTogg
         </div>
       </div>
       {(isExpanded || view === 'detail') && (
-        <div className="px-4 pb-4 pl-12 space-y-2 animate-accordion-down">
-          {task.description && <p className="text-[14px] text-gray-700">{task.description}</p>}
-          {task.startTime && <DetailRow icon={Clock} label="Start" value={task.startTime} />}
-          {task.dueDate && <DetailRow icon={Calendar} label="Due" value={task.dueDate} />}
-          {task.duration && <DetailRow icon={Hourglass} label="Duration" value={`${task.duration} min`} />}
+        <div className="px-4 pb-4 pl-12 space-y-3 animate-accordion-down">
+          <DetailRow 
+            icon={ListTree}
+            label="Description"
+            value={task.description || "Add a description..."}
+            onClick={() => view === 'detail' && setIsEditingDesc(true)}
+            isEditing={isEditingDesc && view === 'detail'}
+            onEditChange={handleDescChange}
+            onEditBlur={handleDescBlur}
+            editValue={editingDesc}
+          />
+          <DetailRow icon={Clock} label="Start" value={task.startTime || 'Not set'} />
+          <DetailRow icon={Calendar} label="Due" value={task.dueDate || 'Not set'} />
+          <DetailRow icon={Hourglass} label="Duration" value={task.duration ? `${task.duration} min` : 'Not set'} />
           {task.subtasks && (
             <DetailRow
               icon={ListTree}

@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { Task } from "@/lib/types";
 import { useTasks } from "@/context/TaskContext";
+import { useRouter } from "next/navigation";
 
 interface GroupedTasks {
   expired: Task[];
@@ -37,6 +38,7 @@ export default function TodayPage() {
   const { tasks, updateTask, deleteTask } = useTasks();
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });
   const [isClient, setIsClient] = React.useState(false);
+  const router = useRouter();
   
   const today = new Date();
   const dateString = today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
@@ -50,26 +52,35 @@ export default function TodayPage() {
     deleteTask(taskId);
   };
 
+  const handleEditTask = (taskId: string) => {
+    router.push(`/edit-task/${taskId}`);
+  };
+
   const handleToggleImportant = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
-      updateTask(taskId, { ...task, isImportant: !task.isImportant });
+      updateTask(taskId, { isImportant: !task.isImportant });
     }
   };
   
   const handleToggleMyDay = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
-      updateTask(taskId, { ...task, isMyDay: !task.isMyDay });
+      updateTask(taskId, { isMyDay: !task.isMyDay });
     }
   };
 
   const handleToggleCompleted = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
-      updateTask(taskId, { ...task, isCompleted: !task.isCompleted });
+      updateTask(taskId, { isCompleted: !task.isCompleted });
     }
   };
+
+  const handleUpdateTask = (taskId: string, updatedFields: Partial<Task>) => {
+    updateTask(taskId, updatedFields);
+  };
+
 
   React.useEffect(() => {
     if (!isClient) return;
@@ -124,6 +135,8 @@ export default function TodayPage() {
   const cardProps = {
     view,
     onDelete: handleDeleteTask,
+    onEdit: handleEditTask,
+    onUpdate: handleUpdateTask,
     onToggleImportant: handleToggleImportant,
     onToggleMyDay: handleToggleMyDay,
     onToggleCompleted: handleToggleCompleted
