@@ -9,10 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Upload } from 'lucide-react';
 import Image from 'next/image';
-import { blogPosts } from '@/lib/data';
+import { useAppContext } from '@/context/TaskContext';
 
 export default function BlogNewPage() {
   const router = useRouter();
+  const { addBlogPost } = useAppContext();
   const [title, setTitle] = React.useState('');
   const [content, setContent] = React.useState('');
   const [coverImage, setCoverImage] = React.useState<string | null>(null);
@@ -58,8 +59,7 @@ export default function BlogNewPage() {
       readingTime: Math.ceil(content.split(' ').length / 200),
     };
 
-    // In a real app, this would be an API call. Here, we'll just push to the in-memory array.
-    blogPosts.unshift(newPost);
+    addBlogPost(newPost);
     router.push('/blog');
   };
 

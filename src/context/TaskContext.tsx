@@ -2,20 +2,23 @@
 'use client';
 
 import * as React from 'react';
-import type { Task } from '@/lib/types';
-import { tasks as initialTasks } from '@/lib/data';
+import type { Task, BlogPost } from '@/lib/types';
+import { tasks as initialTasks, blogPosts as initialBlogPosts } from '@/lib/data';
 
 interface TaskContextType {
   tasks: Task[];
   addTask: (task: Task) => void;
   updateTask: (taskId: string, updatedTask: Partial<Task>) => void;
   deleteTask: (taskId: string) => void;
+  blogPosts: BlogPost[];
+  addBlogPost: (post: BlogPost) => void;
 }
 
 const TaskContext = React.createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
   const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
+  const [blogPosts, setBlogPosts] = React.useState<BlogPost[]>(initialBlogPosts);
 
   const addTask = (task: Task) => {
     setTasks(prevTasks => [task, ...prevTasks]);
@@ -33,8 +36,12 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
   };
 
+  const addBlogPost = (post: BlogPost) => {
+    setBlogPosts(prevPosts => [post, ...prevPosts]);
+  };
+
   return (
-    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask }}>
+    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask, blogPosts, addBlogPost }}>
       {children}
     </TaskContext.Provider>
   );

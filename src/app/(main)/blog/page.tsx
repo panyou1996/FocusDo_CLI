@@ -1,11 +1,16 @@
+
+"use client";
+
 import Link from "next/link";
 import { BookText, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/BlogCard";
-import { blogPosts } from "@/lib/data";
+import { useAppContext } from "@/context/TaskContext";
 
 export default function BlogPage() {
+  const { blogPosts } = useAppContext();
+
   return (
     <div className="px-5">
       <header className="pt-10 pb-4 h-[100px] flex justify-between items-center">

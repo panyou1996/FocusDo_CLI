@@ -8,7 +8,7 @@ import { lists } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { Task } from "@/lib/types";
-import { useTasks } from "@/context/TaskContext";
+import { useAppContext } from "@/context/TaskContext";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -36,7 +36,7 @@ const TaskGroup = ({ title, tasks, ...props }: { title: string; tasks: Task[]; [
 
 export default function TodayPage() {
   const [view, setView] = React.useState<"compact" | "detail">("compact");
-  const { tasks, updateTask, deleteTask } = useTasks();
+  const { tasks, updateTask, deleteTask } = useAppContext();
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });
   const [isClient, setIsClient] = React.useState(false);
   const router = useRouter();
