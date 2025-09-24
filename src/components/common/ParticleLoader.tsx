@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils';
 interface ParticleLoaderProps {
   className?: string;
   particleCount?: number;
-  particleColor?: string;
 }
 
 interface Particle {
@@ -45,6 +44,7 @@ export function ParticleLoader({
     const width = canvas.width / dpr;
     const height = canvas.height / dpr;
 
+    // Dynamically get the primary color from CSS variables
     const primaryColor = getComputedStyle(canvas).getPropertyValue('--primary').trim();
     const particleColor = `hsl(${primaryColor})`;
 
@@ -132,11 +132,19 @@ export function ParticleLoader({
 
         // --- Drawing ---
         const opacity = Math.max(0, Math.min(1, Math.sin( (iteration.current + i * 10) * 0.05) * 0.5 + 0.5));
-
+        
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = particleColor;
+        ctx.globalAlpha = opacity;
+        
         ctx.beginPath();
         ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = `${particleColor.replace(')', `, ${opacity})`).replace('hsl', 'hsla')}`;
+        ctx.fillStyle = particleColor;
         ctx.fill();
+        
+        // Reset canvas context properties
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1.0;
       });
 
       animationFrameId.current = requestAnimationFrame(animate);
