@@ -26,6 +26,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import * as Icons from 'lucide-react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 
 interface GroupedTasks {
   expired: Task[];
@@ -80,6 +83,56 @@ const TaskGroup = ({
   );
 };
 
+const FilterPopoverContent = () => {
+    const [filterStatus, setFilterStatus] = useLocalStorage<'all' | 'incomplete' | 'completed'>('inbox-filter-status', 'all');
+    const [filterImportance, setFilterImportance] = useLocalStorage<'all' | 'important' | 'not-important'>('inbox-filter-importance', 'all');
+    const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance' | 'creationDate'>('inbox-sort-by', 'default');
+    
+    return (
+        <div className="p-4 w-80 space-y-4">
+            <div>
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">FILTER BY</h3>
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="filter-status" className="text-base">Status</Label>
+                        <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-[200px]">
+                            <TabsList className="grid grid-cols-3">
+                                <TabsTrigger value="all">All</TabsTrigger>
+                                <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
+                                <TabsTrigger value="completed">Completed</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    </div>
+                    <Separator />
+                    <div className="flex items-center justify-between">
+                        <Label htmlFor="show-important" className="text-base">Grade</Label>
+                        <Tabs value={filterImportance} onValueChange={(value) => setFilterImportance(value as any)} className="w-[200px]">
+                            <TabsList className="grid grid-cols-3">
+                                <TabsTrigger value="all">All</TabsTrigger>
+                                <TabsTrigger value="important">Important</TabsTrigger>
+                                <TabsTrigger value="not-important">Not Important</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                 <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
+                 <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
+                    <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="default">Start Time</TabsTrigger>
+                        <TabsTrigger value="dueDate">Due Date</TabsTrigger>
+                        <TabsTrigger value="importance">Importance</TabsTrigger>
+                        <TabsTrigger value="creationDate">Created Time</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+            </div>
+        </div>
+    );
+};
+
+
 export default function InboxPage() {
   const { tasks, updateTask, deleteTask, lists } = useAppContext();
   const [selectedList, setSelectedList] = useLocalStorage('inbox-selected-list', 'all');
@@ -93,9 +146,9 @@ export default function InboxPage() {
   const router = useRouter();
 
   // Filter and Sort States from localStorage
-  const [filterStatus, setFilterStatus] = useLocalStorage<'all' | 'incomplete' | 'completed'>('inbox-filter-status', 'all');
-  const [filterImportance, setFilterImportance] = useLocalStorage<'all' | 'important' | 'not-important'>('inbox-filter-importance', 'all');
-  const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance' | 'creationDate'>('inbox-sort-by', 'default');
+  const [filterStatus] = useLocalStorage<'all' | 'incomplete' | 'completed'>('inbox-filter-status', 'all');
+  const [filterImportance] = useLocalStorage<'all' | 'important' | 'not-important'>('inbox-filter-importance', 'all');
+  const [sortBy] = useLocalStorage<'default' | 'dueDate' | 'importance' | 'creationDate'>('inbox-sort-by', 'default');
 
 
   React.useEffect(() => {
@@ -336,11 +389,16 @@ export default function InboxPage() {
           <h1 className="text-[28px] font-bold text-foreground">Inbox</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/inbox/filter">
-            <Button variant="ghost" size="icon">
-              <Filter className="w-6 h-6" strokeWidth={1.5} />
-            </Button>
-          </Link>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Filter className="w-6 h-6" strokeWidth={1.5} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-auto p-0">
+                <FilterPopoverContent />
+            </PopoverContent>
+          </Popover>
         </div>
       </header>
 
@@ -450,3 +508,5 @@ export default function InboxPage() {
     </div>
   );
 }
+
+    
