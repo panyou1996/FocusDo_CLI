@@ -32,6 +32,7 @@ interface TaskCardProps {
   task: Task;
   list: TaskList;
   view: "compact" | "detail";
+  status: 'expired' | 'upcoming' | 'done';
   onDelete: (taskId: string) => void;
   onEdit: (taskId: string) => void;
   onUpdate: (taskId: string, updatedTask: Partial<Task>) => void;
@@ -49,7 +50,7 @@ const getIcon = (iconName: string): LucideIcon => {
 };
 
 
-export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
+export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
   const { lists } = useAppContext();
   
@@ -337,7 +338,14 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
           )}
 
           {task.startTime && !isEditingTitle && (
-            <p className="text-[13px] text-muted-foreground">{task.startTime}</p>
+             <p className={cn(
+                "text-[13px]",
+                status === 'expired' && 'font-bold text-destructive',
+                status === 'upcoming' && 'font-bold text-primary',
+                status === 'done' && 'text-muted-foreground'
+             )}>
+                {task.startTime}
+            </p>
           )}
         </div>
         <div className="flex items-center gap-0.5 ml-2">

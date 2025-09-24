@@ -33,7 +33,7 @@ const getIcon = (iconName: string): LucideIcon => {
 };
 
 
-const TaskGroup = ({ title, tasks, ...props }: { title: string, tasks: Task[], [key: string]: any }) => {
+const TaskGroup = ({ title, tasks, status, ...props }: { title: string, tasks: Task[], status: 'expired' | 'upcoming' | 'done', [key: string]: any }) => {
   const { lists } = useAppContext();
 
   if (tasks.length === 0) return null;
@@ -45,7 +45,7 @@ const TaskGroup = ({ title, tasks, ...props }: { title: string, tasks: Task[], [
           const list = lists.find((l) => l.id === task.listId);
           if (!list) return null;
           const ListIcon = getIcon(list.icon as string);
-          return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} {...props} />;
+          return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} status={status} {...props} />;
         })}
       </div>
     </div>
@@ -198,9 +198,9 @@ export default function InboxPage() {
 
     return (
       <div className="space-y-6 px-5 mt-4">
-        <TaskGroup title="Expired" tasks={expired} {...cardProps} />
-        <TaskGroup title="Upcoming" tasks={upcoming} {...cardProps} />
-        <TaskGroup title="Done" tasks={done} {...cardProps} />
+        <TaskGroup title="Expired" tasks={expired} status="expired" {...cardProps} />
+        <TaskGroup title="Upcoming" tasks={upcoming} status="upcoming" {...cardProps} />
+        <TaskGroup title="Done" tasks={done} status="done" {...cardProps} />
       </div>
     );
   };
@@ -287,7 +287,11 @@ export default function InboxPage() {
                 const list = lists.find((l) => l.id === task.listId);
                 if (!list) return null;
                 const ListIcon = getIcon(list.icon as string);
-                return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} {...cardProps} />;
+                
+                // Simplified status logic for calendar view
+                const status = task.isCompleted ? 'done' : 'upcoming';
+                
+                return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} {...cardProps} status={status} />;
               })
             ) : (
               <p className="text-muted-foreground text-center py-4">No tasks for this day.</p>
