@@ -265,16 +265,6 @@ export default function InboxPage() {
   React.useEffect(() => {
     if (!isClient) return;
 
-    // Grouping is only applied when sorting by 'default' (Start Time)
-    if (sortBy !== 'default') {
-      setGroupedTasks({
-        expired: [],
-        upcoming: processedTasks.filter(t => !t.isCompleted),
-        done: processedTasks.filter(t => t.isCompleted),
-      });
-      return;
-    }
-
     const groupAndSortTasks = (tasksToSort: Task[]) => {
       const now = new Date();
       const done: Task[] = [];
@@ -301,14 +291,7 @@ export default function InboxPage() {
           upcoming.push(task);
         }
       });
-
-      // The main sorting logic is already handled in processedTasks
-      // We just need to separate them here.
-      return {
-        expired,
-        upcoming,
-        done,
-      };
+      return { expired, upcoming, done };
     };
 
     setGroupedTasks(groupAndSortTasks(processedTasks));
@@ -509,5 +492,3 @@ export default function InboxPage() {
     </div>
   );
 }
-
-    
