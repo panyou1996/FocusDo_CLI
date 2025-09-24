@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Sun, SlidersHorizontal, Wand2, type Icon as LucideIcon } from "lucide-react";
+import { SlidersHorizontal, Wand2, type Icon as LucideIcon } from "lucide-react";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import * as Icons from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 
 interface GroupedTasks {
@@ -49,7 +50,7 @@ const TaskGroup = ({ title, tasks, status, ...props }: { title: string; tasks: T
 
 export default function TodayPage() {
   const [view, setView] = React.useState<"compact" | "detail">("compact");
-  const { tasks, updateTask, deleteTask } = useAppContext();
+  const { tasks, updateTask, deleteTask, currentUser } = useAppContext();
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });
   const [isClient, setIsClient] = React.useState(false);
   const router = useRouter();
@@ -184,11 +185,14 @@ export default function TodayPage() {
   return (
     <div className="px-5">
       <header className="pt-10 pb-4 h-[100px] flex justify-between items-center relative">
-        <div className="flex items-center gap-3">
-          <Sun className="w-7 h-7 text-orange-400" strokeWidth={2} />
+        <div className="flex items-center gap-4">
+          <Avatar className="w-12 h-12">
+            <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
+            <AvatarFallback>{currentUser.name?.charAt(0)}</AvatarFallback>
+          </Avatar>
           <div>
-            <h1 className="text-[28px] font-bold text-foreground">My Day</h1>
-            <p className="text-sm text-muted-foreground">{`${dateString}, ${dayString}`}</p>
+            <h1 className="text-[24px] font-bold text-foreground leading-tight">Hello, {currentUser.name}</h1>
+            <p className="text-sm text-muted-foreground">{`Today is ${dateString}, ${dayString}`}</p>
           </div>
         </div>
                 
