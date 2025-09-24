@@ -394,24 +394,22 @@ export default function InboxPage() {
 
   return (
     <div>
-        <Popover>
-            <header className="px-5 pt-10 pb-4 h-[100px] flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                <InboxIcon className="w-7 h-7" strokeWidth={2} />
-                <h1 className="text-[28px] font-bold text-foreground">Inbox</h1>
-                </div>
-                <div className="flex items-center gap-2">
-                <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                        <Filter className="w-6 h-6" strokeWidth={1.5} />
-                    </Button>
-                </PopoverTrigger>
-                </div>
-            </header>
-            <PopoverContent align="end" className="w-[var(--radix-popover-trigger-width)] p-0">
-                <FilterPopoverContent />
-            </PopoverContent>
-        </Popover>
+      <header className="px-5 pt-10 pb-4 h-[100px] flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <InboxIcon className="w-7 h-7" strokeWidth={2} />
+            <h1 className="text-[28px] font-bold text-foreground">Inbox</h1>
+          </div>
+          <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon">
+                    <Filter className="w-6 h-6" strokeWidth={1.5} />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-[calc(100vw-40px)] max-w-lg p-0">
+                  <FilterPopoverContent />
+              </PopoverContent>
+          </Popover>
+      </header>
 
       <Tabs defaultValue="lists" className="w-full">
         <div className="px-5">
@@ -519,5 +517,3 @@ export default function InboxPage() {
     </div>
   );
 }
-
-    
