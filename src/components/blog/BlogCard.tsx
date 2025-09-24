@@ -1,20 +1,33 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { BlogPost } from "@/lib/types";
+import type { BlogPost, TaskList } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { BookText } from "lucide-react";
+import { BookText, type Icon as LucideIcon } from "lucide-react";
+import * as Icons from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 interface BlogCardProps {
   post: BlogPost;
+  list?: TaskList;
 }
 
-export function BlogCard({ post }: BlogCardProps) {
+const getIcon = (iconName: string): LucideIcon => {
+    const icon = (Icons as any)[iconName];
+    if (icon) {
+        return icon;
+    }
+    return Icons.HelpCircle; // Fallback icon
+};
+
+export function BlogCard({ post, list }: BlogCardProps) {
   // Check if coverImage is a placeholder ID or a Base64 string
   const isBase64 = post.coverImage?.startsWith('data:');
   const placeholderImage = !isBase64 ? PlaceHolderImages.find(img => img.id === post.coverImage) : null;
   const imageUrl = isBase64 ? post.coverImage : placeholderImage?.imageUrl;
+
+  const ListIcon = list ? getIcon(list.icon as string) : null;
 
   return (
     <Link href={`/blog/${post.slug}`} className="block">
@@ -39,6 +52,12 @@ export function BlogCard({ post }: BlogCardProps) {
           </CardHeader>
         )}
         <CardContent className="p-4">
+           {list && ListIcon && (
+             <div className="flex items-center gap-2 mb-2">
+                <ListIcon className="w-4 h-4" style={{color: list.color}} />
+                <span className="text-sm font-medium" style={{color: list.color}}>{list.name}</span>
+             </div>
+           )}
           <h3 className="text-[18px] font-bold text-foreground mb-2 leading-tight">{post.title}</h3>
           <p className="text-[15px] text-muted-foreground line-clamp-3 mb-3">{post.excerpt}</p>
           <p className="text-[13px] text-muted-foreground">{post.date} &bull; {post.readingTime} min read</p>
