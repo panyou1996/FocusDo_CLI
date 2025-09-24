@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function BlogDetailPage() {
   const params = useParams();
@@ -58,10 +59,11 @@ export default function BlogDetailPage() {
     notFound();
   }
 
-  // Author avatar can now be a full URL, no need to find in placeholders
   const authorAvatarUrl = post.author.avatarUrl;
 
-  const coverImageUrl = post.coverImage; // This will be a Base64 string or null
+  const isBase64 = post.coverImage?.startsWith('data:');
+  const placeholderImage = !isBase64 ? PlaceHolderImages.find(img => img.id === post.coverImage) : null;
+  const coverImageUrl = isBase64 ? post.coverImage : placeholderImage?.imageUrl;
 
   return (
     <div>
@@ -118,6 +120,7 @@ export default function BlogDetailPage() {
                 alt={post.title}
                 fill
                 className="object-cover"
+                data-ai-hint={placeholderImage?.imageHint}
               />
             </div>
         )}
