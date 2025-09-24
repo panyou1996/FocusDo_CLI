@@ -78,7 +78,7 @@ export default function FilterPage() {
                         <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
                         <Tabs value={tempSortBy} onValueChange={(value) => setTempSortBy(value as any)}>
                             <TabsList className="grid w-full grid-cols-4">
-                                <TabsTrigger value="default">By Time</TabsTrigger>
+                                <TabsTrigger value="default">Start Time</TabsTrigger>
                                 <TabsTrigger value="dueDate">Due Date</TabsTrigger>
                                 <TabsTrigger value="importance">Importance</TabsTrigger>
                                 <TabsTrigger value="creationDate">Created Time</TabsTrigger>
