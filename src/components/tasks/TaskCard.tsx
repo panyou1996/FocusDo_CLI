@@ -18,11 +18,15 @@ import {
   ListTree,
   Plus,
   FileText,
+  type Icon as LucideIcon,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format, parseISO } from 'date-fns';
 import { Button } from "../ui/button";
+import { useAppContext } from "@/context/AppContext";
+import * as Icons from 'lucide-react';
+
 
 interface TaskCardProps {
   task: Task;
@@ -36,8 +40,18 @@ interface TaskCardProps {
   onToggleCompleted: (taskId: string) => void;
 }
 
+const getIcon = (iconName: string): LucideIcon => {
+    const icon = (Icons as any)[iconName];
+    if (icon) {
+        return icon;
+    }
+    return Icons.HelpCircle; // Fallback icon
+};
+
+
 export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
+  const { lists } = useAppContext();
   
   const [isEditingTitle, setIsEditingTitle] = React.useState(false);
   const [editingTitle, setEditingTitle] = React.useState(task.title);
@@ -241,15 +255,41 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
         />
         
         {ListIcon && (
-            <ListIcon 
-                className="w-5 h-5 ml-3" 
-                style={{ color: list.color }} 
-                strokeWidth={1.5} 
-            />
+          <Popover>
+            <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <Button variant="ghost" size="icon" className="w-8 h-8 ml-2">
+                <ListIcon 
+                    className="w-5 h-5" 
+                    style={{ color: list.color }} 
+                    strokeWidth={1.5} 
+                />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-1" align="start">
+              <div className="flex flex-col gap-1">
+                {lists.map(listOption => {
+                    const ListOptionIcon = getIcon(listOption.icon as string);
+                    return (
+                        <Button
+                            key={listOption.id}
+                            variant="ghost"
+                            className="w-full justify-start gap-2"
+                            onClick={() => {
+                                onUpdate(task.id, { listId: listOption.id });
+                            }}
+                        >
+                            <ListOptionIcon className="w-4 h-4" style={{ color: listOption.color }}/>
+                            {listOption.name}
+                        </Button>
+                    );
+                })}
+              </div>
+            </PopoverContent>
+          </Popover>
         )}
 
-        <div className="flex-grow ml-3">
-          { isEditingTitle && cardIsExpanded ? (
+        <div className="flex-grow ml-1">
+          { isEditingTitle ? (
               <Input
                 value={editingTitle}
                 onChange={handleTitleChange}
@@ -281,7 +321,7 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
             <p className="text-[13px] text-muted-foreground">{task.startTime}</p>
           )}
         </div>
-        <div className="flex items-center gap-2 ml-2">
+        <div className="flex items-center gap-0.5 ml-2">
           <button onClick={handleEditClick}>
             <Pencil className="w-5 h-5 text-muted-foreground hover:text-primary" strokeWidth={1.5} />
           </button>
@@ -477,6 +517,8 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
 }
 
 
+
+    
 
     
 
