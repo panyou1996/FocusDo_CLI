@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -11,6 +12,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 export const metadata: Metadata = {
   title: "TaskFlow",
   description: "Organize your life, unlock your flow.",
+  viewport: "width=device-width, initial-scale=1.0",
 };
 
 export default function RootLayout({
