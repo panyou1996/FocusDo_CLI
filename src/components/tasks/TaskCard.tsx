@@ -326,10 +326,6 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
             onClick={handleToggleExpand}
             >
             <div className="flex items-center p-4">
-                <div
-                className="w-1 h-full self-stretch rounded-l-sm mr-3"
-                style={{ backgroundColor: list.color, minHeight: '40px' }}
-                ></div>
                 <Checkbox
                 id={`task-${task.id}`}
                 checked={task.isCompleted}
@@ -349,7 +345,9 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                         onKeyDown={handleTitleKeyDown}
                         className="h-7 p-0 text-[17px] font-medium border-none focus-visible:ring-0"
                         autoFocus
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
                     />
                 ) : (
                     <p
@@ -407,7 +405,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                 }
             </div>
             {cardIsExpanded && (
-                <div className="px-4 pb-4 pl-12 space-y-3 animate-accordion-down">
+                <div className="px-4 pb-4 pl-[4.25rem] space-y-3 animate-accordion-down">
                 <DetailRow 
                     icon={FileText}
                     label="Description"
