@@ -165,7 +165,7 @@ export default function SetProfilePage() {
                         </div>
                       ))}
                     </div>
-                    <Button variant="outline" size="icon" className="h-8 w-8 flex-shrink-0" onClick={handleRandomizeAvatars} type="button">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={handleRandomizeAvatars} type="button">
                         <RefreshCw className="w-4 h-4"/>
                     </Button>
                   </div>
