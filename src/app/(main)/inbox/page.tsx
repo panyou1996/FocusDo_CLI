@@ -10,8 +10,6 @@ import {
   ChevronRight,
   type Icon as LucideIcon,
   List,
-  X,
-  Star,
 } from 'lucide-react';
 import { TaskCard } from '@/components/tasks/TaskCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -30,9 +28,6 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-
 
 interface GroupedTasks {
   expired: Task[];
@@ -195,6 +190,18 @@ export default function InboxPage() {
       sorted.sort((a, b) => (b.isImportant ? 1 : 0) - (a.isImportant ? 1 : 0));
     } else if (sortBy === 'creationDate') {
        sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    } else if (sortBy === 'default') { // 'By Time' or 'Start Time'
+        const now = new Date();
+        const withStartTime = sorted.filter(t => t.startTime);
+        const withoutStartTime = sorted.filter(t => !t.startTime);
+
+        withStartTime.sort((a, b) => {
+            const timeA = new Date(now.toDateString() + ' ' + a.startTime).getTime();
+            const timeB = new Date(now.toDateString() + ' ' + b.startTime).getTime();
+            return timeA - timeB;
+        });
+
+        sorted = [...withStartTime, ...withoutStartTime];
     }
 
     return sorted;
@@ -386,25 +393,25 @@ export default function InboxPage() {
   };
 
   return (
-    <div className="">
-      <header className="px-5 pt-10 pb-4 h-[100px] flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <InboxIcon className="w-7 h-7" strokeWidth={2} />
-          <h1 className="text-[28px] font-bold text-foreground">Inbox</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Filter className="w-6 h-6" strokeWidth={1.5} />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-full p-0">
+    <div>
+        <Popover>
+            <header className="px-5 pt-10 pb-4 h-[100px] flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                <InboxIcon className="w-7 h-7" strokeWidth={2} />
+                <h1 className="text-[28px] font-bold text-foreground">Inbox</h1>
+                </div>
+                <div className="flex items-center gap-2">
+                <PopoverTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                        <Filter className="w-6 h-6" strokeWidth={1.5} />
+                    </Button>
+                </PopoverTrigger>
+                </div>
+            </header>
+            <PopoverContent align="end" className="w-[var(--radix-popover-trigger-width)] p-0">
                 <FilterPopoverContent />
             </PopoverContent>
-          </Popover>
-        </div>
-      </header>
+        </Popover>
 
       <Tabs defaultValue="lists" className="w-full">
         <div className="px-5">
@@ -512,3 +519,5 @@ export default function InboxPage() {
     </div>
   );
 }
+
+    
