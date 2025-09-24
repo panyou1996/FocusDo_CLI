@@ -15,11 +15,6 @@ import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
 import { defaultAvatarGroup } from '@/lib/default-avatars';
 
-
-const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
-    <p className="px-1 text-[13px] font-regular text-muted-foreground uppercase mt-6 mb-2">{children}</p>
-);
-
 const avatarStyles = [
   'adventurer', 'big-ears', 'bottts', 'miniavs', 'open-peeps', 'pixel-art'
 ];
@@ -62,8 +57,11 @@ export default function ProfilePage() {
             setName(currentUser.name);
             setSelectedAvatarUrl(currentUser.avatarUrl);
         }
-        handleRandomizeAvatars();
     }, [currentUser]); 
+
+    React.useEffect(() => {
+        handleRandomizeAvatars();
+    }, []);
 
 
     const handleSaveChanges = () => {
@@ -136,10 +134,10 @@ export default function ProfilePage() {
                     <ArrowLeft className="w-6 h-6" />
                 </Button>
                 <h1 className="text-[28px] font-bold text-foreground">Profile</h1>
-                <Button variant="link" className="text-primary font-bold" onClick={handleSaveChanges}>Save</Button>
+                <div className="w-10"></div>
             </header>
             
-            <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4 mt-6">
+            <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
                 <CardContent className="p-0 space-y-6">
                     <div className="flex flex-col items-center">
                         <Avatar className="w-24 h-24 mb-4">
@@ -180,15 +178,15 @@ export default function ProfilePage() {
                                             <img
                                                 src={avatarUrl}
                                                 alt="Selectable Avatar"
-                                                width={56}
-                                                height={56}
+                                                width={48}
+                                                height={48}
                                                 className={cn(
                                                     "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-12 h-12",
                                                     selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
                                                 )}
                                             />
                                             {selectedAvatarUrl === avatarUrl && (
-                                                <div className="absolute top-[-4px] right-[2px] bg-primary text-primary-foreground rounded-full p-0.5">
+                                                <div className="absolute top-[-4px] right-0 bg-primary text-primary-foreground rounded-full p-0.5">
                                                     <CheckCircle className="w-3 h-3" />
                                                 </div>
                                             )}
