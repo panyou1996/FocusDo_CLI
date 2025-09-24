@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { X, ListTree, Hourglass, Clock, Calendar, Star, Pin, Trash2 } from 'lucide-react';
+import { X, ListTree, Hourglass, Clock, Calendar, Star, Pin, Trash2, List, type Icon as LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
@@ -17,6 +17,18 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import type { Subtask } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox';
+import * as Icons from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+
+const getIcon = (iconName: string): LucideIcon => {
+    const icon = (Icons as any)[iconName];
+    if (icon) {
+        return icon;
+    }
+    return Icons.HelpCircle; // Fallback icon
+};
+
 
 const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
     <div className="flex items-center h-[50px] px-4">
@@ -30,7 +42,7 @@ const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType
 
 export default function AddTaskPage() {
     const router = useRouter();
-    const { addTask } = useAppContext();
+    const { addTask, lists } = useAppContext();
 
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
@@ -45,6 +57,7 @@ export default function AddTaskPage() {
     const [isAddingSubtask, setIsAddingSubtask] = React.useState(false);
     const [editingSubtaskId, setEditingSubtaskId] = React.useState<string | null>(null);
     const [editingSubtaskText, setEditingSubtaskText] = React.useState('');
+    const [selectedListId, setSelectedListId] = React.useState(lists[0]?.id || 'personal');
 
 
     const handleSaveTask = () => {
@@ -65,7 +78,7 @@ export default function AddTaskPage() {
             subtasks: subtasks,
             isCompleted: false,
             isMyDay: true,
-            listId: 'personal',
+            listId: selectedListId,
         };
 
         addTask(newTask);
@@ -105,6 +118,8 @@ export default function AddTaskPage() {
         }
     };
 
+    const selectedList = lists.find(l => l.id === selectedListId);
+    const SelectedListIcon = selectedList ? getIcon(selectedList.icon as string) : List;
 
     return (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
@@ -137,6 +152,42 @@ export default function AddTaskPage() {
                     </Card>
 
                     <Card className="rounded-2xl shadow-soft border-none overflow-hidden flex-shrink-0">
+                         <AttributeRow icon={List} label="List">
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="text-primary flex items-center gap-2">
+                                        {selectedList && (
+                                            <SelectedListIcon className="w-4 h-4" style={{ color: selectedList.color }}/>
+                                        )}
+                                        {selectedList?.name || 'Select List'}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-1" align="end">
+                                    <div className="flex flex-col gap-1">
+                                        {lists.map(listOption => {
+                                            const ListOptionIcon = getIcon(listOption.icon as string);
+                                            return (
+                                                <Button
+                                                    key={listOption.id}
+                                                    variant="ghost"
+                                                    className={cn(
+                                                        "w-full justify-start gap-2",
+                                                        selectedListId === listOption.id && 'bg-accent'
+                                                    )}
+                                                    onClick={() => {
+                                                        setSelectedListId(listOption.id);
+                                                    }}
+                                                >
+                                                    <ListOptionIcon className="w-4 h-4" style={{ color: listOption.color }}/>
+                                                    {listOption.name}
+                                                </Button>
+                                            );
+                                        })}
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                        </AttributeRow>
+                        <Separator/>
                         <AttributeRow icon={ListTree} label="Subtasks">
                             <div className="flex items-center gap-2">
                                 {subtasks.length > 0 && (
