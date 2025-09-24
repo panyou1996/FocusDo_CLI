@@ -3,7 +3,6 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -126,7 +125,7 @@ export default function SetProfilePage() {
                 <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
                 <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
               </TabsList>
-              <TabsContent value="select" className="pt-4">
+              <TabsContent value="select" className="pt-4 h-[240px] relative">
                 <div className="grid grid-cols-3 gap-4">
                   {selectableAvatars.map((avatarUrl, index) => (
                     <div
@@ -140,7 +139,7 @@ export default function SetProfilePage() {
                         width={100}
                         height={100}
                         className={cn(
-                          "rounded-full aspect-square object-cover border-4 transition-all bg-secondary",
+                          "rounded-full aspect-square object-cover border-4 transition-all bg-secondary w-full",
                           selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
                         )}
                       />
@@ -152,23 +151,12 @@ export default function SetProfilePage() {
                     </div>
                   ))}
                 </div>
-                <Button variant="outline" size="sm" className="w-full mt-4" onClick={handleRandomizeAvatars} type="button">
-                    <RefreshCw className="w-4 h-4 mr-2"/>
-                    Randomize
+                <Button variant="outline" size="icon" className="absolute top-4 right-0 h-9 w-9" onClick={handleRandomizeAvatars} type="button">
+                    <RefreshCw className="w-4 h-4"/>
                 </Button>
               </TabsContent>
-              <TabsContent value="generate" className="pt-4 space-y-4">
-                 <div className='flex gap-2'>
-                    <Input 
-                        placeholder='e.g., a happy robot'
-                        value={aiPrompt}
-                        onChange={(e) => setAiPrompt(e.target.value)}
-                    />
-                    <Button onClick={handleGenerateAvatar} disabled={isGenerating || !aiPrompt} type="button">
-                        {isGenerating ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Go'}
-                    </Button>
-                 </div>
-                 <div className='w-full h-40 flex items-center justify-center bg-secondary rounded-lg overflow-hidden'>
+              <TabsContent value="generate" className="pt-4 h-[240px] flex flex-col">
+                 <div className='w-full h-[180px] flex items-center justify-center bg-secondary rounded-lg overflow-hidden'>
                     {isGenerating && <ParticleLoader />}
                     {generatedAvatar && (
                        <div
@@ -193,8 +181,18 @@ export default function SetProfilePage() {
                         </div>
                     )}
                  </div>
+                 <div className='flex gap-2 items-center h-[60px]'>
+                    <Input 
+                        placeholder='e.g., a happy robot'
+                        value={aiPrompt}
+                        onChange={(e) => setAiPrompt(e.target.value)}
+                    />
+                    <Button onClick={handleGenerateAvatar} disabled={isGenerating || !aiPrompt} type="button">
+                        {isGenerating ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Go'}
+                    </Button>
+                 </div>
               </TabsContent>
-              <TabsContent value="upload" className="pt-4 space-y-4">
+              <TabsContent value="upload" className="pt-4 h-[240px] flex flex-col justify-center">
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -203,15 +201,15 @@ export default function SetProfilePage() {
                     className="hidden"
                     />
                 <div 
-                    className="w-full h-[140px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer bg-secondary/50"
+                    className="w-full h-[180px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer bg-secondary/50"
                     onClick={handleImageUploadClick}
                 >
                     <Upload className="w-8 h-8 mb-2" />
                     <p>Click to upload an image</p>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 h-[60px]">
                     <p className="text-sm text-muted-foreground">Preview:</p>
-                    <Avatar className="w-16 h-16">
+                    <Avatar className="w-12 h-12">
                         {isUploading ? (
                             <div className="w-full h-full flex items-center justify-center">
                                 <Loader2 className="w-6 h-6 animate-spin"/>
@@ -237,3 +235,5 @@ export default function SetProfilePage() {
     </Card>
   );
 }
+
+    
