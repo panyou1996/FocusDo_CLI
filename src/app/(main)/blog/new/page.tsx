@@ -13,7 +13,7 @@ import { useAppContext } from '@/context/AppContext';
 
 export default function BlogNewPage() {
   const router = useRouter();
-  const { addBlogPost } = useAppContext();
+  const { addBlogPost, currentUser } = useAppContext();
   const [title, setTitle] = React.useState('');
   const [content, setContent] = React.useState('');
   const [coverImage, setCoverImage] = React.useState<string | null>(null);
@@ -43,6 +43,12 @@ export default function BlogNewPage() {
       alert('Title and content are required.');
       return;
     }
+    
+    if (!currentUser) {
+      alert('You must be logged in to create a post.');
+      router.push('/login');
+      return;
+    }
 
     const newPost = {
       id: String(Date.now()),
@@ -51,10 +57,7 @@ export default function BlogNewPage() {
       content: `<p>${content.replace(/\n/g, '</p><p>')}</p>`,
       excerpt: content.slice(0, 150) + '...',
       coverImage: coverImage, 
-      author: {
-        name: 'Current User', // Replace with actual user data
-        avatarUrl: 'placeholder_avatar_1',
-      },
+      author: currentUser,
       date: new Date().toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',

@@ -1,5 +1,4 @@
 import { BottomNavBar } from "@/components/layout/BottomNavBar";
-import { AppProvider } from "@/context/AppContext";
 
 export default function MainLayout({
   children,
@@ -7,13 +6,11 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AppProvider>
       <div className="min-h-screen w-full max-w-lg mx-auto bg-background">
         <main className="pb-[74px]">
           {children}
         </main>
         <BottomNavBar />
       </div>
-    </AppProvider>
   );
 }

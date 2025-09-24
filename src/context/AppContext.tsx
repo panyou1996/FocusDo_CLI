@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import type { Task, BlogPost } from '@/lib/types';
+import type { Task, BlogPost, Author } from '@/lib/types';
 import { tasks as initialTasks, blogPosts as initialBlogPosts } from '@/lib/data';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
@@ -13,6 +13,8 @@ interface AppContextType {
   deleteTask: (taskId: string) => void;
   blogPosts: BlogPost[];
   addBlogPost: (post: BlogPost) => void;
+  currentUser: Author | null;
+  setCurrentUser: (user: Author | null) => void;
 }
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
@@ -20,6 +22,7 @@ const AppContext = React.createContext<AppContextType | undefined>(undefined);
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('tasks', initialTasks);
   const [blogPosts, setBlogPosts] = useLocalStorage<BlogPost[]>('blogPosts', initialBlogPosts);
+  const [currentUser, setCurrentUser] = useLocalStorage<Author | null>('currentUser', null);
 
   const addTask = (task: Task) => {
     setTasks(prevTasks => [task, ...prevTasks]);
@@ -42,7 +45,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AppContext.Provider value={{ tasks, addTask, updateTask, deleteTask, blogPosts, addBlogPost }}>
+    <AppContext.Provider value={{ tasks, addTask, updateTask, deleteTask, blogPosts, addBlogPost, currentUser, setCurrentUser }}>
       {children}
     </AppContext.Provider>
   );

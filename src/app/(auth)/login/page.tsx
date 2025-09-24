@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -7,14 +8,23 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/icons/Logo";
+import { useAppContext } from "@/context/AppContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { currentUser } = useAppContext();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    router.push("/today");
+    // In a real app, you would verify credentials.
+    // For this demo, we'll check if a user profile exists in localStorage.
+    if (currentUser) {
+      router.push("/today");
+    } else {
+      // If no user exists, maybe they need to register first.
+      alert("No user profile found. Please sign up first.");
+      router.push("/register");
+    }
   };
 
   return (

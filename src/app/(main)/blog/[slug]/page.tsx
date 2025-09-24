@@ -8,7 +8,6 @@ import { ArrowLeft, Share2 } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import * as React from "react";
 import type { BlogPost } from "@/lib/types";
 
@@ -40,10 +39,10 @@ export default function BlogDetailPage() {
     notFound();
   }
 
-  const authorAvatar = PlaceHolderImages.find(img => img.id === post.author.avatarUrl);
-  const coverImageUrl = post.coverImage?.startsWith('data:') 
-    ? post.coverImage 
-    : PlaceHolderImages.find(img => img.id === post.coverImage)?.imageUrl;
+  // Author avatar can now be a full URL, no need to find in placeholders
+  const authorAvatarUrl = post.author.avatarUrl;
+
+  const coverImageUrl = post.coverImage; // This will be a Base64 string or null
 
   return (
     <div>
@@ -61,7 +60,7 @@ export default function BlogDetailPage() {
         <h1 className="text-[30px] font-bold leading-tight mt-6 mb-4">{post.title}</h1>
         <div className="flex items-center gap-3 mb-6">
           <Avatar className="w-10 h-10">
-             {authorAvatar && <AvatarImage src={authorAvatar.imageUrl} alt={post.author.name} />}
+             <AvatarImage src={authorAvatarUrl} alt={post.author.name} />
             <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>

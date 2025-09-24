@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -13,8 +14,9 @@ export default function RegisterPage() {
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle registration logic here
-    router.push("/today");
+    // In a real app, you'd handle registration logic here.
+    // For this demo, we'll simulate success and move to profile setup.
+    router.push("/set-profile");
   };
 
   return (
@@ -28,10 +30,6 @@ export default function RegisterPage() {
       </CardHeader>
       <form onSubmit={handleRegister}>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" type="text" placeholder="Your Name" required className="h-auto p-3 rounded-md"/>
-          </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" placeholder="name@example.com" required className="h-auto p-3 rounded-md"/>

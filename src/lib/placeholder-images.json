@@ -23,6 +23,42 @@
       "description": "A portrait of a man with glasses.",
       "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
+    },
+    {
+      "id": "selectable_avatar_1",
+      "description": "Abstract colorful geometric pattern.",
+      "imageUrl": "https://images.unsplash.com/photo-1604079628040-94301bb21b91?q=80&w=1080",
+      "imageHint": "abstract colorful"
+    },
+    {
+      "id": "selectable_avatar_2",
+      "description": "A calm, blue wave.",
+      "imageUrl": "https://images.unsplash.com/photo-1536733282946-b79f17293544?q=80&w=1080",
+      "imageHint": "blue wave"
+    },
+    {
+      "id": "selectable_avatar_3",
+      "description": "A single green leaf with water droplets.",
+      "imageUrl": "https://images.unsplash.com/photo-1596464716123-286803815a45?q=80&w=1080",
+      "imageHint": "green leaf"
+    },
+    {
+      "id": "selectable_avatar_4",
+      "description": "A majestic mountain peak at sunrise.",
+      "imageUrl": "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=1080",
+      "imageHint": "mountain peak"
+    },
+    {
+      "id": "selectable_avatar_5",
+      "description": "A cute illustrated robot waving.",
+      "imageUrl": "https://images.unsplash.com/photo-1589254065909-b7086229d092?q=80&w=1080",
+      "imageHint": "cute robot"
+    },
+    {
+      "id": "selectable_avatar_6",
+      "description": "A close-up of a cat's face.",
+      "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=1080",
+      "imageHint": "cat face"
     }
   ]
 }
