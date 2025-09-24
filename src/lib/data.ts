@@ -1,10 +1,11 @@
 
 import type { Task, TaskList, BlogPost } from '@/lib/types';
+import { Briefcase, User, Book } from 'lucide-react';
 
 export const lists: TaskList[] = [
-  { id: 'work', name: 'Work', color: 'rgb(0, 122, 255)' },
-  { id: 'personal', name: 'Personal', color: 'rgb(255, 149, 0)' },
-  { id: 'study', name: 'Study', color: 'rgb(52, 199, 89)' },
+  { id: 'work', name: 'Work', color: 'rgb(0, 122, 255)', icon: Briefcase },
+  { id: 'personal', name: 'Personal', color: 'rgb(255, 149, 0)', icon: User },
+  { id: 'study', name: 'Study', color: 'rgb(52, 199, 89)', icon: Book },
 ];
 
 export const tasks: Task[] = [

@@ -140,6 +140,8 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
     }
   }, [view]);
 
+  const ListIcon = list.icon;
+
   return (
     <div
       className="bg-card rounded-2xl shadow-soft transition-all duration-300 ease-in-out"
@@ -147,7 +149,7 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
     >
       <div className="flex items-center p-4">
         <div
-          className="w-1 h-full self-stretch rounded-l-sm mr-4"
+          className="w-1 h-full self-stretch rounded-l-sm mr-3"
           style={{ backgroundColor: list.color, minHeight: '40px' }}
         ></div>
         <Checkbox
@@ -157,6 +159,15 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
           onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
           className="w-6 h-6 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
         />
+        
+        {ListIcon && (
+            <ListIcon 
+                className="w-5 h-5 ml-3" 
+                style={{ color: list.color }} 
+                strokeWidth={1.5} 
+            />
+        )}
+
         <div className="flex-grow ml-3">
           { isEditingTitle && view === 'detail' ? (
               <Input
@@ -230,7 +241,7 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
             <DetailRow
               icon={ListTree}
               label="Subtasks"
-              value={`${task.subtasks.filter((st) => st.isCompleted).length} of ${task.subtasks.length} completed`}
+              value={`${task.subtasks.filter((st) => st.isCompleted).length} of ${task.subtanpmks.length} completed`}
             />
           )}
         </div>

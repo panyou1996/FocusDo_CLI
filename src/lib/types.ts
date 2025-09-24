@@ -1,3 +1,4 @@
+import type { ElementType } from "react";
 
 export type Task = {
   id: string;
@@ -24,6 +25,7 @@ export type TaskList = {
   id: string;
   name: string;
   color: string; // hex or rgb string
+  icon: ElementType;
 };
 
 export type Author = {
