@@ -60,7 +60,7 @@ export default function SetProfilePage() {
                   className="relative cursor-pointer"
                   onClick={() => setSelectedAvatarUrl(avatar.imageUrl)}
                 >
-                  <Image
+                  <img
                     src={avatar.imageUrl}
                     alt={avatar.description}
                     width={100}

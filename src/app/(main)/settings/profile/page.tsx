@@ -3,7 +3,6 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,15 +22,21 @@ export default function ProfilePage() {
     const router = useRouter();
     const { currentUser, setCurrentUser } = useAppContext();
 
-    // Initialize state directly from currentUser, which is now guaranteed to be an object.
-    const [name, setName] = React.useState(currentUser.name);
-    const [selectedAvatarUrl, setSelectedAvatarUrl] = React.useState(currentUser.avatarUrl);
+    const [name, setName] = React.useState(currentUser?.name || '');
+    const [selectedAvatarUrl, setSelectedAvatarUrl] = React.useState(currentUser?.avatarUrl || '');
     const [isClient, setIsClient] = React.useState(false);
   
-    // Only use useEffect to track client-side mounting.
     React.useEffect(() => {
         setIsClient(true);
     }, []); 
+
+    React.useEffect(() => {
+      if (currentUser) {
+        setName(currentUser.name);
+        setSelectedAvatarUrl(currentUser.avatarUrl);
+      }
+    }, [currentUser]);
+
 
     const selectableAvatars = PlaceHolderImages.filter(img => img.id.startsWith('selectable_avatar_'));
 
@@ -44,7 +49,6 @@ export default function ProfilePage() {
         router.back();
     };
 
-    // Show skeleton only when not on client yet.
     if (!isClient) {
         return (
             <div className="px-5">
@@ -94,7 +98,7 @@ export default function ProfilePage() {
             <div className="flex flex-col items-center mb-8">
                 <Avatar className="w-24 h-24 mb-4">
                     <AvatarImage src={selectedAvatarUrl} alt={name} />
-                    <AvatarFallback>{name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <h2 className="text-2xl font-bold">{name}</h2>
             </div>
@@ -123,7 +127,7 @@ export default function ProfilePage() {
                             className="relative cursor-pointer"
                             onClick={() => setSelectedAvatarUrl(avatar.imageUrl)}
                             >
-                            <Image
+                            <img
                                 src={avatar.imageUrl}
                                 alt={avatar.description}
                                 width={100}
