@@ -196,6 +196,8 @@ export default function InboxPage() {
         const withoutStartTime = sorted.filter(t => !t.startTime);
 
         withStartTime.sort((a, b) => {
+            if (!a.startTime) return 1;
+            if (!b.startTime) return -1;
             const timeA = new Date(now.toDateString() + ' ' + a.startTime).getTime();
             const timeB = new Date(now.toDateString() + ' ' + b.startTime).getTime();
             return timeA - timeB;
@@ -263,6 +265,7 @@ export default function InboxPage() {
   React.useEffect(() => {
     if (!isClient) return;
 
+    // Grouping is only applied when sorting by 'default' (Start Time)
     if (sortBy !== 'default') {
       setGroupedTasks({
         expired: [],
@@ -299,16 +302,12 @@ export default function InboxPage() {
         }
       });
 
-      const sortFn = (a: Task, b: Task) => {
-        if (!a.startTime) return 1;
-        if (!b.startTime) return -1;
-        return a.startTime.localeCompare(b.startTime);
-      };
-
+      // The main sorting logic is already handled in processedTasks
+      // We just need to separate them here.
       return {
-        expired: expired.sort(sortFn),
-        upcoming: upcoming.sort(sortFn),
-        done: done.sort(sortFn),
+        expired,
+        upcoming,
+        done,
       };
     };
 
@@ -345,34 +344,27 @@ export default function InboxPage() {
         </p>
       );
     }
-    
-    const tasksToDisplay = sortBy !== 'default' ? [...upcoming, ...done] : [...expired, ...upcoming, ...done];
 
-    if (tasksToDisplay.length === 0) {
-         return (
-            <p className="text-muted-foreground text-center py-10">
-            No tasks match your filters.
-            </p>
-        );
-    }
-
+    // If not sorting by default, render a single flat list
     if (sortBy !== 'default') {
       let title = "Tasks";
-      if(filterStatus === 'completed') title = "Completed";
-      if(filterStatus === 'incomplete') title = "Incomplete";
+      if(filterStatus === 'completed') title = "Completed Tasks";
+      if(filterStatus === 'incomplete') title = "Incomplete Tasks";
+      if(filterImportance === 'important') title = "Important Tasks";
 
       return (
         <div className="space-y-3 px-5 mt-4">
           <TaskGroup
             title={title}
-            tasks={tasksToDisplay}
-            status="upcoming"
+            tasks={processedTasks}
+            status="upcoming" // Use 'upcoming' for neutral styling
             {...cardProps}
           />
         </div>
       );
     }
-
+    
+    // If sorting by default, render grouped list
     return (
       <div className="space-y-6 px-5 mt-4">
         <TaskGroup
@@ -517,3 +509,5 @@ export default function InboxPage() {
     </div>
   );
 }
+
+    
