@@ -17,6 +17,9 @@ import {
   Hourglass,
   ListTree,
 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { format, parseISO } from 'date-fns';
 
 interface TaskCardProps {
   task: Task;
@@ -32,20 +35,29 @@ interface TaskCardProps {
 
 export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
+  
   const [isEditingTitle, setIsEditingTitle] = React.useState(false);
   const [editingTitle, setEditingTitle] = React.useState(task.title);
+
   const [isEditingDesc, setIsEditingDesc] = React.useState(false);
   const [editingDesc, setEditingDesc] = React.useState(task.description || "");
+
+  const [isEditingStartTime, setIsEditingStartTime] = React.useState(false);
+  const [editingStartTime, setEditingStartTime] = React.useState(task.startTime || "");
+
+  const [isEditingDueDate, setIsEditingDueDate] = React.useState(false);
+  const [editingDueDate, setEditingDueDate] = React.useState<Date | undefined>(
+    task.dueDate ? parseISO(task.dueDate) : undefined
+  );
+
+  const [isEditingDuration, setIsEditingDuration] = React.useState(false);
+  const [editingDuration, setEditingDuration] = React.useState(task.duration || 0);
+
 
   const handleToggleExpand = () => {
     if (view === "compact") {
       setIsExpanded(!isExpanded);
     }
-  };
-
-  const handleCheckboxClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onToggleCompleted(task.id);
   };
   
   const handleToggleImportantClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -68,28 +80,50 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
     onToggleMyDay(task.id);
   };
 
+  // --- Title ---
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditingTitle(e.target.value);
   };
-
   const handleTitleBlur = () => {
     onUpdate(task.id, { title: editingTitle });
     setIsEditingTitle(false);
   };
-
   const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleTitleBlur();
-    }
+    if (e.key === 'Enter') handleTitleBlur();
   };
   
+  // --- Description ---
   const handleDescChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEditingDesc(e.target.value);
   };
-
   const handleDescBlur = () => {
     onUpdate(task.id, { description: editingDesc });
     setIsEditingDesc(false);
+  };
+
+  // --- Start Time ---
+  const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditingStartTime(e.target.value);
+  };
+  const handleStartTimeBlur = () => {
+    onUpdate(task.id, { startTime: editingStartTime });
+    setIsEditingStartTime(false);
+  };
+
+  // --- Due Date ---
+  const handleDueDateChange = (date: Date | undefined) => {
+    setEditingDueDate(date);
+    onUpdate(task.id, { dueDate: date ? format(date, 'yyyy-MM-dd') : undefined });
+    setIsEditingDueDate(false);
+  };
+  
+  // --- Duration ---
+  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setEditingDuration(Number(e.target.value));
+  };
+  const handleDurationBlur = () => {
+      onUpdate(task.id, { duration: editingDuration });
+      setIsEditingDuration(false);
   };
 
 
@@ -99,32 +133,22 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
     value,
     onClick,
     isEditing,
-    onEditChange,
-    onEditBlur,
-    editValue,
+    InputComponent,
   }: {
     icon: React.ElementType;
     label: string;
-    value: React.ReactNode;
+    value?: React.ReactNode;
     onClick?: () => void;
     isEditing?: boolean;
-    onEditChange?: (e: any) => void;
-    onEditBlur?: () => void;
-    editValue?: string;
+    InputComponent?: React.ReactNode;
   }) => (
-    <div className="flex items-start text-sm text-gray-600">
-      <Icon className="w-4 h-4 mr-2 mt-1" strokeWidth={1.5} />
-      <span className="font-medium w-20">{label}:</span>
-      {isEditing ? (
-         <Textarea
-          value={editValue}
-          onChange={onEditChange}
-          onBlur={onEditBlur}
-          className="h-auto flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm"
-          autoFocus
-        />
+    <div className="flex items-start text-sm text-muted-foreground min-h-[24px]">
+      <Icon className="w-4 h-4 mr-2 mt-1 flex-shrink-0" strokeWidth={1.5} />
+      <span className="font-medium w-20 flex-shrink-0">{label}:</span>
+      {isEditing && view === 'detail' ? (
+         InputComponent
       ) : (
-        <span onClick={onClick} className="flex-grow cursor-text">{value}</span>
+        <span onClick={onClick} className={cn("flex-grow", onClick && "cursor-text")}>{value}</span>
       )}
     </div>
   );
@@ -137,8 +161,20 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
     if (view !== 'detail') {
         setIsEditingTitle(false);
         setIsEditingDesc(false);
+        setIsEditingStartTime(false);
+        setIsEditingDueDate(false);
+        setIsEditingDuration(false);
     }
   }, [view]);
+
+  React.useEffect(() => {
+    setEditingTitle(task.title);
+    setEditingDesc(task.description || "");
+    setEditingStartTime(task.startTime || "");
+    setEditingDueDate(task.dueDate ? parseISO(task.dueDate) : undefined);
+    setEditingDuration(task.duration || 0);
+  }, [task]);
+
 
   const ListIcon = list.icon;
 
@@ -229,15 +265,81 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
             label="Description"
             value={task.description || "Add a description..."}
             onClick={() => view === 'detail' && setIsEditingDesc(true)}
-            isEditing={isEditingDesc && view === 'detail'}
-            onEditChange={handleDescChange}
-            onEditBlur={handleDescBlur}
-            editValue={editingDesc}
+            isEditing={isEditingDesc}
+            InputComponent={
+                <Textarea
+                    value={editingDesc}
+                    onChange={handleDescChange}
+                    onBlur={handleDescBlur}
+                    className="h-auto flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm bg-transparent"
+                    autoFocus
+                />
+            }
           />
-          <DetailRow icon={Clock} label="Start" value={task.startTime || 'Not set'} />
-          <DetailRow icon={Calendar} label="Due" value={task.dueDate || 'Not set'} />
-          <DetailRow icon={Hourglass} label="Duration" value={task.duration ? `${task.duration} min` : 'Not set'} />
-          {task.subtasks && (
+          <DetailRow 
+            icon={Clock} 
+            label="Start" 
+            value={task.startTime || 'Not set'}
+            onClick={() => view === 'detail' && setIsEditingStartTime(true)}
+            isEditing={isEditingStartTime}
+            InputComponent={
+                <Input
+                    type="time"
+                    value={editingStartTime}
+                    onChange={handleStartTimeChange}
+                    onBlur={handleStartTimeBlur}
+                    className="h-7 p-0 text-sm border-none focus-visible:ring-0 bg-transparent"
+                    autoFocus
+                />
+            }
+          />
+          <DetailRow 
+            icon={Calendar} 
+            label="Due" 
+            value={task.dueDate ? format(parseISO(task.dueDate), 'PPP') : 'Not set'}
+            onClick={() => view === 'detail' && setIsEditingDueDate(true)}
+            isEditing={isEditingDueDate}
+            InputComponent={
+              <Popover open={isEditingDueDate} onOpenChange={setIsEditingDueDate}>
+                <PopoverTrigger asChild>
+                  <button className="text-sm text-primary">
+                    {editingDueDate ? format(editingDueDate, 'PPP') : 'Set Date'}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                    <CalendarComponent
+                        mode="single"
+                        selected={editingDueDate}
+                        onSelect={handleDueDateChange}
+                        initialFocus
+                    />
+                </PopoverContent>
+              </Popover>
+            }
+          />
+          <DetailRow 
+            icon={Hourglass} 
+            label="Duration" 
+            value={task.duration ? `${task.duration} min` : 'Not set'}
+            onClick={() => view === 'detail' && setIsEditingDuration(true)}
+            isEditing={isEditingDuration}
+            InputComponent={
+              <div className="flex items-center gap-1">
+                <Input 
+                    type="number" 
+                    value={editingDuration}
+                    onChange={handleDurationChange}
+                    onBlur={handleDurationBlur}
+                    className="w-20 h-7 p-0 text-sm text-right border-none focus-visible:ring-0 bg-transparent"
+                    min="0"
+                    step="5"
+                    autoFocus
+                />
+                <span className="text-sm">min</span>
+              </div>
+            }
+          />
+          {task.subtasks && task.subtasks.length > 0 && (
             <DetailRow
               icon={ListTree}
               label="Subtasks"
