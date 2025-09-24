@@ -7,6 +7,7 @@ import { tasks as initialTasks, blogPosts as initialBlogPosts } from '@/lib/data
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from 'next-themes';
 import { themes } from '@/lib/themes';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 interface AppContextType {
   tasks: Task[];
@@ -15,8 +16,8 @@ interface AppContextType {
   deleteTask: (taskId: string) => void;
   blogPosts: BlogPost[];
   addBlogPost: (post: BlogPost) => void;
-  currentUser: Author | null;
-  setCurrentUser: (user: Author | null) => void;
+  currentUser: Author;
+  setCurrentUser: (user: Author) => void;
   theme: string;
   setTheme: (theme: string) => void;
   mode: string | undefined;
@@ -25,10 +26,16 @@ interface AppContextType {
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
 
+const defaultUser: Author = {
+  name: 'New User',
+  avatarUrl: PlaceHolderImages.find(img => img.id === 'selectable_avatar_1')?.imageUrl || '',
+};
+
+
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('tasks', initialTasks);
   const [blogPosts, setBlogPosts] = useLocalStorage<BlogPost[]>('blogPosts', initialBlogPosts);
-  const [currentUser, setCurrentUser] = useLocalStorage<Author | null>('currentUser', null);
+  const [currentUser, setCurrentUser] = useLocalStorage<Author>('currentUser', defaultUser);
   const { theme: mode, setTheme: setMode } = useTheme();
   const [colorTheme, setColorTheme] = useLocalStorage<string>('color-theme', 'Default');
 
@@ -67,8 +74,31 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setBlogPosts(prevPosts => [post, ...prevPosts]);
   };
 
+  // Ensure that if localStorage had a "null" value, it gets updated to the default user.
+  React.useEffect(() => {
+    if (currentUser === null) {
+      setCurrentUser(defaultUser);
+    }
+  }, [currentUser, setCurrentUser]);
+  
+  const appContextValue = React.useMemo(() => ({
+    tasks,
+    addTask,
+    updateTask,
+    deleteTask,
+    blogPosts,
+    addBlogPost,
+    currentUser: currentUser || defaultUser, // Always provide a valid user object
+    setCurrentUser,
+    theme: colorTheme,
+    setTheme: setColorTheme,
+    mode,
+    setMode: setMode as (mode: 'light' | 'dark') => void,
+  }), [tasks, blogPosts, currentUser, colorTheme, mode, setMode, setCurrentUser, setColorTheme]);
+
+
   return (
-    <AppContext.Provider value={{ tasks, addTask, updateTask, deleteTask, blogPosts, addBlogPost, currentUser, setCurrentUser, theme: colorTheme, setTheme: setColorTheme, mode, setMode: setMode as (mode: 'light' | 'dark') => void }}>
+    <AppContext.Provider value={appContextValue}>
       {children}
     </AppContext.Provider>
   );
