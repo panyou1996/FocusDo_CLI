@@ -276,7 +276,7 @@ export default function InboxPage() {
                   <Filter className="w-6 h-6" strokeWidth={1.5} />
                 </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="rounded-t-2xl">
+            <SheetContent side="bottom" className="rounded-t-2xl mx-auto max-w-lg">
               <SheetHeader className="text-center mb-4">
                 <SheetTitle>Filter & Sort</SheetTitle>
               </SheetHeader>
@@ -429,5 +429,3 @@ export default function InboxPage() {
     </div>
   );
 }
-
-    
