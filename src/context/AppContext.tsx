@@ -7,7 +7,6 @@ import { tasks as initialTasks, blogPosts as initialBlogPosts } from '@/lib/data
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from 'next-themes';
 import { themes } from '@/lib/themes';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 interface AppContextType {
   tasks: Task[];
@@ -28,7 +27,7 @@ const AppContext = React.createContext<AppContextType | undefined>(undefined);
 
 const defaultUser: Author = {
   name: 'New User',
-  avatarUrl: 'https://api.dicebear.com/8.x/adventurer/svg?seed=Default',
+  avatarUrl: 'https://api.dicebear.com/8.x/adventurer/svg?seed=DefaultUser',
 };
 
 

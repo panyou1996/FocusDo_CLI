@@ -18,8 +18,8 @@ export default function BlogDetailPage() {
   const [post, setPost] = React.useState<BlogPost | undefined | null>(undefined); // undefined: loading, null: not found
 
   React.useEffect(() => {
-    // Only proceed if blogPosts have been loaded from localStorage and slug is available from URL
-    if (blogPosts.length > 0 && slug) {
+    // Only proceed if blogPosts are available and slug is available from URL
+    if (slug) {
         const foundPost = blogPosts.find((p) => p.slug === slug);
         setPost(foundPost || null); // Set to the found post, or null if not found
     }
