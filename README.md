@@ -1,3 +1,4 @@
+
 # TaskFlow: Your AI-Powered Productivity Hub
 
 TaskFlow is a modern, feature-rich productivity application designed to help you organize your tasks, manage your life, and share your insights. It leverages the power of AI to provide smart features, all wrapped in a beautifully designed, customizable, and responsive user interface.
@@ -49,11 +50,12 @@ To run this project locally, follow these steps:
     ```
 
 3.  **Set up Environment Variables**:
-    Create a `.env` file in the root of the project. You will need to add your Google AI API key for the Genkit features to work.
+    Create a `.env` file in the root of the project by copying the example file.
+    ```bash
+    cp .env.example .env
     ```
-    GEMINI_API_KEY=your_google_ai_api_key_here
-    ```
-
+    You will need to add your Google AI API key inside the new `.env` file for the Genkit features to work.
+    
 4.  **Run the development server**:
     The application runs on `http://localhost:9002`.
     ```bash
@@ -99,6 +101,7 @@ Here is an overview of the key directories and files in the project:
 │   │
 │   ├── lib/                # Shared utilities, types, and data
 │   │   ├── data.ts         # Initial/default data for the app
+│   │   ├── icon-utils.ts   # Centralized icon helper function
 │   │   ├── themes.ts       # Color theme definitions
 │   │   └── types.ts        # TypeScript type definitions
 │   │

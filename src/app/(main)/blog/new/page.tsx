@@ -6,21 +6,13 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Upload, X, List, type Icon as LucideIcon } from 'lucide-react';
+import { Loader2, Upload, X, List } from 'lucide-react';
 import Image from 'next/image';
 import { useAppContext } from '@/context/AppContext';
 import { Card } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import * as Icons from 'lucide-react';
-
-const getIcon = (iconName: string): LucideIcon => {
-    const icon = (Icons as any)[iconName];
-    if (icon) {
-        return icon;
-    }
-    return Icons.HelpCircle; // Fallback icon
-};
+import { getIcon } from '@/lib/icon-utils';
 
 export default function BlogNewPage() {
   const router = useRouter();

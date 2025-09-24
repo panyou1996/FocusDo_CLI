@@ -8,7 +8,6 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
-  type Icon as LucideIcon,
   List,
 } from 'lucide-react';
 import { TaskCard } from '@/components/tasks/TaskCard';
@@ -23,25 +22,17 @@ import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
-import * as Icons from 'lucide-react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { getIcon } from '@/lib/icon-utils';
 
 interface GroupedTasks {
   expired: Task[];
   upcoming: Task[];
   done: Task[];
 }
-
-const getIcon = (iconName: string): LucideIcon => {
-  const icon = (Icons as any)[iconName];
-  if (icon) {
-    return icon;
-  }
-  return Icons.HelpCircle; // Fallback icon
-};
 
 const TaskGroup = ({
   title,

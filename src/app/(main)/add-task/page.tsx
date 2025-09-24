@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { X, ListTree, Hourglass, Clock, Calendar, Star, Pin, Trash2, List, type Icon as LucideIcon } from 'lucide-react';
+import { X, ListTree, Hourglass, Clock, Calendar, Star, Pin, Trash2, List } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
@@ -17,17 +17,8 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import type { Subtask } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox';
-import * as Icons from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-
-const getIcon = (iconName: string): LucideIcon => {
-    const icon = (Icons as any)[iconName];
-    if (icon) {
-        return icon;
-    }
-    return Icons.HelpCircle; // Fallback icon
-};
+import { getIcon } from '@/lib/icon-utils';
 
 
 const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (

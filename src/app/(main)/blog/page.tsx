@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { BookText, Plus, Search, Filter, List, type Icon as LucideIcon } from "lucide-react";
+import { BookText, Plus, Search, Filter, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/BlogCard";
@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { cn } from "@/lib/utils";
-import * as Icons from 'lucide-react';
+import { getIcon } from "@/lib/icon-utils";
 
 type SortByType = 'newest' | 'oldest' | 'readingTime';
 
@@ -22,15 +22,6 @@ interface FilterPopoverContentProps {
   sortBy: SortByType;
   setSortBy: (value: SortByType) => void;
 }
-
-const getIcon = (iconName: string): LucideIcon => {
-  const icon = (Icons as any)[iconName];
-  if (icon) {
-    return icon;
-  }
-  return Icons.HelpCircle; // Fallback icon
-};
-
 
 const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({ sortBy, setSortBy }) => {
     return (

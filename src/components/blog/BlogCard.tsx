@@ -7,19 +7,12 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { BookText, type Icon as LucideIcon } from "lucide-react";
 import * as Icons from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { getIcon } from "@/lib/icon-utils";
 
 interface BlogCardProps {
   post: BlogPost;
   list?: TaskList;
 }
-
-const getIcon = (iconName: string): LucideIcon => {
-    const icon = (Icons as any)[iconName];
-    if (icon) {
-        return icon;
-    }
-    return Icons.HelpCircle; // Fallback icon
-};
 
 export function BlogCard({ post, list }: BlogCardProps) {
   // Check if coverImage is a placeholder ID or a Base64 string

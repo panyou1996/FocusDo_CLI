@@ -18,14 +18,12 @@ import {
   Plus,
   FileText,
   Pencil,
-  type Icon as LucideIcon,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format, parseISO } from 'date-fns';
 import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
-import * as Icons from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +34,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
+import { getIcon } from "@/lib/icon-utils";
 
 
 interface TaskCardProps {
@@ -51,15 +50,6 @@ interface TaskCardProps {
   onToggleMyDay: (taskId: string) => void;
   onToggleCompleted: (taskId: string) => void;
 }
-
-const getIcon = (iconName: string): LucideIcon => {
-    const icon = (Icons as any)[iconName];
-    if (icon) {
-        return icon;
-    }
-    return Icons.HelpCircle; // Fallback icon
-};
-
 
 export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
@@ -510,7 +500,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                   <PopoverTrigger asChild>
                   <button className="text-sm text-primary" onClick={(e) => {e.stopPropagation(); setIsEditingDueDate(true)}}>
                       {editingDueDate ? format(editingDueDate, 'PPP') : 'Set Date'}
-                  </button>
+                  </button>                  
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="end" onClick={(e) => e.stopPropagation()}>
                       <CalendarComponent

@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { SlidersHorizontal, type Icon as LucideIcon } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,8 @@ import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import * as Icons from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getIcon } from "@/lib/icon-utils";
 
 
 interface GroupedTasks {
@@ -20,15 +20,6 @@ interface GroupedTasks {
   upcoming: Task[];
   done: Task[];
 }
-
-const getIcon = (iconName: string): LucideIcon => {
-    const icon = (Icons as any)[iconName];
-    if (icon) {
-        return icon;
-    }
-    return Icons.HelpCircle; // Fallback icon
-};
-
 
 const TaskGroup = ({ title, tasks, status, ...props }: { title: string; tasks: Task[]; status: 'expired' | 'upcoming' | 'done', [key: string]: any }) => {
   const { lists } = useAppContext();
