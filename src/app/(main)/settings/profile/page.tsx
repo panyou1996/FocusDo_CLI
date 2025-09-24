@@ -32,7 +32,7 @@ export default function ProfilePage() {
             setName(currentUser.name);
             setSelectedAvatarUrl(currentUser.avatarUrl);
         }
-    }, [currentUser]);
+    }, []); // Empty dependency array ensures this runs only once on mount
 
     const selectableAvatars = PlaceHolderImages.filter(img => img.id.startsWith('selectable_avatar_'));
 
@@ -77,7 +77,7 @@ export default function ProfilePage() {
                     <AvatarImage src={selectedAvatarUrl || currentUser.avatarUrl} alt={name} />
                     <AvatarFallback>{name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <h2 className="text-2xl font-bold">{name}</h2>
+                <h2 className="text-2xl font-bold">{name || 'Loading...'}</h2>
             </div>
             
             <SettingsGroupLabel>Edit Profile</SettingsGroupLabel>
