@@ -44,7 +44,7 @@ export default function ProfilePage() {
     const [name, setName] = React.useState('');
     const [selectedAvatarUrl, setSelectedAvatarUrl] = React.useState('');
     
-    const [selectableAvatars, setSelectableAvatars] = React.useState<string[]>(defaultAvatarGroup);
+    const [selectableAvatars, setSelectableAvatars] = React.useState<string[]>([]);
     const [aiPrompt, setAiPrompt] = React.useState('');
     const [isGenerating, setIsGenerating] = React.useState(false);
     const [isUploading, setIsUploading] = React.useState(false);
@@ -62,8 +62,11 @@ export default function ProfilePage() {
     }, [currentUser]); 
 
     React.useEffect(() => {
-        handleRandomizeAvatars();
-    }, []);
+        // Generate avatars only on the client-side
+        if(isClient) {
+            handleRandomizeAvatars();
+        }
+    }, [isClient]);
 
 
     const handleSaveChanges = () => {
@@ -178,7 +181,7 @@ export default function ProfilePage() {
                                         <TabsContent value="random" className="m-0 relative">
                                             <div className="flex items-center gap-2">
                                                 <div className="grid grid-cols-5 gap-2 flex-grow">
-                                                    {selectableAvatars.map((avatarUrl, index) => (
+                                                    {selectableAvatars.length > 0 ? selectableAvatars.map((avatarUrl, index) => (
                                                         <div
                                                         key={index}
                                                         className="relative cursor-pointer"
@@ -199,6 +202,10 @@ export default function ProfilePage() {
                                                                 <CheckCircle className="w-3 h-3" />
                                                             </div>
                                                         )}
+                                                        </div>
+                                                    )) : defaultAvatarGroup.map((_, index) => (
+                                                        <div key={index} className="relative cursor-pointer">
+                                                          <div className="rounded-full aspect-square bg-secondary mx-auto w-12 h-12 animate-pulse" />
                                                         </div>
                                                     ))}
                                                 </div>

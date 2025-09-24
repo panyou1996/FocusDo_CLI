@@ -22,21 +22,27 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function BlogDetailPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params ? (params.slug as string) : undefined;
-  const { blogPosts, deleteBlogPost } = useAppContext();
+  const { blogPosts, deleteBlogPost, currentUser } = useAppContext();
   const [post, setPost] = React.useState<BlogPost | undefined | null>(undefined); // undefined: loading, null: not found
+  const [isClient, setIsClient] = React.useState(false);
 
   React.useEffect(() => {
-    // Only proceed if blogPosts are available and slug is available from URL
-    if (slug) {
+    setIsClient(true);
+  }, []);
+
+  React.useEffect(() => {
+    // Only proceed if client-side, blogPosts are available and slug is available from URL
+    if (isClient && slug) {
         const foundPost = blogPosts.find((p) => p.slug === slug);
         setPost(foundPost || null); // Set to the found post, or null if not found
     }
-  }, [blogPosts, slug]);
+  }, [blogPosts, slug, isClient]);
 
   const handleDelete = () => {
     if (post) {
@@ -46,10 +52,30 @@ export default function BlogDetailPage() {
   };
 
   // Handle loading state
-  if (post === undefined) {
+  if (!isClient || post === undefined) {
     return (
-        <div className="flex justify-center items-center h-screen">
-            <p>Loading...</p>
+        <div className="px-5">
+            <header className="px-5 pt-10 pb-4 flex justify-between items-center -mx-5">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="flex items-center gap-2">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                </div>
+            </header>
+            <div className="mt-6 space-y-4">
+              <Skeleton className="h-8 w-3/4" />
+              <div className="flex items-center gap-3">
+                <Skeleton className="w-10 h-10 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+              <Skeleton className="h-[250px] w-full rounded-2xl" />
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-6 w-5/6" />
+            </div>
         </div>
     );
   }
@@ -58,8 +84,9 @@ export default function BlogDetailPage() {
   if (post === null) {
     notFound();
   }
-
-  const authorAvatarUrl = post.author.avatarUrl;
+  
+  const postAuthor = post.author || currentUser;
+  const authorAvatarUrl = postAuthor.avatarUrl;
 
   const isBase64 = post.coverImage?.startsWith('data:');
   const placeholderImage = !isBase64 ? PlaceHolderImages.find(img => img.id === post.coverImage) : null;
@@ -104,11 +131,11 @@ export default function BlogDetailPage() {
         <h1 className="text-[30px] font-bold leading-tight mt-6 mb-4">{post.title}</h1>
         <div className="flex items-center gap-3 mb-6">
           <Avatar className="w-10 h-10">
-             <AvatarImage src={authorAvatarUrl} alt={post.author.name} />
-            <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+             <AvatarImage src={authorAvatarUrl} alt={postAuthor.name} />
+            <AvatarFallback>{postAuthor.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-[15px] font-medium">{post.author.name}</p>
+            <p className="text-[15px] font-medium">{postAuthor.name}</p>
             <p className="text-[13px] text-muted-foreground">{post.date}</p>
           </div>
         </div>

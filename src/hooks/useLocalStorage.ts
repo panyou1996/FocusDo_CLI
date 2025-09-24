@@ -1,63 +1,44 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
-  // State to store our value
-  // Pass initial state function to useState so logic is only executed once
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    // Prevent build errors from trying to access window
-    if (typeof window === 'undefined') {
-      return initialValue;
-    }
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-    try {
-      // Get from local storage by key
-      const item = window.localStorage.getItem(key);
-      // Parse stored json or if none return initialValue
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      // If error also return initialValue
-      console.log(error);
-      return initialValue;
-    }
-  });
-
-  // useEffect to update local storage when the state changes
   useEffect(() => {
-    // Prevent build errors from trying to access window
-    if (typeof window === 'undefined') {
-        return;
-    }
-
+    // This effect runs only once on the client after hydration
+    // It safely reads from localStorage and updates the state.
     try {
-      // Allow value to be a function so we have same API as useState
-      const valueToStore =
-        typeof storedValue === 'function'
-          ? storedValue(storedValue)
-          : storedValue;
-      // Save state to local storage
+      const item = window.localStorage.getItem(key);
+      if (item) {
+        setStoredValue(JSON.parse(item));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setIsInitialized(true);
+  }, [key]);
+
+  const setValue = useCallback((value: T | ((val: T) => T)) => {
+    if (typeof window === 'undefined' || !isInitialized) {
+      // Don't do anything on the server or before initialization.
+      // Or queue it up to run after initialization.
+      return;
+    }
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
-      // A more advanced implementation would handle the error case
       console.log(error);
     }
-  }, [key, storedValue]);
-
-  const setValue = (value: T | ((val: T) => T)) => {
-    try {
-      // Allow value to be a function so we have the same API as useState
-      const valueToStore =
-        value instanceof Function ? value(storedValue) : value;
-      // Save state
-      setStoredValue(valueToStore);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  }, [key, storedValue, isInitialized]);
 
 
+  // During SSR and initial client render, return the initialValue.
+  // After hydration, this will update to the value from localStorage.
   return [storedValue, setValue];
 }
 

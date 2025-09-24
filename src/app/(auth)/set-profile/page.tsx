@@ -41,7 +41,7 @@ export default function SetProfilePage() {
   const [name, setName] = React.useState('');
   const [selectedAvatarUrl, setSelectedAvatarUrl] = React.useState('');
   
-  const [selectableAvatars, setSelectableAvatars] = React.useState<string[]>(defaultAvatarGroup);
+  const [selectableAvatars, setSelectableAvatars] = React.useState<string[]>([]);
   const [aiPrompt, setAiPrompt] = React.useState('');
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
@@ -50,7 +50,10 @@ export default function SetProfilePage() {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
+    // Generate avatars only on the client-side to avoid hydration mismatch
     handleRandomizeAvatars();
+    // Set a default initial avatar
+    setSelectedAvatarUrl(defaultAvatarGroup[0]);
   }, []);
 
   const handleSaveProfile = (e: React.FormEvent) => {
@@ -141,7 +144,7 @@ export default function SetProfilePage() {
                 <TabsContent value="random" className="m-0 relative">
                   <div className="flex items-center gap-2">
                     <div className="grid grid-cols-5 gap-2 flex-grow">
-                      {selectableAvatars.map((avatarUrl, index) => (
+                      {selectableAvatars.length > 0 ? selectableAvatars.map((avatarUrl, index) => (
                         <div
                           key={index}
                           className="relative cursor-pointer"
@@ -163,7 +166,13 @@ export default function SetProfilePage() {
                             </div>
                           )}
                         </div>
-                      ))}
+                      )) : defaultAvatarGroup.map((avatarUrl, index) => (
+                         <div key={index} className="relative cursor-pointer">
+                            <div className="rounded-full aspect-square bg-secondary mx-auto w-12 h-12 animate-pulse" />
+                         </div>
+                      ))
+                      
+                      }
                     </div>
                     <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={handleRandomizeAvatars} type="button">
                         <RefreshCw className="w-4 h-4"/>
