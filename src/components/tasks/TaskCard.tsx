@@ -306,7 +306,7 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
                     {editingDueDate ? format(editingDueDate, 'PPP') : 'Set Date'}
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="end">
                     <CalendarComponent
                         mode="single"
                         selected={editingDueDate}

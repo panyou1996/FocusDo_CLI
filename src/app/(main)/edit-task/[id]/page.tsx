@@ -251,7 +251,7 @@ export default function EditTaskPage() {
                                         {dueDate ? format(dueDate, 'PPP') : 'Set Date'}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
+                                <PopoverContent className="w-auto p-0" align="end">
                                     <CalendarComponent
                                         mode="single"
                                         selected={dueDate}
@@ -281,4 +281,3 @@ export default function EditTaskPage() {
         </div>
     );
 }
-
