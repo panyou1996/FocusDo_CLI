@@ -163,35 +163,37 @@ export default function ProfilePage() {
                             <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
                         </TabsList>
                         <div className='py-2 flex flex-col justify-center min-h-[90px]'>
-                            <TabsContent value="select" className="relative m-0">
-                                <div className="grid grid-cols-5 gap-2">
-                                    {selectableAvatars.map((avatarUrl, index) => (
-                                        <div
-                                        key={index}
-                                        className="relative cursor-pointer"
-                                        onClick={() => setSelectedAvatarUrl(avatarUrl)}
-                                        >
-                                        <img
-                                            src={avatarUrl}
-                                            alt="Selectable Avatar"
-                                            width={56}
-                                            height={56}
-                                            className={cn(
-                                                "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-14 h-14",
-                                                selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
+                            <TabsContent value="select" className="m-0">
+                                <div className="flex items-center gap-2">
+                                    <div className="grid grid-cols-5 gap-2 flex-grow">
+                                        {selectableAvatars.map((avatarUrl, index) => (
+                                            <div
+                                            key={index}
+                                            className="relative cursor-pointer"
+                                            onClick={() => setSelectedAvatarUrl(avatarUrl)}
+                                            >
+                                            <img
+                                                src={avatarUrl}
+                                                alt="Selectable Avatar"
+                                                width={56}
+                                                height={56}
+                                                className={cn(
+                                                    "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-14 h-14",
+                                                    selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
+                                                )}
+                                            />
+                                            {selectedAvatarUrl === avatarUrl && (
+                                                <div className="absolute top-[-4px] right-[-2px] bg-primary text-primary-foreground rounded-full p-0.5">
+                                                    <CheckCircle className="w-3 h-3" />
+                                                </div>
                                             )}
-                                        />
-                                        {selectedAvatarUrl === avatarUrl && (
-                                            <div className="absolute top-[-4px] right-[-2px] bg-primary text-primary-foreground rounded-full p-0.5">
-                                                <CheckCircle className="w-3 h-3" />
                                             </div>
-                                        )}
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
+                                    <Button variant="outline" size="icon" className="h-8 w-8 flex-shrink-0" onClick={handleRandomizeAvatars} type="button">
+                                        <RefreshCw className="w-4 h-4"/>
+                                    </Button>
                                 </div>
-                                <Button variant="outline" size="icon" className="absolute top-1/2 -translate-y-1/2 right-0 h-8 w-8" onClick={handleRandomizeAvatars} type="button">
-                                    <RefreshCw className="w-4 h-4"/>
-                                </Button>
                             </TabsContent>
                             <TabsContent value="generate" className='m-0'>
                                 <div className='flex gap-2 items-center'>
