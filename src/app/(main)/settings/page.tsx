@@ -4,6 +4,7 @@ import { ChevronRight, Bell, User, Palette, Lock, Settings as SettingsIcon } fro
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { Button } from '@/components/ui/button';
 
 const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
   <p className="px-5 text-[13px] font-regular text-muted-foreground uppercase mt-6 mb-2">{children}</p>
@@ -37,6 +38,7 @@ export default function SettingsPage() {
           <SettingsIcon className="w-7 h-7" strokeWidth={2} />
           <h1 className="text-[28px] font-bold text-foreground">Settings</h1>
         </div>
+        <div className="w-10 h-10"></div>
       </header>
 
       <div className="px-5">

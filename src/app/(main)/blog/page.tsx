@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { BookText, Plus, Search } from "lucide-react";
+import { BookText, Plus, Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/BlogCard";
@@ -26,6 +26,11 @@ export default function BlogPage() {
         <div className="flex items-center gap-3">
           <BookText className="w-7 h-7" strokeWidth={2} />
           <h1 className="text-[28px] font-bold text-foreground">Blog</h1>
+        </div>
+         <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon">
+            <Filter className="w-6 h-6" strokeWidth={1.5} />
+          </Button>
         </div>
       </header>
       

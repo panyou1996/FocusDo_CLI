@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { SlidersHorizontal, Wand2, type Icon as LucideIcon } from "lucide-react";
+import { SlidersHorizontal, type Icon as LucideIcon } from "lucide-react";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -197,11 +197,8 @@ export default function TodayPage() {
         </div>
                 
         <div className="flex items-center gap-2">
-           <Button variant="ghost" size="icon" className="h-8 w-8 bg-secondary">
-            <SlidersHorizontal className="w-5 h-5" strokeWidth={1.5} />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 bg-secondary">
-            <Wand2 className="w-5 h-5 text-primary" strokeWidth={1.5} />
+           <Button variant="ghost" size="icon">
+            <SlidersHorizontal className="w-6 h-6" strokeWidth={1.5} />
           </Button>
         </div>
       </header>
