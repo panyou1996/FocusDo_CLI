@@ -46,7 +46,7 @@ export default function SettingsPage() {
 
         <SettingsGroupLabel>Account Settings</SettingsGroupLabel>
         <Card className="rounded-xl overflow-hidden shadow-soft border-none">
-          <SettingsItem icon={User} label="Profile" color="#8b5cf6" action="navigate" />
+          <SettingsItem icon={User} label="Profile" color="#8b5cf6" action="navigate" href="/settings/profile" />
           <Separator />
           <SettingsItem icon={Lock} label="Password" color="#f97316" action="navigate" />
         </Card>
