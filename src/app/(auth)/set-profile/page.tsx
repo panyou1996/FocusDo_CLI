@@ -13,12 +13,13 @@ import { CheckCircle, RefreshCw, Upload, Wand2, Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ParticleLoader } from '@/components/common/ParticleLoader';
 
 const avatarStyles = [
   'adventurer', 'big-ears', 'bottts', 'miniavs', 'open-peeps', 'pixel-art'
 ];
 
-function generateRandomAvatars(count = 3) {
+function generateRandomAvatars(count = 6) {
     const avatars = [];
     for (let i = 0; i < count; i++) {
         const style = avatarStyles[Math.floor(Math.random() * avatarStyles.length)];
@@ -39,6 +40,7 @@ export default function SetProfilePage() {
   const [aiPrompt, setAiPrompt] = React.useState('');
   const [isGenerating, setIsGenerating] = React.useState(false);
   const [isUploading, setIsUploading] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState('select');
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -63,6 +65,7 @@ export default function SetProfilePage() {
   const handleGenerateAvatar = async () => {
     if (!aiPrompt) return;
     setIsGenerating(true);
+    setActiveTab('generate');
     try {
       const result = await generateAvatar(aiPrompt);
       const svgDataUrl = `data:image/svg+xml;base64,${btoa(result.svgContent)}`;
@@ -122,78 +125,81 @@ export default function SetProfilePage() {
           </div>
           <div className="space-y-2">
             <Label>Choose an Avatar</Label>
-            <Tabs defaultValue="select">
+            <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="select">
               <TabsList className='grid w-full grid-cols-3'>
                 <TabsTrigger value="select">Select</TabsTrigger>
                 <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
                 <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
               </TabsList>
-              <TabsContent value="select" className="relative pt-4">
-                <div className="grid grid-cols-3 gap-4">
-                  {selectableAvatars.map((avatarUrl, index) => (
-                    <div
-                      key={index}
-                      className="relative cursor-pointer"
-                      onClick={() => setSelectedAvatarUrl(avatarUrl)}
-                    >
-                      <img
-                        src={avatarUrl}
-                        alt="Selectable Avatar"
-                        width={80}
-                        height={80}
-                        className={cn(
-                          "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto",
-                          selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
+               <div className='min-h-[140px] flex flex-col justify-center py-2'>
+                <TabsContent value="select" className="relative m-0">
+                  <div className="grid grid-cols-3 gap-4">
+                    {selectableAvatars.slice(0, 3).map((avatarUrl, index) => (
+                      <div
+                        key={index}
+                        className="relative cursor-pointer"
+                        onClick={() => setSelectedAvatarUrl(avatarUrl)}
+                      >
+                        <img
+                          src={avatarUrl}
+                          alt="Selectable Avatar"
+                          width={80}
+                          height={80}
+                          className={cn(
+                            "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-20 h-20",
+                            selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
+                          )}
+                        />
+                        {selectedAvatarUrl === avatarUrl && (
+                          <div className="absolute top-[-4px] right-1 bg-primary text-primary-foreground rounded-full p-1">
+                            <CheckCircle className="w-4 h-4" />
+                          </div>
                         )}
+                      </div>
+                    ))}
+                  </div>
+                  <Button variant="outline" size="icon" className="absolute top-0 right-0 h-9 w-9" onClick={handleRandomizeAvatars} type="button">
+                      <RefreshCw className="w-4 h-4"/>
+                  </Button>
+                </TabsContent>
+                <TabsContent value="generate" className="m-0">
+                    <div className='flex gap-2 items-center'>
+                      <Input 
+                          placeholder='e.g., a happy robot'
+                          value={aiPrompt}
+                          onChange={(e) => setAiPrompt(e.target.value)}
+                          disabled={isGenerating}
                       />
-                      {selectedAvatarUrl === avatarUrl && (
-                        <div className="absolute top-0 right-2 bg-primary text-primary-foreground rounded-full p-1">
-                          <CheckCircle className="w-4 h-4" />
-                        </div>
-                      )}
+                      <Button onClick={handleGenerateAvatar} disabled={isGenerating || !aiPrompt} type="button">
+                          {isGenerating ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Go'}
+                      </Button>
                     </div>
-                  ))}
-                </div>
-                <Button variant="outline" size="icon" className="absolute top-4 right-0 h-9 w-9" onClick={handleRandomizeAvatars} type="button">
-                    <RefreshCw className="w-4 h-4"/>
-                </Button>
-              </TabsContent>
-              <TabsContent value="generate" className="pt-4">
-                 <div className='flex gap-2 items-center'>
-                    <Input 
-                        placeholder='e.g., a happy robot'
-                        value={aiPrompt}
-                        onChange={(e) => setAiPrompt(e.target.value)}
-                    />
-                    <Button onClick={handleGenerateAvatar} disabled={isGenerating || !aiPrompt} type="button">
-                        {isGenerating ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Go'}
-                    </Button>
-                 </div>
-              </TabsContent>
-              <TabsContent value="upload" className="pt-4">
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept="image/*"
-                    className="hidden"
-                    disabled={isUploading}
-                />
-                <Button 
-                    variant="outline" 
-                    className="w-full h-12" 
-                    onClick={handleImageUploadClick}
-                    disabled={isUploading}
-                    type="button"
-                >
-                    {isUploading ? (
-                        <Loader2 className="w-5 h-5 animate-spin mr-2"/>
-                    ) : (
-                        <Upload className="w-5 h-5 mr-2" />
-                    )}
-                    Upload Image
-                </Button>
-              </TabsContent>
+                </TabsContent>
+                <TabsContent value="upload" className="m-0">
+                  <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      className="hidden"
+                      disabled={isUploading}
+                  />
+                  <Button 
+                      variant="outline" 
+                      className="w-full h-12" 
+                      onClick={handleImageUploadClick}
+                      disabled={isUploading}
+                      type="button"
+                  >
+                      {isUploading ? (
+                          <Loader2 className="w-5 h-5 animate-spin mr-2"/>
+                      ) : (
+                          <Upload className="w-5 h-5 mr-2" />
+                      )}
+                      Upload Image
+                  </Button>
+                </TabsContent>
+              </div>
             </Tabs>
           </div>
         </CardContent>
@@ -206,3 +212,5 @@ export default function SetProfilePage() {
     </Card>
   );
 }
+
+    
