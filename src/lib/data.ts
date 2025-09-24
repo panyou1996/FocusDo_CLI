@@ -69,7 +69,7 @@ export const blogPosts: BlogPost[] = [
       name: 'Jane Doe',
       avatarUrl: 'placeholder_avatar_1',
     },
-    date: '8/16, Wed',
+    date: '8/16/2023',
     readingTime: 5,
     content: `
 <p>In today's fast-paced digital world, mastering productivity is more than a skill—it's a necessity for personal and professional success. The constant influx of notifications, emails, and social media updates can easily derail our focus, leaving us feeling overwhelmed and unproductive. However, with the right strategies, it's possible to reclaim control over your time and attention.</p>
@@ -94,7 +94,7 @@ export const blogPosts: BlogPost[] = [
       name: 'John Smith',
       avatarUrl: 'placeholder_avatar_2',
     },
-    date: '9/5, Tue',
+    date: '9/5/2023',
     readingTime: 3,
     content: '<p>Content for the blog post about digital minimalism...</p>'
   },

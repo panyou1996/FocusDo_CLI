@@ -50,10 +50,11 @@ export default function BlogNewPage() {
       return;
     }
     
-    const today = new Date();
-    const dateString = today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
-    const dayString = today.toLocaleDateString('en-US', { weekday: 'short' }).replace('.', '');
-    const formattedDate = `${dateString}, ${dayString}`;
+    const formattedDate = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    });
 
     const newPost = {
       id: String(Date.now()),
