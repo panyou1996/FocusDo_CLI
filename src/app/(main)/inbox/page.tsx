@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Inbox as InboxIcon, Filter, Plus, ChevronLeft, ChevronRight, type Icon as LucideIcon } from "lucide-react";
+import { Inbox as InboxIcon, Filter, Plus, ChevronLeft, ChevronRight, type Icon as LucideIcon, List } from "lucide-react";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -55,7 +55,7 @@ const TaskGroup = ({ title, tasks, status, ...props }: { title: string, tasks: T
 
 export default function InboxPage() {
   const { tasks, updateTask, deleteTask, lists } = useAppContext();
-  const [selectedList, setSelectedList] = React.useState(lists[0]?.id || '');
+  const [selectedList, setSelectedList] = React.useState('all');
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });
   const [isClient, setIsClient] = React.useState(false);
@@ -63,10 +63,7 @@ export default function InboxPage() {
   
   React.useEffect(() => {
     setIsClient(true);
-    if(lists.length > 0 && !selectedList){
-        setSelectedList(lists[0].id);
-    }
-  }, [lists, selectedList]);
+  }, []);
   
   const tasksForSelectedDate = React.useMemo(() => {
     if (!date || !isClient) return [];
@@ -121,9 +118,11 @@ export default function InboxPage() {
   };
 
   React.useEffect(() => {
-    if(!isClient || !selectedList) return;
+    if(!isClient) return;
 
-    const filteredTasks = tasks.filter(task => task.listId === selectedList);
+    const filteredTasks = selectedList === 'all'
+      ? tasks
+      : tasks.filter(task => task.listId === selectedList);
 
     const groupAndSortTasks = (tasksToSort: Task[]) => {
       const now = new Date();
@@ -192,7 +191,9 @@ export default function InboxPage() {
       );
     }
 
-    if (tasks.filter(t => t.listId === selectedList).length === 0) {
+    const tasksToShow = selectedList === 'all' ? tasks : tasks.filter(t => t.listId === selectedList);
+
+    if (tasksToShow.length === 0) {
         return <p className="text-muted-foreground text-center py-10">No tasks in this list.</p>;
     }
 
@@ -231,6 +232,18 @@ export default function InboxPage() {
         <TabsContent value="lists" className="mt-4">
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex gap-2 px-5 py-2">
+               <button
+                  onClick={() => setSelectedList('all')}
+                  className={cn(
+                    "inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9",
+                    selectedList === 'all'
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground bg-secondary"
+                  )}
+                >
+                  <List className="w-4 h-4" />
+                  <span>All</span>
+                </button>
               {lists.map((list) => {
                 const ListIcon = getIcon(list.icon as string);
                 const isSelected = selectedList === list.id;
@@ -307,3 +320,4 @@ export default function InboxPage() {
     </div>
   );
 }
+
