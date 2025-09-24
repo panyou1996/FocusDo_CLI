@@ -13,13 +13,12 @@ import { CheckCircle, RefreshCw, Upload, Wand2, Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ParticleLoader } from '@/components/common/ParticleLoader';
 
 const avatarStyles = [
   'adventurer', 'big-ears', 'bottts', 'miniavs', 'open-peeps', 'pixel-art'
 ];
 
-function generateRandomAvatars(count = 6) {
+function generateRandomAvatars(count = 5) {
     const avatars = [];
     for (let i = 0; i < count; i++) {
         const style = avatarStyles[Math.floor(Math.random() * avatarStyles.length)];
@@ -65,11 +64,11 @@ export default function SetProfilePage() {
   const handleGenerateAvatar = async () => {
     if (!aiPrompt) return;
     setIsGenerating(true);
-    setActiveTab('generate');
     try {
       const result = await generateAvatar(aiPrompt);
       const svgDataUrl = `data:image/svg+xml;base64,${btoa(result.svgContent)}`;
       setSelectedAvatarUrl(svgDataUrl);
+      setActiveTab('generate'); // Keep tab active to show result implicitly on main avatar
     } catch (error) {
       console.error("Error generating avatar:", error);
       alert("Could not generate avatar. Please try again.");
@@ -91,6 +90,7 @@ export default function SetProfilePage() {
         const result = reader.result as string;
         setSelectedAvatarUrl(result);
         setIsUploading(false);
+        setActiveTab('upload');
       };
       reader.readAsDataURL(file);
     }
@@ -131,10 +131,10 @@ export default function SetProfilePage() {
                 <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
                 <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
               </TabsList>
-               <div className='min-h-[140px] flex flex-col justify-center py-2'>
+               <div className='py-2 flex flex-col justify-center min-h-[90px]'>
                 <TabsContent value="select" className="relative m-0">
-                  <div className="grid grid-cols-3 gap-4">
-                    {selectableAvatars.slice(0, 3).map((avatarUrl, index) => (
+                  <div className="grid grid-cols-5 gap-2">
+                    {selectableAvatars.map((avatarUrl, index) => (
                       <div
                         key={index}
                         className="relative cursor-pointer"
@@ -143,22 +143,22 @@ export default function SetProfilePage() {
                         <img
                           src={avatarUrl}
                           alt="Selectable Avatar"
-                          width={80}
-                          height={80}
+                          width={56}
+                          height={56}
                           className={cn(
-                            "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-20 h-20",
+                            "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-14 h-14",
                             selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
                           )}
                         />
                         {selectedAvatarUrl === avatarUrl && (
-                          <div className="absolute top-[-4px] right-1 bg-primary text-primary-foreground rounded-full p-1">
-                            <CheckCircle className="w-4 h-4" />
+                          <div className="absolute top-[-4px] right-[-2px] bg-primary text-primary-foreground rounded-full p-0.5">
+                            <CheckCircle className="w-3 h-3" />
                           </div>
                         )}
                       </div>
                     ))}
                   </div>
-                  <Button variant="outline" size="icon" className="absolute top-0 right-0 h-9 w-9" onClick={handleRandomizeAvatars} type="button">
+                  <Button variant="outline" size="icon" className="absolute top-1/2 -translate-y-1/2 right-0 h-8 w-8" onClick={handleRandomizeAvatars} type="button">
                       <RefreshCw className="w-4 h-4"/>
                   </Button>
                 </TabsContent>

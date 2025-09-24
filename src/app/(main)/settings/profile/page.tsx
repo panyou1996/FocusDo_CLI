@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
-import { ParticleLoader } from '@/components/common/ParticleLoader';
 
 
 const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
@@ -24,7 +23,7 @@ const avatarStyles = [
   'adventurer', 'big-ears', 'bottts', 'miniavs', 'open-peeps', 'pixel-art'
 ];
 
-function generateRandomAvatars(count = 6) {
+function generateRandomAvatars(count = 5) {
     const avatars = [];
     for (let i = 0; i < count; i++) {
         const style = avatarStyles[Math.floor(Math.random() * avatarStyles.length)];
@@ -77,11 +76,11 @@ export default function ProfilePage() {
     const handleGenerateAvatar = async () => {
         if (!aiPrompt) return;
         setIsGenerating(true);
-        setActiveTab('generate');
         try {
             const result = await generateAvatar(aiPrompt);
             const svgDataUrl = `data:image/svg+xml;base64,${btoa(result.svgContent)}`;
             setSelectedAvatarUrl(svgDataUrl);
+            setActiveTab('generate');
         } catch (error) {
             console.error("Error generating avatar:", error);
             alert("Could not generate avatar. Please try again.");
@@ -94,8 +93,6 @@ export default function ProfilePage() {
         fileInputRef.current?.click();
     };
 
-
-
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
@@ -105,6 +102,7 @@ export default function ProfilePage() {
                 const result = reader.result as string;
                 setSelectedAvatarUrl(result);
                 setIsUploading(false);
+                setActiveTab('upload');
             };
             reader.readAsDataURL(file);
         }
@@ -164,9 +162,9 @@ export default function ProfilePage() {
                             <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
                             <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
                         </TabsList>
-                        <div className='min-h-[220px] flex flex-col justify-center py-2'>
+                        <div className='py-2 flex flex-col justify-center min-h-[90px]'>
                             <TabsContent value="select" className="relative m-0">
-                                <div className="grid grid-cols-3 gap-y-4 gap-x-2">
+                                <div className="grid grid-cols-5 gap-2">
                                     {selectableAvatars.map((avatarUrl, index) => (
                                         <div
                                         key={index}
@@ -176,38 +174,26 @@ export default function ProfilePage() {
                                         <img
                                             src={avatarUrl}
                                             alt="Selectable Avatar"
-                                            width={80}
-                                            height={80}
+                                            width={56}
+                                            height={56}
                                             className={cn(
-                                            "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-[80px] h-[80px]",
-                                            selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
+                                                "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-14 h-14",
+                                                selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
                                             )}
                                         />
                                         {selectedAvatarUrl === avatarUrl && (
-                                            <div className="absolute top-[-4px] right-1 bg-primary text-primary-foreground rounded-full p-1">
-                                            <CheckCircle className="w-4 h-4" />
+                                            <div className="absolute top-[-4px] right-[-2px] bg-primary text-primary-foreground rounded-full p-0.5">
+                                                <CheckCircle className="w-3 h-3" />
                                             </div>
                                         )}
                                         </div>
                                     ))}
                                 </div>
-                                <Button variant="outline" size="icon" className="absolute top-0 right-0 h-9 w-9" onClick={handleRandomizeAvatars} type="button">
+                                <Button variant="outline" size="icon" className="absolute top-1/2 -translate-y-1/2 right-0 h-8 w-8" onClick={handleRandomizeAvatars} type="button">
                                     <RefreshCw className="w-4 h-4"/>
                                 </Button>
                             </TabsContent>
-                            <TabsContent value="generate" className='m-0 space-y-4'>
-                                <div className='h-[120px] bg-secondary rounded-lg flex items-center justify-center overflow-hidden'>
-                                    {isGenerating ? (
-                                    <ParticleLoader />
-                                    ) : selectedAvatarUrl && activeTab === 'generate' ? (
-                                    <Avatar className="w-24 h-24">
-                                        <AvatarImage src={selectedAvatarUrl} />
-                                        <AvatarFallback>?</AvatarFallback>
-                                    </Avatar>
-                                    ) : (
-                                        <Wand2 className='w-10 h-10 text-muted-foreground'/>
-                                    )}
-                                </div>
+                            <TabsContent value="generate" className='m-0'>
                                 <div className='flex gap-2 items-center'>
                                     <Input 
                                         placeholder='e.g., a happy robot'
@@ -220,7 +206,7 @@ export default function ProfilePage() {
                                     </Button>
                                 </div>
                             </TabsContent>
-                           <TabsContent value="upload" className='m-0 flex flex-col items-center justify-center'>
+                           <TabsContent value="upload" className='m-0'>
                                 <input
                                     type="file"
                                     ref={fileInputRef}
