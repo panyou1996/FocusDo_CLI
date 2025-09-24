@@ -32,7 +32,7 @@ export default function ProfilePage() {
             setName(currentUser.name);
             setSelectedAvatarUrl(currentUser.avatarUrl);
         }
-    }, []); // Empty dependency array ensures this runs only once on mount
+    }, []); 
 
     const selectableAvatars = PlaceHolderImages.filter(img => img.id.startsWith('selectable_avatar_'));
 
@@ -49,7 +49,7 @@ export default function ProfilePage() {
         return (
             <div className="px-5">
                 <header className="pt-10 pb-4 h-[100px] flex justify-between items-center">
-                    <Skeleton className="h-10 w-10" />
+                    <Skeleton className="h-10 w-10 rounded-full" />
                     <Skeleton className="h-8 w-32" />
                     <div className="w-10"></div>
                 </header>
@@ -57,7 +57,26 @@ export default function ProfilePage() {
                     <Skeleton className="w-24 h-24 rounded-full mb-4" />
                     <Skeleton className="h-8 w-40" />
                 </div>
-                <Skeleton className="h-64 w-full" />
+                <SettingsGroupLabel>Edit Profile</SettingsGroupLabel>
+                <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
+                  <CardContent className="p-0 space-y-6">
+                      <div className="space-y-2">
+                          <Skeleton className="h-4 w-20" />
+                          <Skeleton className="h-10 w-full" />
+                      </div>
+                      <div className="space-y-2">
+                          <Skeleton className="h-4 w-24" />
+                          <div className="grid grid-cols-6 gap-4">
+                              {Array.from({ length: 6 }).map((_, i) => (
+                                  <Skeleton key={i} className="h-16 w-16 rounded-full" />
+                              ))}
+                          </div>
+                      </div>
+                  </CardContent>
+                </Card>
+                 <div className="mt-8">
+                     <Skeleton className="h-[50px] w-full rounded-md" />
+                </div>
             </div>
         );
     }
@@ -77,7 +96,7 @@ export default function ProfilePage() {
                     <AvatarImage src={selectedAvatarUrl || currentUser.avatarUrl} alt={name} />
                     <AvatarFallback>{name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <h2 className="text-2xl font-bold">{name || 'Loading...'}</h2>
+                <h2 className="text-2xl font-bold">{name || '...'}</h2>
             </div>
             
             <SettingsGroupLabel>Edit Profile</SettingsGroupLabel>
