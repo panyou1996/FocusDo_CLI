@@ -64,23 +64,29 @@ export default function InboxPage() {
   React.useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const filteredTasksByList = React.useMemo(() => {
+    if (!isClient) return [];
+    if (selectedList === 'all') return tasks;
+    return tasks.filter(task => task.listId === selectedList);
+  }, [tasks, selectedList, isClient]);
   
   const tasksForSelectedDate = React.useMemo(() => {
     if (!date || !isClient) return [];
     const formattedDate = format(date, 'yyyy-MM-dd');
-    return tasks.filter(task => task.dueDate === formattedDate);
-  }, [date, tasks, isClient]);
+    return filteredTasksByList.filter(task => task.dueDate === formattedDate);
+  }, [date, filteredTasksByList, isClient]);
 
   const tasksPerDay = React.useMemo(() => {
     if (!isClient) return {};
     const counts: { [key: string]: number } = {};
-    tasks.forEach(task => {
+    filteredTasksByList.forEach(task => {
       if (task.dueDate) {
         counts[task.dueDate] = (counts[task.dueDate] || 0) + 1;
       }
     });
     return counts;
-  }, [tasks, isClient]);
+  }, [filteredTasksByList, isClient]);
 
 
   const handleDeleteTask = (taskId: string) => {
@@ -119,10 +125,6 @@ export default function InboxPage() {
 
   React.useEffect(() => {
     if(!isClient) return;
-
-    const filteredTasks = selectedList === 'all'
-      ? tasks
-      : tasks.filter(task => task.listId === selectedList);
 
     const groupAndSortTasks = (tasksToSort: Task[]) => {
       const now = new Date();
@@ -164,8 +166,8 @@ export default function InboxPage() {
       };
     };
 
-    setGroupedTasks(groupAndSortTasks(filteredTasks));
-  }, [tasks, selectedList, isClient]);
+    setGroupedTasks(groupAndSortTasks(filteredTasksByList));
+  }, [filteredTasksByList, isClient]);
   
 
   const { expired, upcoming, done } = groupedTasks;
@@ -191,9 +193,7 @@ export default function InboxPage() {
       );
     }
 
-    const tasksToShow = selectedList === 'all' ? tasks : tasks.filter(t => t.listId === selectedList);
-
-    if (tasksToShow.length === 0) {
+    if (filteredTasksByList.length === 0) {
         return <p className="text-muted-foreground text-center py-10">No tasks in this list.</p>;
     }
 
@@ -228,52 +228,53 @@ export default function InboxPage() {
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
           </TabsList>
         </div>
-
-        <TabsContent value="lists" className="mt-4">
-          <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex gap-2 px-5 py-2">
-               <button
-                  onClick={() => setSelectedList('all')}
+        
+        <ScrollArea className="w-full whitespace-nowrap mt-4">
+          <div className="flex gap-2 px-5 py-2">
+              <button
+                onClick={() => setSelectedList('all')}
+                className={cn(
+                  "inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9",
+                  selectedList === 'all'
+                    ? "bg-primary text-primary-foreground"
+                    : "text-foreground bg-secondary"
+                )}
+              >
+                <List className="w-4 h-4" />
+                <span>All</span>
+              </button>
+            {lists.map((list) => {
+              const ListIcon = getIcon(list.icon as string);
+              const isSelected = selectedList === list.id;
+              return (
+                <button
+                  key={list.id}
+                  onClick={() => setSelectedList(list.id)}
                   className={cn(
                     "inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9",
-                    selectedList === 'all'
-                      ? "bg-primary text-primary-foreground"
+                    isSelected
+                      ? "text-white"
                       : "text-foreground bg-secondary"
                   )}
+                  style={{
+                    backgroundColor: isSelected ? list.color : undefined,
+                  }}
                 >
-                  <List className="w-4 h-4" />
-                  <span>All</span>
+                  <ListIcon className="w-4 h-4" />
+                  <span>{list.name}</span>
                 </button>
-              {lists.map((list) => {
-                const ListIcon = getIcon(list.icon as string);
-                const isSelected = selectedList === list.id;
-                return (
-                  <button
-                    key={list.id}
-                    onClick={() => setSelectedList(list.id)}
-                    className={cn(
-                      "inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9",
-                      isSelected
-                        ? "text-white"
-                        : "text-foreground bg-secondary"
-                    )}
-                    style={{
-                      backgroundColor: isSelected ? list.color : undefined,
-                    }}
-                  >
-                    <ListIcon className="w-4 h-4" />
-                    <span>{list.name}</span>
-                  </button>
-                );
-              })}
-              <Link href="/add-list">
-                <Button size="icon" variant="secondary" className="rounded-full w-9 h-9 flex-shrink-0">
-                  <Plus className="w-5 h-5" />
-                </Button>
-              </Link>
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+              );
+            })}
+            <Link href="/add-list">
+              <Button size="icon" variant="secondary" className="rounded-full w-9 h-9 flex-shrink-0">
+                <Plus className="w-5 h-5" />
+              </Button>
+            </Link>
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+
+        <TabsContent value="lists">
           {renderListContent()}
         </TabsContent>
 
@@ -306,7 +307,6 @@ export default function InboxPage() {
                 if (!list) return null;
                 const ListIcon = getIcon(list.icon as string);
                 
-                // Simplified status logic for calendar view
                 const status = task.isCompleted ? 'done' : 'upcoming';
                 
                 return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} {...cardProps} status={status} />;
