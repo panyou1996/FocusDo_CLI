@@ -318,9 +318,10 @@ export default function InboxPage() {
     if (!isClient) {
       return (
         <div className="space-y-4 px-5 mt-4">
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-16 w-full rounded-2xl" />
+          <Skeleton className="h-16 w-full rounded-2xl" />
+          <Skeleton className="h-16 w-full rounded-2xl" />
+          <Skeleton className="h-16 w-full rounded-2xl" />
         </div>
       );
     }
@@ -471,7 +472,7 @@ export default function InboxPage() {
           <div className="space-y-3 px-5 mt-4">
             {!isClient ? (
               <div className="space-y-3">
-                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-16 w-full rounded-2xl" />
               </div>
             ) : tasksForSelectedDate.length > 0 ? (
               tasksForSelectedDate.map(task => {

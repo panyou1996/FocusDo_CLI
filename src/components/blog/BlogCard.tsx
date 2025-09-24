@@ -24,7 +24,7 @@ export function BlogCard({ post, list }: BlogCardProps) {
 
   return (
     <Link href={`/blog/${post.slug}`} className="block">
-      <Card className="rounded-2xl shadow-soft border-none overflow-hidden">
+      <Card className="rounded-2xl shadow-soft border-none overflow-hidden transition-all duration-300 ease-in-out">
         {imageUrl ? (
           <CardHeader className="p-0">
             <div className="relative w-full h-[180px]">
@@ -49,11 +49,9 @@ export function BlogCard({ post, list }: BlogCardProps) {
           <p className="text-[15px] text-muted-foreground line-clamp-3 mb-3">{post.excerpt}</p>
           <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
              {list && ListIcon && (
-                <>
-                    <ListIcon className="w-4 h-4" style={{color: list.color}} />
-                    <span>&bull;</span>
-                </>
+                <ListIcon className="w-4 h-4" style={{color: list.color}} />
              )}
+             {list && ListIcon && <span>&bull;</span>}
             <span>{post.date}</span>
             <span>&bull;</span>
             <span>{post.readingTime} min read</span>

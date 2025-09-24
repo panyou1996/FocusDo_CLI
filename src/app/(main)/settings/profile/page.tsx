@@ -115,18 +115,20 @@ export default function ProfilePage() {
     };
 
     const renderLoadingState = () => (
-      <div className="px-5 py-4 space-y-6">
+      <div className="p-4 space-y-6">
         <div className="flex flex-col items-center">
           <Skeleton className="w-24 h-24 rounded-full mb-4" />
         </div>
         <div className="space-y-2">
           <Skeleton className="h-4 w-20" />
-          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full rounded-md" />
         </div>
         <div className="space-y-2">
           <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-20 w-full mt-2" />
+          <Skeleton className="h-10 w-full rounded-md" />
+          <div className="pt-2 flex flex-col justify-center min-h-[90px]">
+            <Skeleton className="h-14 w-full rounded-md" />
+          </div>
         </div>
       </div>
     )

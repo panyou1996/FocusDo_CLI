@@ -378,7 +378,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
       </div>
 
       {cardIsExpanded && (
-        <div className="px-4 pb-4 pl-[4.25rem] space-y-3 animate-accordion-down">
+        <div className="px-4 pb-4 pl-[4.25rem] space-y-3 overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
           <DetailRow 
               icon={FileText}
               label="Description"

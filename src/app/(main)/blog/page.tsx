@@ -169,10 +169,10 @@ export default function BlogPage() {
 
       <div className="space-y-4 mt-4">
         {!isClient ? (
-            <>
-              <Skeleton className="h-[320px] w-full rounded-2xl" />
-              <Skeleton className="h-[320px] w-full rounded-2xl" />
-            </>
+            <div className="space-y-4">
+              <Skeleton className="h-[280px] w-full rounded-2xl" />
+              <Skeleton className="h-[280px] w-full rounded-2xl" />
+            </div>
         ) : filteredBlogPosts.length > 0 ? (
           filteredBlogPosts.map((post) => {
             const list = lists.find(l => l.id === post.listId);
