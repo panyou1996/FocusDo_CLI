@@ -13,6 +13,7 @@ export type Task = {
   isFixed?: boolean;
   subtasks?: Subtask[];
   description?: string;
+  createdAt: string;
 };
 
 export type Subtask = {

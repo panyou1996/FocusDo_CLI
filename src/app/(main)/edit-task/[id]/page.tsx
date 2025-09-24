@@ -74,7 +74,7 @@ export default function EditTaskPage() {
             return;
         }
         
-        const updatedTask: Partial<Task> = {
+        const updatedTask: Partial<Omit<Task, 'createdAt'>> = { // `createdAt` should not be updated
             title,
             description,
             isImportant,

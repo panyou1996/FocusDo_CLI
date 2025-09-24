@@ -21,7 +21,8 @@ export const tasks: Task[] = [
     subtasks: [
       { id: 'sub1-1', title: 'Review data', isCompleted: true },
       { id: 'sub1-2', title: 'Write summary', isCompleted: false },
-    ]
+    ],
+    createdAt: '2025-09-20T10:00:00.000Z',
   },
   {
     id: '2',
@@ -31,6 +32,7 @@ export const tasks: Task[] = [
     startTime: '17:00',
     isImportant: false,
     isMyDay: true,
+    createdAt: '2025-09-22T11:00:00.000Z',
   },
   {
     id: '3',
@@ -38,6 +40,7 @@ export const tasks: Task[] = [
     listId: 'study',
     isCompleted: true,
     isImportant: false,
+    createdAt: '2025-09-23T12:00:00.000Z',
   },
   {
     id: '4',
@@ -48,6 +51,7 @@ export const tasks: Task[] = [
     duration: 30,
     isImportant: true,
     isMyDay: true,
+    createdAt: '2025-09-24T13:00:00.000Z',
   },
   {
     id: '5',
@@ -55,6 +59,7 @@ export const tasks: Task[] = [
     listId: 'personal',
     isCompleted: false,
     isImportant: true,
+    createdAt: '2025-09-25T14:00:00.000Z',
   },
 ];
 

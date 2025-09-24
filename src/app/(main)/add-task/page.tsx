@@ -79,6 +79,7 @@ export default function AddTaskPage() {
             isCompleted: false,
             isMyDay: true,
             listId: selectedListId,
+            createdAt: new Date().toISOString(),
         };
 
         addTask(newTask);

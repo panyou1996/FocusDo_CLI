@@ -95,7 +95,7 @@ export default function InboxPage() {
   // Filter and Sort States from localStorage
   const [filterStatus, setFilterStatus] = useLocalStorage<'all' | 'incomplete' | 'completed'>('inbox-filter-status', 'all');
   const [filterImportance, setFilterImportance] = useLocalStorage<'all' | 'important' | 'not-important'>('inbox-filter-importance', 'all');
-  const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance'>('inbox-sort-by', 'default');
+  const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance' | 'creationDate'>('inbox-sort-by', 'default');
 
 
   React.useEffect(() => {
@@ -136,6 +136,8 @@ export default function InboxPage() {
       });
     } else if (sortBy === 'importance') {
       sorted.sort((a, b) => (b.isImportant ? 1 : 0) - (a.isImportant ? 1 : 0));
+    } else if (sortBy === 'creationDate') {
+      sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
 
     return sorted;

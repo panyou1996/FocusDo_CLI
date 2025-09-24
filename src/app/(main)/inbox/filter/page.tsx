@@ -17,7 +17,7 @@ export default function FilterPage() {
 
     const [filterStatus, setFilterStatus] = useLocalStorage<'all' | 'incomplete' | 'completed'>('inbox-filter-status', 'all');
     const [filterImportance, setFilterImportance] = useLocalStorage<'all' | 'important' | 'not-important'>('inbox-filter-importance', 'all');
-    const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance'>('inbox-sort-by', 'default');
+    const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance' | 'creationDate'>('inbox-sort-by', 'default');
     
     // Temporary states to avoid instant updates on the underlying page
     const [tempFilterStatus, setTempFilterStatus] = React.useState(filterStatus);
@@ -77,10 +77,11 @@ export default function FilterPage() {
                     <Card className="rounded-2xl shadow-soft border-none p-4 flex-shrink-0">
                         <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
                         <Tabs value={tempSortBy} onValueChange={(value) => setTempSortBy(value as any)}>
-                            <TabsList className="grid w-full grid-cols-3">
-                                <TabsTrigger value="default">Default</TabsTrigger>
+                            <TabsList className="grid w-full grid-cols-4">
+                                <TabsTrigger value="default">By Time</TabsTrigger>
                                 <TabsTrigger value="dueDate">Due Date</TabsTrigger>
                                 <TabsTrigger value="importance">Importance</TabsTrigger>
+                                <TabsTrigger value="creationDate">Created Time</TabsTrigger>
                             </TabsList>
                         </Tabs>
                     </Card>
