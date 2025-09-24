@@ -2,9 +2,8 @@
 "use client";
 
 import * as React from "react";
-import { Sun, SlidersHorizontal, Wand2 } from "lucide-react";
+import { Sun, SlidersHorizontal, Wand2, type Icon as LucideIcon } from "lucide-react";
 import { TaskCard } from "@/components/tasks/TaskCard";
-import { lists } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { Task } from "@/lib/types";
@@ -12,6 +11,8 @@ import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import * as Icons from 'lucide-react';
+
 
 interface GroupedTasks {
   expired: Task[];
@@ -19,7 +20,17 @@ interface GroupedTasks {
   done: Task[];
 }
 
+const getIcon = (iconName: string): LucideIcon => {
+    const icon = (Icons as any)[iconName];
+    if (icon) {
+        return icon;
+    }
+    return Icons.HelpCircle; // Fallback icon
+};
+
+
 const TaskGroup = ({ title, tasks, ...props }: { title: string; tasks: Task[]; [key: string]: any }) => {
+  const { lists } = useAppContext();
   if (tasks.length === 0) return null;
   return (
     <div>
@@ -28,7 +39,8 @@ const TaskGroup = ({ title, tasks, ...props }: { title: string; tasks: Task[]; [
         {tasks.map((task) => {
           const list = lists.find((l) => l.id === task.listId);
           if (!list) return null;
-          return <TaskCard key={task.id} task={task} list={list} {...props} />;
+          const ListIcon = getIcon(list.icon as string);
+          return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} {...props} />;
         })}
       </div>
     </div>

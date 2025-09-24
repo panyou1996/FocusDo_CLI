@@ -2,8 +2,8 @@
 'use client';
 
 import * as React from 'react';
-import type { Task, BlogPost, Author } from '@/lib/types';
-import { tasks as initialTasks, blogPosts as initialBlogPosts } from '@/lib/data';
+import type { Task, BlogPost, Author, TaskList } from '@/lib/types';
+import { tasks as initialTasks, blogPosts as initialBlogPosts, lists as initialLists } from '@/lib/data';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from 'next-themes';
 import { themes } from '@/lib/themes';
@@ -22,6 +22,8 @@ interface AppContextType {
   setTheme: (theme: string) => void;
   mode: string | undefined;
   setMode: (mode: 'light' | 'dark') => void;
+  lists: TaskList[];
+  addList: (list: TaskList) => void;
 }
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
@@ -35,6 +37,7 @@ const defaultUser: Author = {
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('tasks', initialTasks);
   const [blogPosts, setBlogPosts] = useLocalStorage<BlogPost[]>('blogPosts', initialBlogPosts);
+  const [lists, setLists] = useLocalStorage<TaskList[]>('lists', initialLists);
   const [currentUser, setCurrentUser] = useLocalStorage<Author>('currentUser', defaultUser);
   const { theme: mode, setTheme: setMode } = useTheme();
   const [colorTheme, setColorTheme] = useLocalStorage<string>('color-theme', 'Default');
@@ -77,6 +80,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const deleteBlogPost = (postId: string) => {
     setBlogPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
   };
+  
+  const addList = (list: TaskList) => {
+    setLists(prevLists => [...prevLists, list]);
+  };
 
   // Ensure that if localStorage had a "null" value, it gets updated to the default user.
   React.useEffect(() => {
@@ -99,7 +106,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setTheme: setColorTheme,
     mode,
     setMode: setMode as (mode: 'light' | 'dark') => void,
-  }), [tasks, blogPosts, currentUser, colorTheme, mode, setMode, setCurrentUser, setColorTheme]);
+    lists,
+    addList,
+  }), [tasks, blogPosts, currentUser, colorTheme, mode, setMode, lists, setCurrentUser, setColorTheme]);
 
 
   return (

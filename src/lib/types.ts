@@ -25,7 +25,7 @@ export type TaskList = {
   id: string;
   name: string;
   color: string; // hex or rgb string
-  icon: ElementType;
+  icon: string | ElementType;
 };
 
 export type Author = {

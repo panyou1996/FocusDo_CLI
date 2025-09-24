@@ -2,8 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Inbox as InboxIcon, Filter, Plus, ChevronLeft, ChevronRight } from "lucide-react";
-import { lists } from "@/lib/data";
+import { Inbox as InboxIcon, Filter, Plus, ChevronLeft, ChevronRight, type Icon as LucideIcon } from "lucide-react";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,8 @@ import { useAppContext } from "@/context/AppContext";
 import { format } from 'date-fns';
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+import * as Icons from 'lucide-react';
 
 
 interface GroupedTasks {
@@ -23,7 +24,18 @@ interface GroupedTasks {
   done: Task[];
 }
 
+const getIcon = (iconName: string): LucideIcon => {
+    const icon = (Icons as any)[iconName];
+    if (icon) {
+        return icon;
+    }
+    return Icons.HelpCircle; // Fallback icon
+};
+
+
 const TaskGroup = ({ title, tasks, ...props }: { title: string, tasks: Task[], [key: string]: any }) => {
+  const { lists } = useAppContext();
+
   if (tasks.length === 0) return null;
   return (
     <div>
@@ -32,7 +44,8 @@ const TaskGroup = ({ title, tasks, ...props }: { title: string, tasks: Task[], [
         {tasks.map((task) => {
           const list = lists.find((l) => l.id === task.listId);
           if (!list) return null;
-          return <TaskCard key={task.id} task={task} list={list} {...props} />;
+          const ListIcon = getIcon(list.icon as string);
+          return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} {...props} />;
         })}
       </div>
     </div>
@@ -41,8 +54,8 @@ const TaskGroup = ({ title, tasks, ...props }: { title: string, tasks: Task[], [
 
 
 export default function InboxPage() {
-  const { tasks, updateTask, deleteTask } = useAppContext();
-  const [selectedList, setSelectedList] = React.useState(lists[0].id);
+  const { tasks, updateTask, deleteTask, lists } = useAppContext();
+  const [selectedList, setSelectedList] = React.useState(lists[0]?.id || '');
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });
   const [isClient, setIsClient] = React.useState(false);
@@ -50,7 +63,10 @@ export default function InboxPage() {
   
   React.useEffect(() => {
     setIsClient(true);
-  }, []);
+    if(lists.length > 0 && !selectedList){
+        setSelectedList(lists[0].id);
+    }
+  }, [lists, selectedList]);
   
   const tasksForSelectedDate = React.useMemo(() => {
     if (!date || !isClient) return [];
@@ -105,7 +121,7 @@ export default function InboxPage() {
   };
 
   React.useEffect(() => {
-    if(!isClient) return;
+    if(!isClient || !selectedList) return;
 
     const filteredTasks = tasks.filter(task => task.listId === selectedList);
 
@@ -232,9 +248,11 @@ export default function InboxPage() {
                   {list.name}
                 </button>
               ))}
-              <Button size="icon" variant="secondary" className="rounded-full w-9 h-9 flex-shrink-0">
-                <Plus className="w-5 h-5" />
-              </Button>
+              <Link href="/add-list">
+                <Button size="icon" variant="secondary" className="rounded-full w-9 h-9 flex-shrink-0">
+                  <Plus className="w-5 h-5" />
+                </Button>
+              </Link>
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
@@ -268,7 +286,8 @@ export default function InboxPage() {
               tasksForSelectedDate.map((task) => {
                 const list = lists.find((l) => l.id === task.listId);
                 if (!list) return null;
-                return <TaskCard key={task.id} task={task} list={list} {...cardProps} />;
+                const ListIcon = getIcon(list.icon as string);
+                return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} {...cardProps} />;
               })
             ) : (
               <p className="text-muted-foreground text-center py-4">No tasks for this day.</p>
