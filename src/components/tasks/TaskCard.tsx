@@ -241,7 +241,7 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
             <DetailRow
               icon={ListTree}
               label="Subtasks"
-              value={`${task.subtasks.filter((st) => st.isCompleted).length} of ${task.subtanpmks.length} completed`}
+              value={`${task.subtasks.filter((st) => st.isCompleted).length} of ${task.subtasks.length} completed`}
             />
           )}
         </div>
