@@ -335,7 +335,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                 checked={task.isCompleted}
                 onCheckedChange={() => onToggleCompleted(task.id)}
                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
-                className="w-6 h-6 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
+                className="w-5 h-5 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
                 />
                 
                 {ListIcon && renderListIcon()}
@@ -577,6 +577,8 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
 }
 
 
+
+    
 
     
 
