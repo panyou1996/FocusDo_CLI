@@ -34,6 +34,17 @@ import {
   LeadingActions,
 } from 'react-swipeable-list';
 import 'react-swipeable-list/dist/styles.css';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 
 interface TaskCardProps {
@@ -277,14 +288,32 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
   
   const trailingActions = () => (
     <TrailingActions>
-      <SwipeAction
-        destructive={true}
-        onClick={() => onDelete(task.id)}
-      >
-        <div className="flex items-center justify-center bg-destructive text-destructive-foreground h-full px-5">
-            <Trash2 className="w-5 h-5" />
-        </div>
-      </SwipeAction>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <SwipeAction
+            destructive={true}
+            onClick={(e) => e.preventDefault()}
+          >
+            <div className="flex items-center justify-center bg-destructive text-destructive-foreground h-full px-5">
+                <Trash2 className="w-5 h-5" />
+            </div>
+          </SwipeAction>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the task "{task.title}".
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => onDelete(task.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+      </AlertDialog>
     </TrailingActions>
   );
 
@@ -310,16 +339,10 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
 
 
   return (
-    <SwipeableList destructiveCallbackDelay={300}>
+    <SwipeableList destructiveCallbackDelay={0}>
         <SwipeableListItem
             leadingActions={leadingActions()}
             trailingActions={trailingActions()}
-            onSwipeEnd={(swipeDirection) => {
-                if (swipeDirection === 'left') {
-                   // To give time for destructive animation
-                   setTimeout(() => onDelete(task.id), 300);
-                }
-            }}
         >
             <div
             className="bg-card w-full rounded-2xl shadow-soft transition-all duration-300 ease-in-out"
@@ -358,8 +381,8 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                     )}
                     onClick={(e) => {
                         if(cardIsExpanded) {
-                        e.stopPropagation();
-                        setIsEditingTitle(true)
+                            e.stopPropagation();
+                            setIsEditingTitle(true)
                         }
                     }}
                     >
@@ -575,6 +598,8 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
 }
 
 
+
+    
 
     
 
