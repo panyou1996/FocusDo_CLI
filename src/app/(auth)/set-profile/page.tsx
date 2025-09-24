@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAppContext } from '@/context/AppContext';
 import { cn } from '@/lib/utils';
-import { CheckCircle, RefreshCw, Upload, Wand2, Loader2 } from 'lucide-react';
+import { CheckCircle, RefreshCw, Upload, Wand2, Loader2, Shuffle } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -127,7 +127,7 @@ export default function SetProfilePage() {
             <Label>Choose an Avatar</Label>
             <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="select">
               <TabsList className='grid w-full grid-cols-3'>
-                <TabsTrigger value="select">Select</TabsTrigger>
+                <TabsTrigger value="select"><Shuffle className='w-4 h-4 mr-2'/>Random</TabsTrigger>
                 <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
                 <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
               </TabsList>
@@ -212,5 +212,3 @@ export default function SetProfilePage() {
     </Card>
   );
 }
-
-    

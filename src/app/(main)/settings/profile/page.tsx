@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, CheckCircle, RefreshCw, Wand2, Upload, Loader2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle, RefreshCw, Wand2, Upload, Loader2, Shuffle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -158,7 +158,7 @@ export default function ProfilePage() {
                         <Label>Choose an Avatar</Label>
                          <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="select">
                         <TabsList className='grid w-full grid-cols-3'>
-                            <TabsTrigger value="select">Select</TabsTrigger>
+                            <TabsTrigger value="select"><Shuffle className='w-4 h-4 mr-2'/>Random</TabsTrigger>
                             <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
                             <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
                         </TabsList>
@@ -244,5 +244,3 @@ export default function ProfilePage() {
         </div>
     );
 }
-
-    
