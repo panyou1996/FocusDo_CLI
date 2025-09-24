@@ -291,7 +291,6 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <SwipeAction
-            destructive={true}
             onClick={(e) => e.preventDefault()}
           >
             <div className="flex items-center justify-center bg-destructive text-destructive-foreground h-full px-5">
