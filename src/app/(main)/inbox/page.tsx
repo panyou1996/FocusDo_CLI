@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Inbox as InboxIcon, Filter, Plus, ChevronLeft, ChevronRight, type Icon as LucideIcon, List } from "lucide-react";
+import { Inbox as InboxIcon, Filter, Plus, ChevronLeft, ChevronRight, type Icon as LucideIcon, List, X, Star } from "lucide-react";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,11 @@ import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import * as Icons from 'lucide-react';
-
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface GroupedTasks {
   expired: Task[];
@@ -60,33 +64,71 @@ export default function InboxPage() {
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });
   const [isClient, setIsClient] = React.useState(false);
   const router = useRouter();
-  
+
+  // Filter and Sort States
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false);
+  const [filterStatus, setFilterStatus] = React.useState<'all' | 'incomplete' | 'completed'>('all');
+  const [showImportantOnly, setShowImportantOnly] = React.useState(false);
+  const [sortBy, setSortBy] = React.useState<'default' | 'dueDate' | 'importance'>('default');
+
   React.useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const filteredTasksByList = React.useMemo(() => {
+  const processedTasks = React.useMemo(() => {
     if (!isClient) return [];
-    if (selectedList === 'all') return tasks;
-    return tasks.filter(task => task.listId === selectedList);
-  }, [tasks, selectedList, isClient]);
+    
+    let filtered = tasks;
+
+    // 1. Filter by List
+    if (selectedList !== 'all') {
+      filtered = filtered.filter(task => task.listId === selectedList);
+    }
+    
+    // 2. Filter by Status
+    if (filterStatus === 'incomplete') {
+        filtered = filtered.filter(task => !task.isCompleted);
+    } else if (filterStatus === 'completed') {
+        filtered = filtered.filter(task => task.isCompleted);
+    }
+    
+    // 3. Filter by Importance
+    if (showImportantOnly) {
+        filtered = filtered.filter(task => task.isImportant);
+    }
+
+    // 4. Sort
+    if (sortBy === 'dueDate') {
+      filtered.sort((a, b) => {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      });
+    } else if (sortBy === 'importance') {
+      filtered.sort((a, b) => (b.isImportant ? 1 : 0) - (a.isImportant ? 1 : 0));
+    }
+    
+    return filtered;
+
+  }, [tasks, selectedList, filterStatus, showImportantOnly, sortBy, isClient]);
   
   const tasksForSelectedDate = React.useMemo(() => {
     if (!date || !isClient) return [];
     const formattedDate = format(date, 'yyyy-MM-dd');
-    return filteredTasksByList.filter(task => task.dueDate === formattedDate);
-  }, [date, filteredTasksByList, isClient]);
+    return processedTasks.filter(task => task.dueDate === formattedDate);
+  }, [date, processedTasks, isClient]);
 
   const tasksPerDay = React.useMemo(() => {
     if (!isClient) return {};
     const counts: { [key: string]: number } = {};
-    filteredTasksByList.forEach(task => {
+    const listToCount = selectedList === 'all' ? tasks : tasks.filter(task => task.listId === selectedList);
+    listToCount.forEach(task => {
       if (task.dueDate) {
         counts[task.dueDate] = (counts[task.dueDate] || 0) + 1;
       }
     });
     return counts;
-  }, [filteredTasksByList, isClient]);
+  }, [tasks, selectedList, isClient]);
 
 
   const handleDeleteTask = (taskId: string) => {
@@ -125,6 +167,11 @@ export default function InboxPage() {
 
   React.useEffect(() => {
     if(!isClient) return;
+
+    if (sortBy !== 'default') {
+        setGroupedTasks({ expired: [], upcoming: processedTasks, done: [] });
+        return;
+    }
 
     const groupAndSortTasks = (tasksToSort: Task[]) => {
       const now = new Date();
@@ -166,8 +213,8 @@ export default function InboxPage() {
       };
     };
 
-    setGroupedTasks(groupAndSortTasks(filteredTasksByList));
-  }, [filteredTasksByList, isClient]);
+    setGroupedTasks(groupAndSortTasks(processedTasks));
+  }, [processedTasks, isClient, sortBy]);
   
 
   const { expired, upcoming, done } = groupedTasks;
@@ -193,8 +240,16 @@ export default function InboxPage() {
       );
     }
 
-    if (filteredTasksByList.length === 0) {
-        return <p className="text-muted-foreground text-center py-10">No tasks in this list.</p>;
+    if (processedTasks.length === 0) {
+        return <p className="text-muted-foreground text-center py-10">No tasks match your filters.</p>;
+    }
+
+    if (sortBy !== 'default') {
+        return (
+            <div className="space-y-3 px-5 mt-4">
+                <TaskGroup title="All Tasks" tasks={processedTasks} status="upcoming" {...cardProps} />
+            </div>
+        )
     }
 
     return (
@@ -215,9 +270,66 @@ export default function InboxPage() {
           <h1 className="text-[28px] font-bold text-foreground">Inbox</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
-            <Filter className="w-6 h-6" strokeWidth={1.5} />
-          </Button>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+            <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Filter className="w-6 h-6" strokeWidth={1.5} />
+                </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="rounded-t-2xl">
+              <SheetHeader className="text-center mb-4">
+                <SheetTitle>Filter & Sort</SheetTitle>
+              </SheetHeader>
+              <div className="space-y-6">
+                
+                {/* Filter By */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium text-muted-foreground">FILTER BY</h3>
+                  <div className="bg-secondary/50 rounded-lg p-4 space-y-4">
+                     <div className="flex items-center justify-between">
+                        <Label htmlFor="filter-status" className="text-base flex items-center gap-2">Status</Label>
+                        <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-auto">
+                            <TabsList>
+                                <TabsTrigger value="all">All</TabsTrigger>
+                                <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
+                                <TabsTrigger value="completed">Completed</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                     </div>
+                     <Separator />
+                     <div className="flex items-center justify-between">
+                        <Label htmlFor="show-important" className="text-base flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500"/> Importance</Label>
+                        <Switch id="show-important" checked={showImportantOnly} onCheckedChange={setShowImportantOnly} />
+                     </div>
+                  </div>
+                </div>
+
+                {/* Sort By */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium text-muted-foreground">SORT BY</h3>
+                  <RadioGroup value={sortBy} onValueChange={(value) => setSortBy(value as any)} className="bg-secondary/50 rounded-lg p-4 space-y-2">
+                     <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="default" id="sort-default" />
+                        <Label htmlFor="sort-default" className="text-base font-normal flex-grow">Default</Label>
+                    </div>
+                     <Separator />
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="dueDate" id="sort-due-date" />
+                        <Label htmlFor="sort-due-date" className="text-base font-normal flex-grow">Due Date</Label>
+                    </div>
+                     <Separator />
+                    <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="importance" id="sort-importance" />
+                        <Label htmlFor="sort-importance" className="text-base font-normal flex-grow">Importance</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </div>
+               <SheetFooter className="mt-6">
+                  <Button className="w-full h-12 text-lg" onClick={() => setIsSheetOpen(false)}>Done</Button>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </div>
       </header>
 
@@ -317,3 +429,5 @@ export default function InboxPage() {
     </div>
   );
 }
+
+    
