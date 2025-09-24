@@ -15,6 +15,7 @@ interface AppContextType {
   deleteTask: (taskId: string) => void;
   blogPosts: BlogPost[];
   addBlogPost: (post: BlogPost) => void;
+  deleteBlogPost: (postId: string) => void;
   currentUser: Author;
   setCurrentUser: (user: Author) => void;
   theme: string;
@@ -73,6 +74,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setBlogPosts(prevPosts => [post, ...prevPosts]);
   };
 
+  const deleteBlogPost = (postId: string) => {
+    setBlogPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+  };
+
   // Ensure that if localStorage had a "null" value, it gets updated to the default user.
   React.useEffect(() => {
     if (currentUser === null) {
@@ -87,6 +92,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     deleteTask,
     blogPosts,
     addBlogPost,
+    deleteBlogPost,
     currentUser: currentUser || defaultUser, // Always provide a valid user object
     setCurrentUser,
     theme: colorTheme,

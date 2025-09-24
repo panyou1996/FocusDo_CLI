@@ -1,20 +1,32 @@
 
 "use client";
 
-import { notFound, useParams } from "next/navigation";
+import { notFound, useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Share2 } from "lucide-react";
+import { ArrowLeft, Share2, Trash2 } from "lucide-react";
 import { useAppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as React from "react";
 import type { BlogPost } from "@/lib/types";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function BlogDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const slug = params ? (params.slug as string) : undefined;
-  const { blogPosts } = useAppContext();
+  const { blogPosts, deleteBlogPost } = useAppContext();
   const [post, setPost] = React.useState<BlogPost | undefined | null>(undefined); // undefined: loading, null: not found
 
   React.useEffect(() => {
@@ -24,6 +36,13 @@ export default function BlogDetailPage() {
         setPost(foundPost || null); // Set to the found post, or null if not found
     }
   }, [blogPosts, slug]);
+
+  const handleDelete = () => {
+    if (post) {
+      deleteBlogPost(post.id);
+      router.push("/blog");
+    }
+  };
 
   // Handle loading state
   if (post === undefined) {
@@ -52,9 +71,32 @@ export default function BlogDetailPage() {
             <ArrowLeft className="w-6 h-6" />
           </Button>
         </Link>
-        <Button variant="ghost" size="icon">
-          <Share2 className="w-6 h-6" />
-        </Button>
+        <div className="flex items-center gap-2">
+           <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Trash2 className="w-6 h-6 text-destructive" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete this blog post.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          <Button variant="ghost" size="icon">
+            <Share2 className="w-6 h-6" />
+          </Button>
+        </div>
       </header>
       <article className="px-5">
         <h1 className="text-[30px] font-bold leading-tight mt-6 mb-4">{post.title}</h1>
