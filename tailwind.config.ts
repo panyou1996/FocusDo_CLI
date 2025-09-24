@@ -74,10 +74,30 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "scale-in-from-top-right": {
+            from: { opacity: "0", transform: "scale(0.95) translateY(-6px)", transformOrigin: "top right" },
+            to: { opacity: "1", transform: "scale(1) translateY(0)", transformOrigin: "top right" },
+        },
+        "scale-out-to-top-right": {
+            from: { opacity: "1", transform: "scale(1) translateY(0)", transformOrigin: "top right" },
+            to: { opacity: "0", transform: "scale(0.95) translateY(-6px)", transformOrigin: "top right" },
+        },
+        "scale-in-from-top-left": {
+            from: { opacity: "0", transform: "scale(0.95) translateY(-6px)", transformOrigin: "top left" },
+            to: { opacity: "1", transform: "scale(1) translateY(0)", transformOrigin: "top left" },
+        },
+        "scale-out-to-top-left": {
+            from: { opacity: "1", transform: "scale(1) translateY(0)", transformOrigin: "top left" },
+            to: { opacity: "0", transform: "scale(0.95) translateY(-6px)", transformOrigin: "top left" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "scale-in-from-top-right": "scale-in-from-top-right 0.1s ease-out",
+        "scale-out-to-top-right": "scale-out-to-top-right 0.1s ease-out",
+        "scale-in-from-top-left": "scale-in-from-top-left 0.1s ease-out",
+        "scale-out-to-top-left": "scale-out-to-top-left 0.1s ease-out",
       },
     },
   },
