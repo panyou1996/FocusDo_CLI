@@ -55,7 +55,6 @@ export default function BlogPage() {
   const [isClient, setIsClient] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  // Filter and Sort States from localStorage
   const [selectedList, setSelectedList] = useLocalStorage('blog-selected-list', 'all');
   const [sortBy, setSortBy] = useLocalStorage<SortByType>('blog-sort-by', 'newest');
 
@@ -68,7 +67,6 @@ export default function BlogPage() {
     
     let filtered = blogPosts;
 
-    // 1. Filter by Search Query
     if (searchQuery) {
       filtered = filtered.filter(post => 
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -76,12 +74,10 @@ export default function BlogPage() {
       );
     }
     
-    // 2. Filter by List
     if (selectedList !== 'all') {
       filtered = filtered.filter(post => post.listId === selectedList);
     }
 
-    // 3. Sort
     let sorted = [...filtered];
     if (sortBy === 'oldest') {
       sorted.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -140,43 +136,45 @@ export default function BlogPage() {
         </Link>
       </div>
 
-      <ScrollArea className="w-full whitespace-nowrap -mx-5 px-5">
-        <div className="flex gap-2 py-2">
-          <button
-            onClick={() => setSelectedList('all')}
-            className={cn(
-              'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-              selectedList === 'all'
-                ? 'bg-primary text-primary-foreground'
-                : 'text-foreground bg-secondary'
-            )}
-          >
-            <List className="w-4 h-4" />
-            <span>All</span>
-          </button>
-          {lists.map(list => {
-            const ListIcon = getIcon(list.icon as string);
-            const isSelected = selectedList === list.id;
-            return (
-              <button
-                key={list.id}
-                onClick={() => setSelectedList(list.id)}
-                className={cn(
-                  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                  isSelected ? 'text-white' : 'text-foreground bg-secondary'
-                )}
-                style={{
-                  backgroundColor: isSelected ? list.color : undefined,
-                }}
-              >
-                <ListIcon className="w-4 h-4" />
-                <span>{list.name}</span>
-              </button>
-            );
-          })}
-        </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      <div className="-mx-5">
+        <ScrollArea className="w-full whitespace-nowrap">
+          <div className="flex gap-2 py-2 px-5">
+            <button
+              onClick={() => setSelectedList('all')}
+              className={cn(
+                'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                selectedList === 'all'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground bg-secondary'
+              )}
+            >
+              <List className="w-4 h-4" />
+              <span>All</span>
+            </button>
+            {lists.map(list => {
+              const ListIcon = getIcon(list.icon as string);
+              const isSelected = selectedList === list.id;
+              return (
+                <button
+                  key={list.id}
+                  onClick={() => setSelectedList(list.id)}
+                  className={cn(
+                    'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                    isSelected ? 'text-white' : 'text-foreground bg-secondary'
+                  )}
+                  style={{
+                    backgroundColor: isSelected ? list.color : undefined,
+                  }}
+                >
+                  <ListIcon className="w-4 h-4" />
+                  <span>{list.name}</span>
+                </button>
+              );
+            })}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </div>
 
       <div className="space-y-4 mt-4">
         {!isClient ? (
