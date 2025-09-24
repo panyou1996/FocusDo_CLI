@@ -1,0 +1,97 @@
+
+'use client';
+
+import * as React from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { X, Star } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
+export default function FilterPage() {
+    const router = useRouter();
+
+    const [filterStatus, setFilterStatus] = useLocalStorage<'all' | 'incomplete' | 'completed'>('inbox-filter-status', 'all');
+    const [showImportantOnly, setShowImportantOnly] = useLocalStorage<boolean>('inbox-filter-important', false);
+    const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance'>('inbox-sort-by', 'default');
+    
+    // Temporary states to avoid instant updates on the underlying page
+    const [tempFilterStatus, setTempFilterStatus] = React.useState(filterStatus);
+    const [tempShowImportantOnly, setTempShowImportantOnly] = React.useState(showImportantOnly);
+    const [tempSortBy, setTempSortBy] = React.useState(sortBy);
+
+    const handleDone = () => {
+        setFilterStatus(tempFilterStatus);
+        setShowImportantOnly(tempShowImportantOnly);
+        setSortBy(tempSortBy);
+        router.back();
+    };
+
+    return (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
+            <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
+                <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
+                    <div className="w-10"></div>
+                    <h1 className="text-[17px] font-bold">Filter & Sort</h1>
+                    <Button variant="ghost" size="icon" aria-label="Close" onClick={() => router.back()}>
+                        <X className="w-6 h-6" />
+                    </Button>
+                </header>
+
+                <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
+                    <Card className="rounded-2xl shadow-soft border-none p-4 flex-shrink-0">
+                        <h3 className="text-sm font-medium text-muted-foreground mb-3">FILTER BY</h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="filter-status" className="text-base flex items-center gap-2">Status</Label>
+                                <Tabs value={tempFilterStatus} onValueChange={(value) => setTempFilterStatus(value as any)} className="w-auto">
+                                    <TabsList>
+                                        <TabsTrigger value="all">All</TabsTrigger>
+                                        <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
+                                        <TabsTrigger value="completed">Completed</TabsTrigger>
+                                    </TabsList>
+                                </Tabs>
+                            </div>
+                            <Separator />
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="show-important" className="text-base flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500"/> Importance</Label>
+                                <Switch id="show-important" checked={tempShowImportantOnly} onCheckedChange={setTempShowImportantOnly} />
+                            </div>
+                        </div>
+                    </Card>
+
+                    <Card className="rounded-2xl shadow-soft border-none p-4 flex-shrink-0">
+                        <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
+                         <RadioGroup value={tempSortBy} onValueChange={(value) => setTempSortBy(value as any)} className="space-y-2">
+                             <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="default" id="sort-default" />
+                                <Label htmlFor="sort-default" className="text-base font-normal flex-grow">Default</Label>
+                            </div>
+                             <Separator />
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="dueDate" id="sort-due-date" />
+                                <Label htmlFor="sort-due-date" className="text-base font-normal flex-grow">Due Date</Label>
+                            </div>
+                             <Separator />
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="importance" id="sort-importance" />
+                                <Label htmlFor="sort-importance" className="text-base font-normal flex-grow">Importance</Label>
+                            </div>
+                        </RadioGroup>
+                    </Card>
+                </main>
+
+                <footer className="px-5 py-4 flex-shrink-0 border-t">
+                    <Button className="w-full h-[50px] text-[17px] font-bold rounded-md" onClick={handleDone}>Done</Button>
+                </footer>
+            </div>
+        </div>
+    );
+}
+

@@ -1,26 +1,32 @@
 
-"use client";
+'use client';
 
-import * as React from "react";
-import { Inbox as InboxIcon, Filter, Plus, ChevronLeft, ChevronRight, type Icon as LucideIcon, List, X, Star } from "lucide-react";
-import { TaskCard } from "@/components/tasks/TaskCard";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
-import type { Task } from "@/lib/types";
-import { useAppContext } from "@/context/AppContext";
+import * as React from 'react';
+import {
+  Inbox as InboxIcon,
+  Filter,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  type Icon as LucideIcon,
+  List,
+  X,
+  Star,
+} from 'lucide-react';
+import { TaskCard } from '@/components/tasks/TaskCard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import type { Task } from '@/lib/types';
+import { useAppContext } from '@/context/AppContext';
 import { format } from 'date-fns';
-import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
+import { useRouter } from 'next/navigation';
+import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
 import * as Icons from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface GroupedTasks {
   expired: Task[];
@@ -29,47 +35,69 @@ interface GroupedTasks {
 }
 
 const getIcon = (iconName: string): LucideIcon => {
-    const icon = (Icons as any)[iconName];
-    if (icon) {
-        return icon;
-    }
-    return Icons.HelpCircle; // Fallback icon
+  const icon = (Icons as any)[iconName];
+  if (icon) {
+    return icon;
+  }
+  return Icons.HelpCircle; // Fallback icon
 };
 
-
-const TaskGroup = ({ title, tasks, status, ...props }: { title: string, tasks: Task[], status: 'expired' | 'upcoming' | 'done', [key: string]: any }) => {
+const TaskGroup = ({
+  title,
+  tasks,
+  status,
+  ...props
+}: {
+  title: string;
+  tasks: Task[];
+  status: 'expired' | 'upcoming' | 'done';
+  [key: string]: any;
+}) => {
   const { lists } = useAppContext();
 
   if (tasks.length === 0) return null;
   return (
     <div>
-      <h2 className="text-lg font-semibold text-muted-foreground mb-2 px-1">{title}</h2>
+      <h2 className="text-lg font-semibold text-muted-foreground mb-2 px-1">
+        {title}
+      </h2>
       <div className="space-y-3">
-        {tasks.map((task) => {
-          const list = lists.find((l) => l.id === task.listId);
+        {tasks.map(task => {
+          const list = lists.find(l => l.id === task.listId);
           if (!list) return null;
           const ListIcon = getIcon(list.icon as string);
-          return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} status={status} {...props} />;
+          return (
+            <TaskCard
+              key={task.id}
+              task={task}
+              list={{ ...list, icon: ListIcon }}
+              status={status}
+              {...props}
+            />
+          );
         })}
       </div>
     </div>
   );
 };
 
-
 export default function InboxPage() {
   const { tasks, updateTask, deleteTask, lists } = useAppContext();
-  const [selectedList, setSelectedList] = React.useState('all');
+  const [selectedList, setSelectedList] = useLocalStorage('inbox-selected-list', 'all');
   const [date, setDate] = React.useState<Date | undefined>(new Date());
-  const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });
+  const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({
+    expired: [],
+    upcoming: [],
+    done: [],
+  });
   const [isClient, setIsClient] = React.useState(false);
   const router = useRouter();
 
-  // Filter and Sort States
-  const [isSheetOpen, setIsSheetOpen] = React.useState(false);
-  const [filterStatus, setFilterStatus] = React.useState<'all' | 'incomplete' | 'completed'>('all');
-  const [showImportantOnly, setShowImportantOnly] = React.useState(false);
-  const [sortBy, setSortBy] = React.useState<'default' | 'dueDate' | 'importance'>('default');
+  // Filter and Sort States from localStorage
+  const [filterStatus, setFilterStatus] = useLocalStorage<'all' | 'incomplete' | 'completed'>('inbox-filter-status', 'all');
+  const [showImportantOnly, setShowImportantOnly] = useLocalStorage<boolean>('inbox-filter-important', false);
+  const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance'>('inbox-sort-by', 'default');
+
 
   React.useEffect(() => {
     setIsClient(true);
@@ -77,41 +105,41 @@ export default function InboxPage() {
 
   const processedTasks = React.useMemo(() => {
     if (!isClient) return [];
-    
+
     let filtered = tasks;
 
     // 1. Filter by List
     if (selectedList !== 'all') {
       filtered = filtered.filter(task => task.listId === selectedList);
     }
-    
+
     // 2. Filter by Status
     if (filterStatus === 'incomplete') {
-        filtered = filtered.filter(task => !task.isCompleted);
+      filtered = filtered.filter(task => !task.isCompleted);
     } else if (filterStatus === 'completed') {
-        filtered = filtered.filter(task => task.isCompleted);
+      filtered = filtered.filter(task => task.isCompleted);
     }
-    
+
     // 3. Filter by Importance
     if (showImportantOnly) {
-        filtered = filtered.filter(task => task.isImportant);
+      filtered = filtered.filter(task => task.isImportant);
     }
 
     // 4. Sort
+    let sorted = [...filtered]; // Create a new array for sorting
     if (sortBy === 'dueDate') {
-      filtered.sort((a, b) => {
+      sorted.sort((a, b) => {
         if (!a.dueDate) return 1;
         if (!b.dueDate) return -1;
         return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
       });
     } else if (sortBy === 'importance') {
-      filtered.sort((a, b) => (b.isImportant ? 1 : 0) - (a.isImportant ? 1 : 0));
+      sorted.sort((a, b) => (b.isImportant ? 1 : 0) - (a.isImportant ? 1 : 0));
     }
-    
-    return filtered;
 
+    return sorted;
   }, [tasks, selectedList, filterStatus, showImportantOnly, sortBy, isClient]);
-  
+
   const tasksForSelectedDate = React.useMemo(() => {
     if (!date || !isClient) return [];
     const formattedDate = format(date, 'yyyy-MM-dd');
@@ -121,20 +149,21 @@ export default function InboxPage() {
   const tasksPerDay = React.useMemo(() => {
     if (!isClient) return {};
     const counts: { [key: string]: number } = {};
-    const listToCount = selectedList === 'all' ? tasks : tasks.filter(task => task.listId === selectedList);
-    listToCount.forEach(task => {
+    
+    // The list to count should also respect the filters
+    processedTasks.forEach(task => {
       if (task.dueDate) {
         counts[task.dueDate] = (counts[task.dueDate] || 0) + 1;
       }
     });
     return counts;
-  }, [tasks, selectedList, isClient]);
+  }, [processedTasks, isClient]);
 
 
   const handleDeleteTask = (taskId: string) => {
     deleteTask(taskId);
   };
-  
+
   const handleEditTask = (taskId: string) => {
     router.push(`/edit-task/${taskId}`);
   };
@@ -143,14 +172,13 @@ export default function InboxPage() {
     updateTask(taskId, updatedFields);
   };
 
-
   const handleToggleImportant = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
       updateTask(taskId, { isImportant: !task.isImportant });
     }
   };
-  
+
   const handleToggleMyDay = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
@@ -166,11 +194,15 @@ export default function InboxPage() {
   };
 
   React.useEffect(() => {
-    if(!isClient) return;
+    if (!isClient) return;
 
     if (sortBy !== 'default') {
-        setGroupedTasks({ expired: [], upcoming: processedTasks, done: [] });
-        return;
+      setGroupedTasks({
+        expired: [],
+        upcoming: processedTasks.filter(t => !t.isCompleted),
+        done: processedTasks.filter(t => t.isCompleted),
+      });
+      return;
     }
 
     const groupAndSortTasks = (tasksToSort: Task[]) => {
@@ -184,7 +216,7 @@ export default function InboxPage() {
           done.push(task);
           return;
         }
-        
+
         if (task.startTime) {
           const [hours, minutes] = task.startTime.split(':').map(Number);
           const taskEndTime = new Date(now);
@@ -209,18 +241,17 @@ export default function InboxPage() {
       return {
         expired: expired.sort(sortFn),
         upcoming: upcoming.sort(sortFn),
-        done: done.sort(sortFn)
+        done: done.sort(sortFn),
       };
     };
 
     setGroupedTasks(groupAndSortTasks(processedTasks));
   }, [processedTasks, isClient, sortBy]);
-  
 
   const { expired, upcoming, done } = groupedTasks;
 
   const cardProps = {
-    view: "compact" as const,
+    view: 'compact' as const,
     onDelete: handleDeleteTask,
     onEdit: handleEditTask,
     onUpdate: handleUpdateTask,
@@ -228,7 +259,7 @@ export default function InboxPage() {
     onToggleMyDay: handleToggleMyDay,
     onToggleCompleted: handleToggleCompleted,
   };
-  
+
   const renderListContent = () => {
     if (!isClient) {
       return (
@@ -241,26 +272,54 @@ export default function InboxPage() {
     }
 
     if (processedTasks.length === 0) {
-        return <p className="text-muted-foreground text-center py-10">No tasks match your filters.</p>;
+      return (
+        <p className="text-muted-foreground text-center py-10">
+          No tasks match your filters.
+        </p>
+      );
+    }
+    
+    const tasksToDisplay = sortBy !== 'default' ? [...upcoming, ...done] : [...expired, ...upcoming, ...done];
+
+    if (tasksToDisplay.length === 0) {
+         return (
+            <p className="text-muted-foreground text-center py-10">
+            No tasks match your filters.
+            </p>
+        );
     }
 
     if (sortBy !== 'default') {
-        return (
-            <div className="space-y-3 px-5 mt-4">
-                <TaskGroup title="All Tasks" tasks={processedTasks} status="upcoming" {...cardProps} />
-            </div>
-        )
+      return (
+        <div className="space-y-3 px-5 mt-4">
+          <TaskGroup
+            title={filterStatus === 'completed' ? 'Completed' : 'All Tasks'}
+            tasks={tasksToDisplay}
+            status="upcoming"
+            {...cardProps}
+          />
+        </div>
+      );
     }
 
     return (
       <div className="space-y-6 px-5 mt-4">
-        <TaskGroup title="Expired" tasks={expired} status="expired" {...cardProps} />
-        <TaskGroup title="Upcoming" tasks={upcoming} status="upcoming" {...cardProps} />
+        <TaskGroup
+          title="Expired"
+          tasks={expired}
+          status="expired"
+          {...cardProps}
+        />
+        <TaskGroup
+          title="Upcoming"
+          tasks={upcoming}
+          status="upcoming"
+          {...cardProps}
+        />
         <TaskGroup title="Done" tasks={done} status="done" {...cardProps} />
       </div>
     );
   };
-
 
   return (
     <div className="">
@@ -270,66 +329,11 @@ export default function InboxPage() {
           <h1 className="text-[28px] font-bold text-foreground">Inbox</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Filter className="w-6 h-6" strokeWidth={1.5} />
-                </Button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="rounded-t-2xl mx-auto max-w-lg">
-              <SheetHeader className="text-center mb-4">
-                <SheetTitle>Filter & Sort</SheetTitle>
-              </SheetHeader>
-              <div className="space-y-6">
-                
-                {/* Filter By */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-muted-foreground">FILTER BY</h3>
-                  <div className="bg-secondary/50 rounded-lg p-4 space-y-4">
-                     <div className="flex items-center justify-between">
-                        <Label htmlFor="filter-status" className="text-base flex items-center gap-2">Status</Label>
-                        <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-auto">
-                            <TabsList>
-                                <TabsTrigger value="all">All</TabsTrigger>
-                                <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
-                                <TabsTrigger value="completed">Completed</TabsTrigger>
-                            </TabsList>
-                        </Tabs>
-                     </div>
-                     <Separator />
-                     <div className="flex items-center justify-between">
-                        <Label htmlFor="show-important" className="text-base flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500"/> Importance</Label>
-                        <Switch id="show-important" checked={showImportantOnly} onCheckedChange={setShowImportantOnly} />
-                     </div>
-                  </div>
-                </div>
-
-                {/* Sort By */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-muted-foreground">SORT BY</h3>
-                  <RadioGroup value={sortBy} onValueChange={(value) => setSortBy(value as any)} className="bg-secondary/50 rounded-lg p-4 space-y-2">
-                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="default" id="sort-default" />
-                        <Label htmlFor="sort-default" className="text-base font-normal flex-grow">Default</Label>
-                    </div>
-                     <Separator />
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="dueDate" id="sort-due-date" />
-                        <Label htmlFor="sort-due-date" className="text-base font-normal flex-grow">Due Date</Label>
-                    </div>
-                     <Separator />
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="importance" id="sort-importance" />
-                        <Label htmlFor="sort-importance" className="text-base font-normal flex-grow">Importance</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-              </div>
-               <SheetFooter className="mt-6">
-                  <Button className="w-full h-12 text-lg" onClick={() => setIsSheetOpen(false)}>Done</Button>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
+          <Link href="/inbox/filter">
+            <Button variant="ghost" size="icon">
+              <Filter className="w-6 h-6" strokeWidth={1.5} />
+            </Button>
+          </Link>
         </div>
       </header>
 
@@ -340,22 +344,22 @@ export default function InboxPage() {
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
           </TabsList>
         </div>
-        
+
         <ScrollArea className="w-full whitespace-nowrap mt-4">
           <div className="flex gap-2 px-5 py-2">
-              <button
-                onClick={() => setSelectedList('all')}
-                className={cn(
-                  "inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9",
-                  selectedList === 'all'
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground bg-secondary"
-                )}
-              >
-                <List className="w-4 h-4" />
-                <span>All</span>
-              </button>
-            {lists.map((list) => {
+            <button
+              onClick={() => setSelectedList('all')}
+              className={cn(
+                'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                selectedList === 'all'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground bg-secondary'
+              )}
+            >
+              <List className="w-4 h-4" />
+              <span>All</span>
+            </button>
+            {lists.map(list => {
               const ListIcon = getIcon(list.icon as string);
               const isSelected = selectedList === list.id;
               return (
@@ -363,10 +367,8 @@ export default function InboxPage() {
                   key={list.id}
                   onClick={() => setSelectedList(list.id)}
                   className={cn(
-                    "inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9",
-                    isSelected
-                      ? "text-white"
-                      : "text-foreground bg-secondary"
+                    'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                    isSelected ? 'text-white' : 'text-foreground bg-secondary'
                   )}
                   style={{
                     backgroundColor: isSelected ? list.color : undefined,
@@ -378,7 +380,11 @@ export default function InboxPage() {
               );
             })}
             <Link href="/add-list">
-              <Button size="icon" variant="secondary" className="rounded-full w-9 h-9 flex-shrink-0">
+              <Button
+                size="icon"
+                variant="secondary"
+                className="rounded-full w-9 h-9 flex-shrink-0"
+              >
                 <Plus className="w-5 h-5" />
               </Button>
             </Link>
@@ -386,42 +392,50 @@ export default function InboxPage() {
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
-        <TabsContent value="lists">
-          {renderListContent()}
-        </TabsContent>
+        <TabsContent value="lists">{renderListContent()}</TabsContent>
 
         <TabsContent value="calendar" className="mt-4">
           <div className="px-5">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md border shadow-soft w-full"
-                tasksPerDay={isClient ? tasksPerDay : {}}
-                components={{
-                  IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-                  IconRight: () => <ChevronRight className="h-4 w-4" />,
-                }}
-                disabled={!isClient}
-              />
-            </div>
-            <div className="space-y-3 px-5 mt-4">
-             {!isClient ? (
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+              className="rounded-md border shadow-soft w-full"
+              tasksPerDay={isClient ? tasksPerDay : {}}
+              components={{
+                IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+                IconRight: () => <ChevronRight className="h-4 w-4" />,
+              }}
+              disabled={!isClient}
+            />
+          </div>
+          <div className="space-y-3 px-5 mt-4">
+            {!isClient ? (
               <div className="space-y-3">
                 <Skeleton className="h-20 w-full" />
               </div>
             ) : tasksForSelectedDate.length > 0 ? (
-              tasksForSelectedDate.map((task) => {
-                const list = lists.find((l) => l.id === task.listId);
+              tasksForSelectedDate.map(task => {
+                const list = lists.find(l => l.id === task.listId);
                 if (!list) return null;
                 const ListIcon = getIcon(list.icon as string);
-                
+
                 const status = task.isCompleted ? 'done' : 'upcoming';
-                
-                return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} {...cardProps} status={status} />;
+
+                return (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    list={{ ...list, icon: ListIcon }}
+                    {...cardProps}
+                    status={status}
+                  />
+                );
               })
             ) : (
-              <p className="text-muted-foreground text-center py-4">No tasks for this day.</p>
+              <p className="text-muted-foreground text-center py-4">
+                No tasks for this day.
+              </p>
             )}
           </div>
         </TabsContent>
