@@ -8,7 +8,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from 'next-themes';
 import { themes } from '@/lib/themes';
 
-const UI_SIZES = [14, 15, 16, 17, 18]; // Corresponds to XS, S, M, L, XL
+const UI_SIZES = [10, 12, 14, 16, 18]; // Corresponds to XS, S, M, L, XL
 
 interface AppContextType {
   tasks: Task[];
@@ -45,7 +45,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useLocalStorage<Author>('currentUser', defaultUser);
   const { theme: mode, setTheme: setMode } = useTheme();
   const [colorTheme, setColorTheme] = useLocalStorage<string>('color-theme', 'Default');
-  const [uiSize, setUiSize] = useLocalStorage<number>('ui-size', 2); // Default to M (16px)
+  const [uiSize, setUiSize] = useLocalStorage<number>('ui-size', 2); // Default to M (14px in new scale)
 
   React.useEffect(() => {
     const root = window.document.documentElement;
@@ -63,7 +63,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   React.useEffect(() => {
     const root = window.document.documentElement;
-    const newSize = UI_SIZES[uiSize] || 16;
+    const newSize = UI_SIZES[uiSize] || 14;
     root.style.fontSize = `${newSize}px`;
   }, [uiSize]);
 
