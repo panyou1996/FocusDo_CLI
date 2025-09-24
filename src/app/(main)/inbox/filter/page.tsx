@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { X, Star } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
@@ -16,17 +16,17 @@ export default function FilterPage() {
     const router = useRouter();
 
     const [filterStatus, setFilterStatus] = useLocalStorage<'all' | 'incomplete' | 'completed'>('inbox-filter-status', 'all');
-    const [showImportantOnly, setShowImportantOnly] = useLocalStorage<boolean>('inbox-filter-important', false);
+    const [filterImportance, setFilterImportance] = useLocalStorage<'all' | 'important' | 'not-important'>('inbox-filter-importance', 'all');
     const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance'>('inbox-sort-by', 'default');
     
     // Temporary states to avoid instant updates on the underlying page
     const [tempFilterStatus, setTempFilterStatus] = React.useState(filterStatus);
-    const [tempShowImportantOnly, setTempShowImportantOnly] = React.useState(showImportantOnly);
+    const [tempFilterImportance, setTempFilterImportance] = React.useState(filterImportance);
     const [tempSortBy, setTempSortBy] = React.useState(sortBy);
 
     const handleDone = () => {
         setFilterStatus(tempFilterStatus);
-        setShowImportantOnly(tempShowImportantOnly);
+        setFilterImportance(tempFilterImportance);
         setSortBy(tempSortBy);
         router.back();
     };
@@ -47,7 +47,7 @@ export default function FilterPage() {
                         <h3 className="text-sm font-medium text-muted-foreground mb-3">FILTER BY</h3>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <Label htmlFor="filter-status" className="text-base flex items-center gap-2">Status</Label>
+                                <Label htmlFor="filter-status" className="text-base">Status</Label>
                                 <Tabs value={tempFilterStatus} onValueChange={(value) => setTempFilterStatus(value as any)} className="w-auto">
                                     <TabsList className="grid grid-cols-3">
                                         <TabsTrigger value="all">All</TabsTrigger>
@@ -58,15 +58,16 @@ export default function FilterPage() {
                             </div>
                             <Separator />
                             <div className="flex items-center justify-between">
-                                <Label htmlFor="show-important" className="text-base flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500"/> Importance</Label>
+                                <Label htmlFor="show-important" className="text-base">Importance</Label>
                                 <Tabs
-                                    value={tempShowImportantOnly ? 'important' : 'all'}
-                                    onValueChange={(value) => setTempShowImportantOnly(value === 'important')}
+                                    value={tempFilterImportance}
+                                    onValueChange={(value) => setTempFilterImportance(value as any)}
                                     className="w-auto"
                                 >
-                                    <TabsList className="grid grid-cols-2">
+                                    <TabsList className="grid grid-cols-3">
                                         <TabsTrigger value="all">All</TabsTrigger>
                                         <TabsTrigger value="important">Important</TabsTrigger>
+                                        <TabsTrigger value="not-important">Not Important</TabsTrigger>
                                     </TabsList>
                                 </Tabs>
                             </div>

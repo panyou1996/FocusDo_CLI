@@ -11,7 +11,6 @@ import {
   type Icon as LucideIcon,
   List,
   X,
-  Star,
 } from 'lucide-react';
 import { TaskCard } from '@/components/tasks/TaskCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -95,7 +94,7 @@ export default function InboxPage() {
 
   // Filter and Sort States from localStorage
   const [filterStatus, setFilterStatus] = useLocalStorage<'all' | 'incomplete' | 'completed'>('inbox-filter-status', 'all');
-  const [showImportantOnly, setShowImportantOnly] = useLocalStorage<boolean>('inbox-filter-important', false);
+  const [filterImportance, setFilterImportance] = useLocalStorage<'all' | 'important' | 'not-important'>('inbox-filter-importance', 'all');
   const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance'>('inbox-sort-by', 'default');
 
 
@@ -121,8 +120,10 @@ export default function InboxPage() {
     }
 
     // 3. Filter by Importance
-    if (showImportantOnly) {
+    if (filterImportance === 'important') {
       filtered = filtered.filter(task => task.isImportant);
+    } else if (filterImportance === 'not-important') {
+      filtered = filtered.filter(task => !task.isImportant);
     }
 
     // 4. Sort
@@ -138,7 +139,7 @@ export default function InboxPage() {
     }
 
     return sorted;
-  }, [tasks, selectedList, filterStatus, showImportantOnly, sortBy, isClient]);
+  }, [tasks, selectedList, filterStatus, filterImportance, sortBy, isClient]);
 
   const tasksForSelectedDate = React.useMemo(() => {
     if (!date || !isClient) return [];
@@ -290,10 +291,14 @@ export default function InboxPage() {
     }
 
     if (sortBy !== 'default') {
+      let title = "Tasks";
+      if(filterStatus === 'completed') title = "Completed";
+      if(filterStatus === 'incomplete') title = "Incomplete";
+
       return (
         <div className="space-y-3 px-5 mt-4">
           <TaskGroup
-            title={filterStatus === 'completed' ? 'Completed' : 'All Tasks'}
+            title={title}
             tasks={tasksToDisplay}
             status="upcoming"
             {...cardProps}
