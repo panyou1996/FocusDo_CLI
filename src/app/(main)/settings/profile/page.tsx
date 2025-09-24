@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
-import { ParticleLoader } from '@/components/common/ParticleLoader';
 
 const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
     <p className="px-1 text-[13px] font-regular text-muted-foreground uppercase mt-6 mb-2">{children}</p>
@@ -23,7 +22,7 @@ const avatarStyles = [
   'adventurer', 'big-ears', 'bottts', 'miniavs', 'open-peeps', 'pixel-art'
 ];
 
-function generateRandomAvatars(count = 6) {
+function generateRandomAvatars(count = 3) {
     const avatars = [];
     for (let i = 0; i < count; i++) {
         const style = avatarStyles[Math.floor(Math.random() * avatarStyles.length)];
@@ -43,7 +42,6 @@ export default function ProfilePage() {
     
     const [selectableAvatars, setSelectableAvatars] = React.useState<string[]>([]);
     const [aiPrompt, setAiPrompt] = React.useState('');
-    const [generatedAvatar, setGeneratedAvatar] = React.useState<string | null>(null);
     const [isGenerating, setIsGenerating] = React.useState(false);
     const [isUploading, setIsUploading] = React.useState(false);
     const [isClient, setIsClient] = React.useState(false);
@@ -76,11 +74,9 @@ export default function ProfilePage() {
     const handleGenerateAvatar = async () => {
         if (!aiPrompt) return;
         setIsGenerating(true);
-        setGeneratedAvatar(null);
         try {
             const result = await generateAvatar(aiPrompt);
             const svgDataUrl = `data:image/svg+xml;base64,${btoa(result.svgContent)}`;
-            setGeneratedAvatar(svgDataUrl);
             setSelectedAvatarUrl(svgDataUrl);
         } catch (error) {
             console.error("Error generating avatar:", error);
@@ -132,18 +128,16 @@ export default function ProfilePage() {
                 <h1 className="text-[28px] font-bold text-foreground">Profile</h1>
                 <Button variant="link" className="text-primary font-bold" onClick={handleSaveChanges}>Save</Button>
             </header>
-
-            <div className="flex flex-col items-center mb-8">
-                <Avatar className="w-24 h-24 mb-4">
-                    <AvatarImage src={selectedAvatarUrl} alt={name} />
-                    <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <h2 className="text-2xl font-bold">{name}</h2>
-            </div>
             
             <SettingsGroupLabel>Edit Profile</SettingsGroupLabel>
             <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
                 <CardContent className="p-0 space-y-6">
+                    <div className="flex flex-col items-center">
+                        <Avatar className="w-24 h-24 mb-4">
+                            <AvatarImage src={selectedAvatarUrl} alt={name} />
+                            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                    </div>
                     <div className="space-y-2">
                         <Label htmlFor="name">Your Name</Label>
                         <Input
@@ -164,63 +158,38 @@ export default function ProfilePage() {
                             <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
                             <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="select" className="h-[180px] relative">
-                            <div className="grid grid-cols-3 gap-4 pt-4">
-                            {selectableAvatars.map((avatarUrl, index) => (
-                                <div
-                                key={index}
-                                className="relative cursor-pointer"
-                                onClick={() => setSelectedAvatarUrl(avatarUrl)}
-                                >
-                                <img
-                                    src={avatarUrl}
-                                    alt="Selectable Avatar"
-                                    width={80}
-                                    height={80}
-                                    className={cn(
-                                    "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto",
-                                    selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
+                        <TabsContent value="select" className="relative pt-4">
+                            <div className="grid grid-cols-3 gap-4">
+                                {selectableAvatars.map((avatarUrl, index) => (
+                                    <div
+                                    key={index}
+                                    className="relative cursor-pointer"
+                                    onClick={() => setSelectedAvatarUrl(avatarUrl)}
+                                    >
+                                    <img
+                                        src={avatarUrl}
+                                        alt="Selectable Avatar"
+                                        width={80}
+                                        height={80}
+                                        className={cn(
+                                        "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto",
+                                        selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
+                                        )}
+                                    />
+                                    {selectedAvatarUrl === avatarUrl && (
+                                        <div className="absolute top-0 right-2 bg-primary text-primary-foreground rounded-full p-1">
+                                        <CheckCircle className="w-4 h-4" />
+                                        </div>
                                     )}
-                                />
-                                {selectedAvatarUrl === avatarUrl && (
-                                    <div className="absolute top-0 right-2 bg-primary text-primary-foreground rounded-full p-1">
-                                    <CheckCircle className="w-4 h-4" />
                                     </div>
-                                )}
-                                </div>
-                            ))}
+                                ))}
                             </div>
                             <Button variant="outline" size="icon" className="absolute top-4 right-0 h-9 w-9" onClick={handleRandomizeAvatars} type="button">
                                 <RefreshCw className="w-4 h-4"/>
                             </Button>
                         </TabsContent>
-                        <TabsContent value="generate" className="h-[180px] flex flex-col">
-                            <div className='w-full h-[120px] flex items-center justify-center bg-secondary rounded-lg overflow-hidden'>
-                                {isGenerating && <ParticleLoader particleCount={500} />}
-                                {!isGenerating && generatedAvatar && (
-                                <div
-                                    className="relative cursor-pointer"
-                                    onClick={() => setSelectedAvatarUrl(generatedAvatar)}
-                                    >
-                                    <img
-                                        src={generatedAvatar}
-                                        alt="AI Generated Avatar"
-                                        width={80}
-                                        height={80}
-                                        className={cn(
-                                        "rounded-full aspect-square object-cover border-4 transition-all bg-white",
-                                        selectedAvatarUrl === generatedAvatar ? 'border-primary' : 'border-transparent'
-                                        )}
-                                    />
-                                    {selectedAvatarUrl === generatedAvatar && (
-                                        <div className="absolute top-0 right-0 bg-primary text-primary-foreground rounded-full p-1">
-                                        <CheckCircle className="w-4 h-4" />
-                                        </div>
-                                    )}
-                                    </div>
-                                )}
-                            </div>
-                            <div className='flex gap-2 items-center h-[60px]'>
+                        <TabsContent value="generate" className="pt-4">
+                            <div className='flex gap-2 items-center'>
                                 <Input 
                                     placeholder='e.g., a happy robot'
                                     value={aiPrompt}
@@ -231,38 +200,29 @@ export default function ProfilePage() {
                                 </Button>
                             </div>
                         </TabsContent>
-                        <TabsContent value="upload" className="h-[180px] flex flex-col justify-center">
+                        <TabsContent value="upload" className="pt-4">
                             <input
                                 type="file"
                                 ref={fileInputRef}
                                 onChange={handleFileChange}
                                 accept="image/*"
                                 className="hidden"
+                                disabled={isUploading}
                                 />
-                             <div className="w-full h-[120px] flex gap-4 items-center justify-center">
-                                <div 
-                                    className="w-3/5 h-full border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer bg-secondary/50"
-                                    onClick={handleImageUploadClick}
-                                >
-                                    <Upload className="w-8 h-8 mb-2" />
-                                    <p>Click to upload</p>
-                                </div>
-                                <div className="w-2/5 h-full flex flex-col items-center justify-center">
-                                    <p className="text-sm text-muted-foreground mb-2">Preview</p>
-                                    <Avatar className="w-20 h-20">
-                                        {isUploading ? (
-                                            <div className="w-full h-full flex items-center justify-center">
-                                                <Loader2 className="w-6 h-6 animate-spin"/>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <AvatarImage src={selectedAvatarUrl.startsWith('data:image/') ? selectedAvatarUrl : undefined} alt="Uploaded preview" />
-                                                <AvatarFallback>{name?.charAt(0) || 'U'}</AvatarFallback>
-                                            </>
-                                        )}
-                                    </Avatar>
-                                </div>
-                            </div>
+                             <Button 
+                                variant="outline" 
+                                className="w-full h-12" 
+                                onClick={handleImageUploadClick}
+                                disabled={isUploading}
+                                type="button"
+                            >
+                                {isUploading ? (
+                                    <Loader2 className="w-5 h-5 animate-spin mr-2"/>
+                                ) : (
+                                    <Upload className="w-5 h-5 mr-2" />
+                                )}
+                                Upload Image
+                            </Button>
                         </TabsContent>
                         </Tabs>
                     </div>
