@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { useAppContext } from '@/context/AppContext';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tabs, TabsList, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
 import Image from 'next/image';
 
@@ -97,7 +97,6 @@ export default function ProfilePage() {
         fileInputRef.current?.click();
     };
 
-_
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
