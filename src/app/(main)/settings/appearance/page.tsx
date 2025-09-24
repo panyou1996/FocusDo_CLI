@@ -63,14 +63,14 @@ export default function AppearancePage() {
       
       <SettingsGroupLabel>Theme Color</SettingsGroupLabel>
       <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-6 gap-4">
           {themes.map((theme) => (
             <div key={theme.name} className="flex flex-col items-center gap-2" onClick={() => handleThemeChange(theme.name)}>
               <div
-                className="w-12 h-12 rounded-full flex items-center justify-center cursor-pointer"
+                className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
                 style={{ backgroundColor: `hsl(${theme.cssVars.light.primary})` }}
               >
-                {currentTheme === theme.name && <Check className="w-6 h-6 text-primary-foreground" />}
+                {currentTheme === theme.name && <Check className="w-5 h-5 text-primary-foreground" />}
               </div>
               <p className={cn("text-xs", currentTheme === theme.name ? "text-primary font-semibold" : "text-muted-foreground")}>{theme.name}</p>
             </div>

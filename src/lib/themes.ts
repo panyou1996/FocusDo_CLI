@@ -85,4 +85,38 @@ export const themes = [
       },
     },
   },
+   {
+    name: 'Violet',
+    cssVars: {
+      light: {
+        primary: '262 84% 58%',
+        'primary-foreground': '0 0% 100%',
+        accent: '262 90% 95%',
+        'accent-foreground': '262 84% 58%',
+      },
+      dark: {
+        primary: '262 84% 58%',
+        'primary-foreground': '0 0% 100%',
+        accent: '262 90% 20%',
+        'accent-foreground': '262 90% 90%',
+      },
+    },
+  },
+  {
+    name: 'Slate',
+    cssVars: {
+      light: {
+        primary: '220 14% 45%',
+        'primary-foreground': '0 0% 100%',
+        accent: '220 10% 95%',
+        'accent-foreground': '220 14% 45%',
+      },
+      dark: {
+        primary: '220 14% 45%',
+        'primary-foreground': '0 0% 100%',
+        accent: '220 10% 25%',
+        'accent-foreground': '220 10% 85%',
+      },
+    },
+  },
 ];
