@@ -14,6 +14,7 @@ import { CheckCircle, RefreshCw, Upload, Wand2, Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
 import { ParticleLoader } from '@/components/common/ParticleLoader';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const avatarStyles = [
   'adventurer', 'big-ears', 'bottts', 'miniavs', 'open-peeps', 'pixel-art'
@@ -193,7 +194,7 @@ export default function SetProfilePage() {
                     )}
                  </div>
               </TabsContent>
-              <TabsContent value="upload" className="pt-4">
+              <TabsContent value="upload" className="pt-4 space-y-4">
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -202,22 +203,26 @@ export default function SetProfilePage() {
                     className="hidden"
                     />
                 <div 
-                    className="w-full h-[180px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer relative overflow-hidden bg-secondary/50"
+                    className="w-full h-[140px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer bg-secondary/50"
                     onClick={handleImageUploadClick}
                 >
-                    {selectedAvatarUrl && selectedAvatarUrl.startsWith('data:image/') ? (
-                        <Image src={selectedAvatarUrl} alt="Cover preview" fill className="object-cover" />
-                    ) : isUploading ? (
-                        <>
-                        <Loader2 className="w-8 h-8 mb-2 animate-spin" />
-                        <p>Uploading...</p>
-                        </>
-                    ) : (
-                        <>
-                        <Upload className="w-8 h-8 mb-2" />
-                        <p>Click to upload an image</p>
-                        </>
-                    )}
+                    <Upload className="w-8 h-8 mb-2" />
+                    <p>Click to upload an image</p>
+                </div>
+                <div className="flex items-center gap-4">
+                    <p className="text-sm text-muted-foreground">Preview:</p>
+                    <Avatar className="w-16 h-16">
+                        {isUploading ? (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <Loader2 className="w-6 h-6 animate-spin"/>
+                            </div>
+                        ) : (
+                            <>
+                                <AvatarImage src={selectedAvatarUrl.startsWith('data:image/') ? selectedAvatarUrl : undefined} alt="Uploaded preview" />
+                                <AvatarFallback>{name?.charAt(0) || 'U'}</AvatarFallback>
+                            </>
+                        )}
+                    </Avatar>
                 </div>
               </TabsContent>
             </Tabs>

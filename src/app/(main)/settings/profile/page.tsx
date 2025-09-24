@@ -39,8 +39,8 @@ export default function ProfilePage() {
     const router = useRouter();
     const { currentUser, setCurrentUser } = useAppContext();
 
-    const [name, setName] = React.useState(currentUser?.name || '');
-    const [selectedAvatarUrl, setSelectedAvatarUrl] = React.useState(currentUser?.avatarUrl || '');
+    const [name, setName] = React.useState('');
+    const [selectedAvatarUrl, setSelectedAvatarUrl] = React.useState('');
     
     const [selectableAvatars, setSelectableAvatars] = React.useState<string[]>([]);
     const [aiPrompt, setAiPrompt] = React.useState('');
@@ -58,7 +58,7 @@ export default function ProfilePage() {
             setSelectedAvatarUrl(currentUser.avatarUrl);
         }
         setSelectableAvatars(generateRandomAvatars());
-    }, []); 
+    }, [currentUser]); 
 
 
     const handleSaveChanges = () => {
@@ -110,8 +110,17 @@ export default function ProfilePage() {
     };
 
     if (!isClient) {
-        // You can return a loader here if you prefer
-        return null;
+        return (
+             <div className="px-5">
+                <header className="pt-10 pb-4 h-[100px] flex justify-between items-center">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                        <ArrowLeft className="w-6 h-6" />
+                    </Button>
+                    <h1 className="text-[28px] font-bold text-foreground">Profile</h1>
+                    <div className="w-10"></div>
+                </header>
+            </div>
+        );
     }
 
 
@@ -222,7 +231,7 @@ export default function ProfilePage() {
                                 )}
                             </div>
                         </TabsContent>
-                        <TabsContent value="upload" className="pt-4">
+                        <TabsContent value="upload" className="pt-4 space-y-4">
                             <input
                                 type="file"
                                 ref={fileInputRef}
@@ -231,22 +240,26 @@ export default function ProfilePage() {
                                 className="hidden"
                                 />
                              <div 
-                                className="w-full h-[180px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer relative overflow-hidden bg-secondary/50"
+                                className="w-full h-[140px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer bg-secondary/50"
                                 onClick={handleImageUploadClick}
                             >
-                                {selectedAvatarUrl && selectedAvatarUrl.startsWith('data:image/') ? (
-                                    <Image src={selectedAvatarUrl} alt="Cover preview" fill className="object-cover" />
-                                ) : isUploading ? (
-                                    <>
-                                    <Loader2 className="w-8 h-8 mb-2 animate-spin" />
-                                    <p>Uploading...</p>
-                                    </>
-                                ) : (
-                                    <>
-                                    <Upload className="w-8 h-8 mb-2" />
-                                    <p>Click to upload an image</p>
-                                    </>
-                                )}
+                                <Upload className="w-8 h-8 mb-2" />
+                                <p>Click to upload an image</p>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <p className="text-sm text-muted-foreground">Preview:</p>
+                                <Avatar className="w-16 h-16">
+                                    {isUploading ? (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <Loader2 className="w-6 h-6 animate-spin"/>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <AvatarImage src={selectedAvatarUrl.startsWith('data:image/') ? selectedAvatarUrl : undefined} alt="Uploaded preview" />
+                                            <AvatarFallback>{name?.charAt(0) || 'U'}</AvatarFallback>
+                                        </>
+                                    )}
+                                </Avatar>
                             </div>
                         </TabsContent>
                         </Tabs>
