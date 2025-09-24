@@ -231,23 +231,28 @@ export default function InboxPage() {
         <TabsContent value="lists" className="mt-4">
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex gap-2 px-5 py-2">
-              {lists.map((list) => (
-                <button
-                  key={list.id}
-                  onClick={() => setSelectedList(list.id)}
-                  className={cn(
-                    "px-4 py-2 rounded-full text-sm font-medium transition-colors",
-                    selectedList === list.id
-                      ? "text-white"
-                      : "text-foreground"
-                  )}
-                  style={{
-                    backgroundColor: selectedList === list.id ? list.color : 'var(--secondary-bg, #E5E5EA)',
-                  }}
-                >
-                  {list.name}
-                </button>
-              ))}
+              {lists.map((list) => {
+                const ListIcon = getIcon(list.icon as string);
+                const isSelected = selectedList === list.id;
+                return (
+                  <button
+                    key={list.id}
+                    onClick={() => setSelectedList(list.id)}
+                    className={cn(
+                      "inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9",
+                      isSelected
+                        ? "text-white"
+                        : "text-foreground bg-secondary"
+                    )}
+                    style={{
+                      backgroundColor: isSelected ? list.color : undefined,
+                    }}
+                  >
+                    <ListIcon className="w-4 h-4" />
+                    <span>{list.name}</span>
+                  </button>
+                );
+              })}
               <Link href="/add-list">
                 <Button size="icon" variant="secondary" className="rounded-full w-9 h-9 flex-shrink-0">
                   <Plus className="w-5 h-5" />
