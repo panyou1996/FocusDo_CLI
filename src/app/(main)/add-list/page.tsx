@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Check, type Icon as LucideIcon, Briefcase, User, Book, ShoppingBasket, Heart, Gift, Plane, Home } from 'lucide-react';
+import { X, Check, type Icon as LucideIcon, Briefcase, User, Book, ShoppingBasket, Heart, Gift, Plane, Home, Coffee, Code, Film, Music, Car, Pizza, Dumbbell, School, Building, TreePine, PenTool, Paintbrush, Wallet, Lightbulb, Globe, Cloud, TrendingUp, Target, Sprout, Star, Flag, Award, Camera, Gamepad2, Wrench, Package } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useAppContext } from '@/context/AppContext';
@@ -26,6 +26,30 @@ const availableIcons: {name: string, icon: LucideIcon}[] = [
   { name: 'Gift', icon: Gift },
   { name: 'Plane', icon: Plane },
   { name: 'Home', icon: Home },
+  { name: 'Coffee', icon: Coffee },
+  { name: 'Code', icon: Code },
+  { name: 'Film', icon: Film },
+  { name: 'Music', icon: Music },
+  { name: 'Car', icon: Car },
+  { name: 'Pizza', icon: Pizza },
+  { name: 'Dumbbell', icon: Dumbbell },
+  { name: 'School', icon: School },
+  { name: 'Building', icon: Building },
+  { name: 'TreePine', icon: TreePine },
+  { name: 'PenTool', icon: PenTool },
+  { name: 'Paintbrush', icon: Paintbrush },
+  { name: 'Wallet', icon: Wallet },
+  { name: 'Lightbulb', icon: Lightbulb },
+  { name: 'Globe', icon: Globe },
+  { name: 'Cloud', icon: Cloud },
+  { name: 'TrendingUp', icon: TrendingUp },
+  { name: 'Target', icon: Target },
+  { name: 'Sprout', icon: Sprout },
+  { name: 'Star', icon: Star },
+  { name: 'Flag', icon: Flag },
+  { name: 'Award', icon: Award },
+  { name: 'Camera', icon: Camera },
+  { name: 'Gamepad2', icon: Gamepad2 },
 ];
 
 
