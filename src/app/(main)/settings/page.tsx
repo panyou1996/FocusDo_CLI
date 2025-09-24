@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { ChevronRight, Bell, User, Palette, Lock } from "lucide-react";
+import { ChevronRight, Bell, User, Palette, Lock, Settings as SettingsIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
@@ -33,7 +33,10 @@ export default function SettingsPage() {
   return (
     <div className="">
       <header className="px-5 pt-10 pb-4 h-[100px] flex justify-between items-center">
-        <h1 className="text-[28px] font-bold text-foreground">Settings</h1>
+        <div className="flex items-center gap-3">
+          <SettingsIcon className="w-7 h-7" strokeWidth={2} />
+          <h1 className="text-[28px] font-bold text-foreground">Settings</h1>
+        </div>
       </header>
 
       <div className="px-5">
@@ -44,7 +47,7 @@ export default function SettingsPage() {
           <SettingsItem icon={Palette} label="Appearance" color="#3b82f6" action="navigate" href="/settings/appearance" />
         </Card>
 
-        <SettingsGroupLabel>Account Settings</SettingsGroupLabel>
+        <SettingsGroup-label>Account Settings</SettingsGroup-label>
         <Card className="rounded-xl overflow-hidden shadow-soft border-none">
           <SettingsItem icon={User} label="Profile" color="#8b5cf6" action="navigate" href="/settings/profile" />
           <Separator />
