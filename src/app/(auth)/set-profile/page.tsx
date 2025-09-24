@@ -114,10 +114,17 @@ export default function SetProfilePage() {
       <form onSubmit={handleSaveProfile}>
         <CardContent className="space-y-6">
           <div className="flex justify-center">
-            <Avatar className="w-24 h-24">
-                <AvatarImage src={selectedAvatarUrl} alt={name} />
-                <AvatarFallback>{name?.charAt(0) || '?'}</AvatarFallback>
-            </Avatar>
+            <div className="relative w-24 h-24">
+                <Avatar className="w-24 h-24">
+                    <AvatarImage src={selectedAvatarUrl} alt={name} />
+                    <AvatarFallback>{name?.charAt(0) || '?'}</AvatarFallback>
+                </Avatar>
+                {isGenerating && (
+                    <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center rounded-full">
+                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    </div>
+                )}
+            </div>
           </div>
 
           <div className="space-y-2">

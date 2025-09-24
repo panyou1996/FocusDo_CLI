@@ -1,9 +1,11 @@
+
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Home, Inbox, BookText, Settings, Plus } from "lucide-react";
+import * as React from 'react';
 
 const navItems = [
   { href: "/today", icon: Home, label: "Today" },
@@ -14,15 +16,21 @@ const navItems = [
 
 export function BottomNavBar() {
   const pathname = usePathname();
+  const [isModalPage, setIsModalPage] = React.useState(false);
 
-  const isAddTaskPage = pathname === '/add-task';
+  const modalPaths = ['/add-task', '/blog/new', '/add-list'];
+  const editTaskRegex = /^\/edit-task\/.+/;
+
+  React.useEffect(() => {
+    setIsModalPage(modalPaths.includes(pathname) || editTaskRegex.test(pathname));
+  }, [pathname]);
 
   return (
     <footer className="fixed bottom-0 left-0 right-0 h-[74px] bg-transparent z-40">
       <div className="relative h-full w-full max-w-lg mx-auto">
         <div className={cn(
             "absolute bottom-0 left-0 right-0 h-[74px] bg-card/80 backdrop-blur-lg rounded-t-[24px] shadow-[0px_-4px_10px_rgba(0,0,0,0.05)] transition-transform duration-300",
-            isAddTaskPage && "translate-y-full"
+            isModalPage && "translate-y-full"
             )}>
           <nav className="flex items-center justify-around h-full pt-1 pb-[24px] px-5">
             {navItems.slice(0, 2).map((item) => {
@@ -64,7 +72,7 @@ export function BottomNavBar() {
           href="/add-task"
           className={cn(
             "absolute left-1/2 -translate-x-1/2 top-[-18px] w-[60px] h-[60px] bg-primary rounded-full flex items-center justify-center shadow-fab z-50 transition-transform duration-300",
-            isAddTaskPage && "scale-0"
+            isModalPage && "scale-0"
             )}
           aria-label="Add Task"
         >

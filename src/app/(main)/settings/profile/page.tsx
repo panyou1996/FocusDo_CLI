@@ -68,6 +68,9 @@ export default function ProfilePage() {
         }
     }, [isClient]);
 
+    const handleClose = () => {
+        router.back();
+    };
 
     const handleSaveChanges = () => {
         if (!name || !selectedAvatarUrl) {
@@ -75,7 +78,7 @@ export default function ProfilePage() {
             return;
         }
         setCurrentUser({ name, avatarUrl: selectedAvatarUrl });
-        router.back();
+        handleClose();
     };
 
     const handleRandomizeAvatars = () => {
@@ -142,7 +145,7 @@ export default function ProfilePage() {
                 <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
                     <div className="w-10"></div>
                     <h1 className="text-[17px] font-bold">Profile</h1>
-                    <Button variant="ghost" size="icon" aria-label="Close" onClick={() => router.back()}>
+                    <Button variant="ghost" size="icon" aria-label="Close" onClick={handleClose}>
                         <X className="w-6 h-6" />
                     </Button>
                 </header>
@@ -152,10 +155,18 @@ export default function ProfilePage() {
                         <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
                             <CardContent className="p-0 space-y-6">
                                 <div className="flex flex-col items-center">
-                                    <Avatar className="w-24 h-24 mb-4">
-                                        <AvatarImage src={selectedAvatarUrl} alt={name} />
-                                        <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
-                                    </Avatar>
+                                    <div className="relative w-24 h-24 mb-4">
+                                        <Avatar className="w-24 h-24">
+                                            <AvatarImage src={selectedAvatarUrl} alt={name} />
+                                            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        {isGenerating && (
+                                            <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center rounded-full text-center p-2">
+                                                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                                                <p className='text-xs mt-2 text-muted-foreground'>AI is generating...</p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Your Name</Label>

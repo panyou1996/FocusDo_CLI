@@ -28,8 +28,15 @@ export default function BlogNewPage() {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   
   React.useEffect(() => {
-    setIsMounted(true);
+    // Delay to allow animation
+    const timer = setTimeout(() => setIsMounted(true), 10);
+    return () => clearTimeout(timer);
   }, []);
+
+  const handleClose = () => {
+    setIsMounted(false);
+    setTimeout(() => router.back(), 300); // Match transition duration
+  };
 
   const handleImageUploadClick = () => {
     fileInputRef.current?.click();
@@ -80,7 +87,7 @@ export default function BlogNewPage() {
     };
 
     addBlogPost(newPost);
-    router.back();
+    handleClose();
   };
 
   const selectedList = lists.find(l => l.id === selectedListId);
@@ -95,7 +102,7 @@ export default function BlogNewPage() {
         <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
           <div className="w-10"></div>
           <h1 className="text-[17px] font-bold">New Blog</h1>
-          <Button variant="ghost" size="icon" aria-label="Close" onClick={() => router.back()}>
+          <Button variant="ghost" size="icon" aria-label="Close" onClick={handleClose}>
             <X className="w-6 h-6" />
           </Button>
         </header>

@@ -52,8 +52,15 @@ export default function AddTaskPage() {
     const [selectedListId, setSelectedListId] = React.useState(lists[0]?.id || 'personal');
 
     React.useEffect(() => {
-        setIsMounted(true);
+        // Delay to allow animation
+        const timer = setTimeout(() => setIsMounted(true), 10);
+        return () => clearTimeout(timer);
     }, []);
+
+    const handleClose = () => {
+        setIsMounted(false);
+        setTimeout(() => router.back(), 300); // Match transition duration
+    };
 
     const handleSaveTask = () => {
         if (!title) {
@@ -78,7 +85,7 @@ export default function AddTaskPage() {
         };
 
         addTask(newTask);
-        router.back();
+        handleClose();
     };
 
     const addSubtask = () => {
@@ -126,7 +133,7 @@ export default function AddTaskPage() {
                 <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
                     <div className="w-10"></div>
                     <h1 className="text-[17px] font-bold">Add New Task</h1>
-                    <Button variant="ghost" size="icon" aria-label="Close" onClick={() => router.back()}>
+                    <Button variant="ghost" size="icon" aria-label="Close" onClick={handleClose}>
                         <X className="w-6 h-6" />
                     </Button>
                 </header>
