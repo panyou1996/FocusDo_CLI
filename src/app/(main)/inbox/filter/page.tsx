@@ -7,9 +7,7 @@ import { Button } from '@/components/ui/button';
 import { X, Star } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -51,7 +49,7 @@ export default function FilterPage() {
                             <div className="flex items-center justify-between">
                                 <Label htmlFor="filter-status" className="text-base flex items-center gap-2">Status</Label>
                                 <Tabs value={tempFilterStatus} onValueChange={(value) => setTempFilterStatus(value as any)} className="w-auto">
-                                    <TabsList>
+                                    <TabsList className="grid grid-cols-3">
                                         <TabsTrigger value="all">All</TabsTrigger>
                                         <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
                                         <TabsTrigger value="completed">Completed</TabsTrigger>
@@ -61,29 +59,29 @@ export default function FilterPage() {
                             <Separator />
                             <div className="flex items-center justify-between">
                                 <Label htmlFor="show-important" className="text-base flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500"/> Importance</Label>
-                                <Switch id="show-important" checked={tempShowImportantOnly} onCheckedChange={setTempShowImportantOnly} />
+                                <Tabs
+                                    value={tempShowImportantOnly ? 'important' : 'all'}
+                                    onValueChange={(value) => setTempShowImportantOnly(value === 'important')}
+                                    className="w-auto"
+                                >
+                                    <TabsList className="grid grid-cols-2">
+                                        <TabsTrigger value="all">All</TabsTrigger>
+                                        <TabsTrigger value="important">Important</TabsTrigger>
+                                    </TabsList>
+                                </Tabs>
                             </div>
                         </div>
                     </Card>
 
                     <Card className="rounded-2xl shadow-soft border-none p-4 flex-shrink-0">
                         <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
-                         <RadioGroup value={tempSortBy} onValueChange={(value) => setTempSortBy(value as any)}>
-                             <div className="flex items-center space-x-2 py-2">
-                                <RadioGroupItem value="default" id="sort-default" />
-                                <Label htmlFor="sort-default" className="text-base font-normal flex-grow">Default</Label>
-                            </div>
-                             <Separator />
-                            <div className="flex items-center space-x-2 py-2">
-                                <RadioGroupItem value="dueDate" id="sort-due-date" />
-                                <Label htmlFor="sort-due-date" className="text-base font-normal flex-grow">Due Date</Label>
-                            </div>
-                             <Separator />
-                            <div className="flex items-center space-x-2 py-2">
-                                <RadioGroupItem value="importance" id="sort-importance" />
-                                <Label htmlFor="sort-importance" className="text-base font-normal flex-grow">Importance</Label>
-                            </div>
-                        </RadioGroup>
+                        <Tabs value={tempSortBy} onValueChange={(value) => setTempSortBy(value as any)}>
+                            <TabsList className="grid w-full grid-cols-3">
+                                <TabsTrigger value="default">Default</TabsTrigger>
+                                <TabsTrigger value="dueDate">Due Date</TabsTrigger>
+                                <TabsTrigger value="importance">Importance</TabsTrigger>
+                            </TabsList>
+                        </Tabs>
                     </Card>
                 </main>
 
