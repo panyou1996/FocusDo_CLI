@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
+import { defaultAvatarGroup } from '@/lib/default-avatars';
 
 
 const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
@@ -24,13 +25,18 @@ const avatarStyles = [
 ];
 
 function generateRandomAvatars(count = 5) {
-    const avatars = [];
-    for (let i = 0; i < count; i++) {
-        const style = avatarStyles[Math.floor(Math.random() * avatarStyles.length)];
-        const seed = Math.random().toString(36).substring(7);
-        avatars.push(`https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`);
+    try {
+        const avatars = [];
+        for (let i = 0; i < count; i++) {
+            const style = avatarStyles[Math.floor(Math.random() * avatarStyles.length)];
+            const seed = Math.random().toString(36).substring(7);
+            avatars.push(`https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`);
+        }
+        return avatars;
+    } catch (error) {
+        console.warn("Could not generate new avatars, using fallback. Error:", error);
+        return defaultAvatarGroup;
     }
-    return avatars;
 }
 
 
@@ -41,12 +47,12 @@ export default function ProfilePage() {
     const [name, setName] = React.useState('');
     const [selectedAvatarUrl, setSelectedAvatarUrl] = React.useState('');
     
-    const [selectableAvatars, setSelectableAvatars] = React.useState<string[]>([]);
+    const [selectableAvatars, setSelectableAvatars] = React.useState<string[]>(defaultAvatarGroup);
     const [aiPrompt, setAiPrompt] = React.useState('');
     const [isGenerating, setIsGenerating] = React.useState(false);
     const [isUploading, setIsUploading] = React.useState(false);
     const [isClient, setIsClient] = React.useState(false);
-    const [activeTab, setActiveTab] = React.useState('select');
+    const [activeTab, setActiveTab] = React.useState('random');
 
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     
@@ -56,7 +62,7 @@ export default function ProfilePage() {
             setName(currentUser.name);
             setSelectedAvatarUrl(currentUser.avatarUrl);
         }
-        setSelectableAvatars(generateRandomAvatars());
+        handleRandomizeAvatars();
     }, [currentUser]); 
 
 
@@ -156,14 +162,14 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-2">
                         <Label>Choose an Avatar</Label>
-                         <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="select">
+                         <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="random">
                         <TabsList className='grid w-full grid-cols-3'>
-                            <TabsTrigger value="select"><Shuffle className='w-4 h-4 mr-2'/>Random</TabsTrigger>
+                            <TabsTrigger value="random"><Shuffle className='w-4 h-4 mr-2'/>Random</TabsTrigger>
                             <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
                             <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
                         </TabsList>
                         <div className='py-2 flex flex-col justify-center min-h-[90px]'>
-                            <TabsContent value="select" className="m-0">
+                            <TabsContent value="random" className="m-0 relative">
                                 <div className="flex items-center gap-2">
                                     <div className="grid grid-cols-5 gap-2 flex-grow">
                                         {selectableAvatars.map((avatarUrl, index) => (
@@ -178,12 +184,12 @@ export default function ProfilePage() {
                                                 width={56}
                                                 height={56}
                                                 className={cn(
-                                                    "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-14 h-14",
+                                                    "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-12 h-12",
                                                     selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
                                                 )}
                                             />
                                             {selectedAvatarUrl === avatarUrl && (
-                                                <div className="absolute top-[-4px] right-[-2px] bg-primary text-primary-foreground rounded-full p-0.5">
+                                                <div className="absolute top-[-4px] right-[2px] bg-primary text-primary-foreground rounded-full p-0.5">
                                                     <CheckCircle className="w-3 h-3" />
                                                 </div>
                                             )}
