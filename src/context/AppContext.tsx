@@ -28,7 +28,7 @@ const AppContext = React.createContext<AppContextType | undefined>(undefined);
 
 const defaultUser: Author = {
   name: 'New User',
-  avatarUrl: PlaceHolderImages.find(img => img.id === 'selectable_avatar_1')?.imageUrl || '',
+  avatarUrl: 'https://api.dicebear.com/8.x/adventurer/svg?seed=Default',
 };
 
 

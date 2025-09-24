@@ -26,39 +26,39 @@
     },
     {
       "id": "selectable_avatar_1",
-      "description": "Abstract colorful geometric pattern.",
-      "imageUrl": "https://images.unsplash.com/photo-1604079628040-94301bb21b91?q=80&w=1080",
-      "imageHint": "abstract colorful"
+      "description": "A cartoon adventurer avatar.",
+      "imageUrl": "https://api.dicebear.com/8.x/adventurer/svg?seed=Felix",
+      "imageHint": "cartoon adventurer"
     },
     {
       "id": "selectable_avatar_2",
-      "description": "A calm, blue wave.",
-      "imageUrl": "https://images.unsplash.com/photo-1536733282946-b79f17293544?q=80&w=1080",
-      "imageHint": "blue wave"
+      "description": "A cartoon avatar with big ears.",
+      "imageUrl": "https://api.dicebear.com/8.x/big-ears/svg?seed=Mimi",
+      "imageHint": "cartoon character"
     },
     {
       "id": "selectable_avatar_3",
-      "description": "A single green leaf with water droplets.",
-      "imageUrl": "https://images.unsplash.com/photo-1596464716123-286803815a45?q=80&w=1080",
-      "imageHint": "green leaf"
+      "description": "A friendly cartoon robot avatar.",
+      "imageUrl": "https://api.dicebear.com/8.x/bottts/svg?seed=Sparky",
+      "imageHint": "cartoon robot"
     },
     {
       "id": "selectable_avatar_4",
-      "description": "A majestic mountain peak at sunrise.",
-      "imageUrl": "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=1080",
-      "imageHint": "mountain peak"
+      "description": "A minimalist cartoon person avatar.",
+      "imageUrl": "https://api.dicebear.com/8.x/miniavs/svg?seed=Leo",
+      "imageHint": "minimalist avatar"
     },
     {
       "id": "selectable_avatar_5",
-      "description": "A cute illustrated robot waving.",
-      "imageUrl": "https://images.unsplash.com/photo-1589254065909-b7086229d092?q=80&w=1080",
-      "imageHint": "cute robot"
+      "description": "An open-peeps style cartoon avatar.",
+      "imageUrl": "https://api.dicebear.com/8.x/open-peeps/svg?seed=Zoe",
+      "imageHint": "cartoon person"
     },
     {
       "id": "selectable_avatar_6",
-      "description": "A close-up of a cat's face.",
-      "imageUrl": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=1080",
-      "imageHint": "cat face"
+      "description": "A pixel art style cartoon avatar.",
+      "imageUrl": "https://api.dicebear.com/8.x/pixel-art/svg?seed=Pixel",
+      "imageHint": "pixel art"
     }
   ]
 }
