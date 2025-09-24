@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Moon, Sun, Check } from 'lucide-react';
+import { ArrowLeft, Moon, Sun, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -33,51 +33,66 @@ export default function AppearancePage() {
   };
 
   if (!isClient) {
-    return null; // or a loading skeleton
+    return (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
+            <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
+                 <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                        <ArrowLeft className="w-6 h-6" />
+                    </Button>
+                    <h1 className="text-[17px] font-bold">Appearance</h1>
+                    <div className="w-10"></div>
+                </header>
+            </div>
+        </div>
+    );
   }
 
   return (
-    <div className="px-5">
-      <header className="pt-10 pb-4 h-[100px] flex justify-between items-center">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}>
-          <ArrowLeft className="w-6 h-6" />
-        </Button>
-        <h1 className="text-[28px] font-bold text-foreground">Appearance</h1>
-        <div className="w-10"></div>
-      </header>
-      
-      <SettingsGroupLabel>Color Mode</SettingsGroupLabel>
-      <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
-        <div className="flex items-center justify-between h-[30px]">
-            <div className='flex items-center'>
-                <Moon className="w-5 h-5 mr-3 text-muted-foreground" />
-                <p className="text-[17px]">Dark Mode</p>
-            </div>
-            <Switch
-                checked={mode === 'dark'}
-                onCheckedChange={handleModeChange}
-                aria-label="Toggle dark mode"
-            />
-        </div>
-      </Card>
-      
-      <SettingsGroupLabel>Theme Color</SettingsGroupLabel>
-      <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
-        <div className="grid grid-cols-6 gap-4">
-          {themes.map((theme) => (
-            <div key={theme.name} className="flex flex-col items-center gap-2" onClick={() => handleThemeChange(theme.name)}>
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
-                style={{ backgroundColor: `hsl(${theme.cssVars.light.primary})` }}
-              >
-                {currentTheme === theme.name && <Check className="w-5 h-5 text-primary-foreground" />}
-              </div>
-              <p className={cn("text-xs", currentTheme === theme.name ? "text-primary font-semibold" : "text-muted-foreground")}>{theme.name}</p>
-            </div>
-          ))}
-        </div>
-      </Card>
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
+      <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
+        <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
+          <div className="w-10"></div>
+          <h1 className="text-[17px] font-bold">Appearance</h1>
+          <Button variant="ghost" size="icon" aria-label="Close" onClick={() => router.back()}>
+            <X className="w-6 h-6" />
+          </Button>
+        </header>
 
+        <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
+          <SettingsGroupLabel>Color Mode</SettingsGroupLabel>
+          <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
+            <div className="flex items-center justify-between h-[30px]">
+                <div className='flex items-center'>
+                    <Moon className="w-5 h-5 mr-3 text-muted-foreground" />
+                    <p className="text-[17px]">Dark Mode</p>
+                </div>
+                <Switch
+                    checked={mode === 'dark'}
+                    onCheckedChange={handleModeChange}
+                    aria-label="Toggle dark mode"
+                />
+            </div>
+          </Card>
+          
+          <SettingsGroupLabel>Theme Color</SettingsGroupLabel>
+          <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
+            <div className="grid grid-cols-6 gap-4">
+              {themes.map((theme) => (
+                <div key={theme.name} className="flex flex-col items-center gap-2" onClick={() => handleThemeChange(theme.name)}>
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
+                    style={{ backgroundColor: `hsl(${theme.cssVars.light.primary})` }}
+                  >
+                    {currentTheme === theme.name && <Check className="w-5 h-5 text-primary-foreground" />}
+                  </div>
+                  <p className={cn("text-xs", currentTheme === theme.name ? "text-primary font-semibold" : "text-muted-foreground")}>{theme.name}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </main>
+      </div>
     </div>
   );
 }
