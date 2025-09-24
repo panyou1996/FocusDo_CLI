@@ -1,3 +1,4 @@
+
 import type { Task, TaskList, BlogPost } from '@/lib/types';
 
 export const lists: TaskList[] = [
@@ -60,7 +61,7 @@ export const tasks: Task[] = [
 export const blogPosts: BlogPost[] = [
   {
     id: '1',
-    slug: 'mastering-productivity',
+    slug: 'mastering-productivity-in-the-digital-age',
     title: 'Mastering Productivity in the Digital Age',
     excerpt: 'Discover the secrets to staying focused and achieving your goals in a world full of distractions. Here are five actionable tips you can implement today.',
     coverImage: 'placeholder_blog_1',
@@ -85,7 +86,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: '2',
-    slug: 'the-art-of-minimalism',
+    slug: 'the-art-of-digital-minimalism',
     title: 'The Art of Digital Minimalism',
     excerpt: 'Learn how decluttering your digital life can lead to more clarity, focus, and intentionality. A guide to curating your digital space for a better life.',
     coverImage: 'placeholder_blog_2',
