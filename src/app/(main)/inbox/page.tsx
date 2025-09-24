@@ -285,7 +285,7 @@ export default function InboxPage() {
                 selected={date}
                 onSelect={setDate}
                 className="rounded-md border shadow-soft w-full"
-                tasksPerDay={tasksPerDay}
+                tasksPerDay={isClient ? tasksPerDay : {}}
                 components={{
                   IconLeft: () => <ChevronLeft className="h-4 w-4" />,
                   IconRight: () => <ChevronRight className="h-4 w-4" />,
@@ -320,4 +320,3 @@ export default function InboxPage() {
     </div>
   );
 }
-
