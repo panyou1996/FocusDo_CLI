@@ -11,8 +11,6 @@ import { useAppContext } from "@/context/AppContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { cn } from "@/lib/utils";
@@ -23,8 +21,6 @@ type SortByType = 'newest' | 'oldest' | 'readingTime';
 interface FilterPopoverContentProps {
   sortBy: SortByType;
   setSortBy: (value: SortByType) => void;
-  selectedList: string;
-  setSelectedList: (value: string) => void;
 }
 
 const getIcon = (iconName: string): LucideIcon => {
@@ -36,50 +32,9 @@ const getIcon = (iconName: string): LucideIcon => {
 };
 
 
-const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({ sortBy, setSortBy, selectedList, setSelectedList }) => {
-    const { lists } = useAppContext();
+const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({ sortBy, setSortBy }) => {
     return (
         <div className="p-4 space-y-4">
-            <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-3">FILTER BY</h3>
-                <ScrollArea className="w-full whitespace-nowrap">
-                    <div className="flex gap-2 py-2">
-                        <button
-                        onClick={() => setSelectedList('all')}
-                        className={cn(
-                            'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                            selectedList === 'all'
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-foreground bg-secondary'
-                        )}
-                        >
-                        <List className="w-4 h-4" />
-                        <span>All</span>
-                        </button>
-                        {lists.map(list => {
-                        const ListIcon = getIcon(list.icon as string);
-                        const isSelected = selectedList === list.id;
-                        return (
-                            <button
-                            key={list.id}
-                            onClick={() => setSelectedList(list.id)}
-                            className={cn(
-                                'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                                isSelected ? 'text-white' : 'text-foreground bg-secondary'
-                            )}
-                            style={{
-                                backgroundColor: isSelected ? list.color : undefined,
-                            }}
-                            >
-                            <ListIcon className="w-4 h-4" />
-                            <span>{list.name}</span>
-                            </button>
-                        );
-                        })}
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-            </div>
              <div>
                  <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
                  <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
@@ -157,13 +112,11 @@ export default function BlogPage() {
             </PopoverTrigger>
             <PopoverContent 
               align="end" 
-              className="w-[calc(100vw-40px)] max-w-lg p-0"
+              className="w-auto p-0"
             >
                 <FilterPopoverContent
                   sortBy={sortBy}
                   setSortBy={setSortBy}
-                  selectedList={selectedList}
-                  setSelectedList={setSelectedList}
                 />
             </PopoverContent>
           </Popover>
@@ -187,7 +140,45 @@ export default function BlogPage() {
         </Link>
       </div>
 
-      <div className="space-y-4 mt-2">
+      <ScrollArea className="w-full whitespace-nowrap -mx-5 px-5">
+        <div className="flex gap-2 py-2">
+          <button
+            onClick={() => setSelectedList('all')}
+            className={cn(
+              'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+              selectedList === 'all'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-foreground bg-secondary'
+            )}
+          >
+            <List className="w-4 h-4" />
+            <span>All</span>
+          </button>
+          {lists.map(list => {
+            const ListIcon = getIcon(list.icon as string);
+            const isSelected = selectedList === list.id;
+            return (
+              <button
+                key={list.id}
+                onClick={() => setSelectedList(list.id)}
+                className={cn(
+                  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                  isSelected ? 'text-white' : 'text-foreground bg-secondary'
+                )}
+                style={{
+                  backgroundColor: isSelected ? list.color : undefined,
+                }}
+              >
+                <ListIcon className="w-4 h-4" />
+                <span>{list.name}</span>
+              </button>
+            );
+          })}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+
+      <div className="space-y-4 mt-4">
         {!isClient ? (
             <>
               <Skeleton className="h-[320px] w-full rounded-2xl" />
