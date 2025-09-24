@@ -108,7 +108,7 @@ export default function BlogNewPage() {
             )}
           </div>
           
-          <Card className="rounded-2xl shadow-soft border-none p-1">
+          <Card className="rounded-2xl shadow-soft border-none p-1 flex-shrink-0">
             <Input 
               placeholder="Blog Title"
               className="border-none text-[18px] font-medium h-[60px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0"

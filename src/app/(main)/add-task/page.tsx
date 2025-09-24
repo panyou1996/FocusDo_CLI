@@ -118,7 +118,7 @@ export default function AddTaskPage() {
                 </header>
 
                 <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
-                    <Card className="rounded-2xl shadow-soft border-none p-1">
+                    <Card className="rounded-2xl shadow-soft border-none p-1 flex-shrink-0">
                         <Input
                             placeholder="What do you want to do?"
                             className="border-none text-[18px] font-medium h-[60px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -127,16 +127,16 @@ export default function AddTaskPage() {
                         />
                     </Card>
                     
-                    <Card className="rounded-2xl shadow-soft border-none p-1">
+                    <Card className="rounded-2xl shadow-soft border-none p-1 flex flex-col">
                         <Textarea
                             placeholder="Add a description..."
-                            className="border-none text-[17px] min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0"
+                            className="border-none text-[17px] min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
                     </Card>
 
-                    <Card className="rounded-2xl shadow-soft border-none overflow-hidden">
+                    <Card className="rounded-2xl shadow-soft border-none overflow-hidden flex-shrink-0">
                         <AttributeRow icon={ListTree} label="Subtasks">
                             <div className="flex items-center gap-2">
                                 {subtasks.length > 0 && (
@@ -232,7 +232,7 @@ export default function AddTaskPage() {
                         </AttributeRow>
                     </Card>
 
-                    <Card className="rounded-2xl shadow-soft border-none overflow-hidden">
+                    <Card className="rounded-2xl shadow-soft border-none overflow-hidden flex-shrink-0">
                         <AttributeRow icon={Star} label="Mark as Important">
                             <Switch checked={isImportant} onCheckedChange={setIsImportant} />
                         </AttributeRow>
