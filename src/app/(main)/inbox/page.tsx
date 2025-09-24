@@ -89,13 +89,13 @@ const FilterPopoverContent = () => {
     const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance' | 'creationDate'>('inbox-sort-by', 'default');
     
     return (
-        <div className="p-4 w-80 space-y-4">
+        <div className="p-4 space-y-4">
             <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-3">FILTER BY</h3>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <Label htmlFor="filter-status" className="text-base">Status</Label>
-                        <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-[200px]">
+                        <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-[320px]">
                             <TabsList className="grid grid-cols-3">
                                 <TabsTrigger value="all">All</TabsTrigger>
                                 <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
@@ -106,7 +106,7 @@ const FilterPopoverContent = () => {
                     <Separator />
                     <div className="flex items-center justify-between">
                         <Label htmlFor="show-important" className="text-base">Grade</Label>
-                        <Tabs value={filterImportance} onValueChange={(value) => setFilterImportance(value as any)} className="w-[200px]">
+                        <Tabs value={filterImportance} onValueChange={(value) => setFilterImportance(value as any)} className="w-[320px]">
                             <TabsList className="grid grid-cols-3">
                                 <TabsTrigger value="all">All</TabsTrigger>
                                 <TabsTrigger value="important">Important</TabsTrigger>
@@ -190,7 +190,7 @@ export default function InboxPage() {
     } else if (sortBy === 'importance') {
       sorted.sort((a, b) => (b.isImportant ? 1 : 0) - (a.isImportant ? 1 : 0));
     } else if (sortBy === 'creationDate') {
-      sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+       sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
 
     return sorted;
@@ -395,7 +395,7 @@ export default function InboxPage() {
                 <Filter className="w-6 h-6" strokeWidth={1.5} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-auto p-0">
+            <PopoverContent align="end" className="w-screen max-w-lg p-0">
                 <FilterPopoverContent />
             </PopoverContent>
           </Popover>
@@ -509,4 +509,3 @@ export default function InboxPage() {
   );
 }
 
-    
