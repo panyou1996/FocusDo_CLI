@@ -90,7 +90,7 @@ export default function BlogNewPage() {
             className="hidden"
           />
           <div 
-            className="w-full h-[180px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer relative overflow-hidden bg-secondary/50"
+            className="w-full h-[180px] flex-shrink-0 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer relative overflow-hidden bg-secondary/50"
             onClick={handleImageUploadClick}
           >
             {coverImage ? (
@@ -117,10 +117,10 @@ export default function BlogNewPage() {
             />
           </Card>
 
-          <Card className="rounded-2xl shadow-soft border-none p-1">
+          <Card className="rounded-2xl shadow-soft border-none p-1 flex-grow flex flex-col">
             <Textarea 
               placeholder="Start writing your story..."
-              className="border-none text-[17px] min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="border-none text-[17px] min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow"
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
@@ -135,4 +135,3 @@ export default function BlogNewPage() {
     </div>
   );
 }
-
