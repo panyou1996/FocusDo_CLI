@@ -155,7 +155,8 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
         onUpdate(task.id, { subtasks: newSubtasks });
     };
 
-    const addSubtask = () => {
+    const addSubtask = (e: React.MouseEvent) => {
+        e.stopPropagation();
         if (newSubtask.trim()) {
             const newSubtasks = [...editingSubtasks, { id: `sub-${Date.now()}`, title: newSubtask, isCompleted: false }];
             updateSubtasks(newSubtasks);
@@ -164,7 +165,8 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
         }
     };
 
-    const removeSubtask = (id: string) => {
+    const removeSubtask = (e: React.MouseEvent, id: string) => {
+        e.stopPropagation();
         const newSubtasks = editingSubtasks.filter(sub => sub.id !== id);
         updateSubtasks(newSubtasks);
     };
@@ -236,6 +238,55 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
 
   const cardIsExpanded = isExpanded || view === 'detail';
 
+  const renderListIcon = () => {
+    const iconElement = (
+      <ListIcon 
+        className="w-5 h-5" 
+        style={{ color: list.color }} 
+        strokeWidth={1.5} 
+      />
+    );
+
+    if (cardIsExpanded) {
+      return (
+        <Popover>
+          <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <Button variant="ghost" size="icon" className="w-8 h-8 ml-2">
+              {iconElement}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-1" align="start">
+            <div className="flex flex-col gap-1">
+              {lists.map(listOption => {
+                  const ListOptionIcon = getIcon(listOption.icon as string);
+                  return (
+                      <Button
+                          key={listOption.id}
+                          variant="ghost"
+                          className="w-full justify-start gap-2"
+                          onClick={() => {
+                              onUpdate(task.id, { listId: listOption.id });
+                          }}
+                      >
+                          <ListOptionIcon className="w-4 h-4" style={{ color: listOption.color }}/>
+                          {listOption.name}
+                      </Button>
+                  );
+              })}
+            </div>
+          </PopoverContent>
+        </Popover>
+      );
+    }
+
+    return (
+      <div className="w-8 h-8 ml-2 flex items-center justify-center">
+        {iconElement}
+      </div>
+    );
+  };
+
+
   return (
     <div
       className="bg-card rounded-2xl shadow-soft transition-all duration-300 ease-in-out"
@@ -254,39 +305,7 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
           className="w-6 h-6 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
         />
         
-        {ListIcon && (
-          <Popover>
-            <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" size="icon" className="w-8 h-8 ml-2">
-                <ListIcon 
-                    className="w-5 h-5" 
-                    style={{ color: list.color }} 
-                    strokeWidth={1.5} 
-                />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-1" align="start">
-              <div className="flex flex-col gap-1">
-                {lists.map(listOption => {
-                    const ListOptionIcon = getIcon(listOption.icon as string);
-                    return (
-                        <Button
-                            key={listOption.id}
-                            variant="ghost"
-                            className="w-full justify-start gap-2"
-                            onClick={() => {
-                                onUpdate(task.id, { listId: listOption.id });
-                            }}
-                        >
-                            <ListOptionIcon className="w-4 h-4" style={{ color: listOption.color }}/>
-                            {listOption.name}
-                        </Button>
-                    );
-                })}
-              </div>
-            </PopoverContent>
-          </Popover>
-        )}
+        {ListIcon && renderListIcon()}
 
         <div className="flex-grow ml-1">
           { isEditingTitle ? (
@@ -411,12 +430,12 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
                                 htmlFor={`subtask-${task.id}-${sub.id}`} 
                                 className="flex-grow text-sm cursor-text data-[completed=true]:line-through data-[completed=true]:text-muted-foreground"
                                 data-completed={sub.isCompleted}
-                                onClick={() => startEditingSubtask(sub)}
+                                onClick={(e) => { e.stopPropagation(); startEditingSubtask(sub); }}
                             >
                                 {sub.title}
                             </label>
                         )}
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => removeSubtask(sub.id)}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => removeSubtask(e, sub.id)}>
                             <Trash2 className="w-4 h-4 text-destructive/70" />
                         </Button>
                     </div>
@@ -428,7 +447,7 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
                             onChange={(e) => setNewSubtask(e.target.value)} 
                             placeholder="Add a subtask..." 
                             className="h-7 border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm" 
-                            onKeyDown={(e) => e.key === 'Enter' && addSubtask()}
+                            onKeyDown={(e) => e.key === 'Enter' && addSubtask(e as any)}
                             autoFocus
                         />
                         <Button size="sm" className="h-7" onClick={addSubtask}>Add</Button>
@@ -517,6 +536,8 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
 }
 
 
+
+    
 
     
 
