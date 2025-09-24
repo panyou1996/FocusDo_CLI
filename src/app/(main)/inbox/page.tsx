@@ -11,6 +11,7 @@ import {
   type Icon as LucideIcon,
   List,
   X,
+  Star,
 } from 'lucide-react';
 import { TaskCard } from '@/components/tasks/TaskCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -29,6 +30,9 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
 
 interface GroupedTasks {
   expired: Task[];
@@ -395,7 +399,7 @@ export default function InboxPage() {
                 <Filter className="w-6 h-6" strokeWidth={1.5} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-screen max-w-lg p-0">
+            <PopoverContent align="end" className="w-full p-0">
                 <FilterPopoverContent />
             </PopoverContent>
           </Popover>
@@ -508,4 +512,3 @@ export default function InboxPage() {
     </div>
   );
 }
-
