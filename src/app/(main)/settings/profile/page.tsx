@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
 import Image from 'next/image';
+import { ParticleLoader } from '@/components/common/ParticleLoader';
 
 const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
     <p className="px-1 text-[13px] font-regular text-muted-foreground uppercase mt-6 mb-2">{children}</p>
@@ -40,27 +41,24 @@ export default function ProfilePage() {
 
     const [name, setName] = React.useState(currentUser?.name || '');
     const [selectedAvatarUrl, setSelectedAvatarUrl] = React.useState(currentUser?.avatarUrl || '');
-    const [isClient, setIsClient] = React.useState(false);
     
     const [selectableAvatars, setSelectableAvatars] = React.useState<string[]>([]);
     const [aiPrompt, setAiPrompt] = React.useState('');
     const [generatedAvatar, setGeneratedAvatar] = React.useState<string | null>(null);
     const [isGenerating, setIsGenerating] = React.useState(false);
     const [isUploading, setIsUploading] = React.useState(false);
+    const [isClient, setIsClient] = React.useState(false);
 
     const fileInputRef = React.useRef<HTMLInputElement>(null);
-
+    
     React.useEffect(() => {
         setIsClient(true);
+        if (currentUser) {
+            setName(currentUser.name);
+            setSelectedAvatarUrl(currentUser.avatarUrl);
+        }
         setSelectableAvatars(generateRandomAvatars());
     }, []); 
-
-    React.useEffect(() => {
-      if (currentUser) {
-        setName(currentUser.name);
-        setSelectedAvatarUrl(currentUser.avatarUrl);
-      }
-    }, [currentUser]);
 
 
     const handleSaveChanges = () => {
@@ -112,8 +110,10 @@ export default function ProfilePage() {
     };
 
     if (!isClient) {
-        return null; // Or a skeleton loader
+        // You can return a loader here if you prefer
+        return null;
     }
+
 
     return (
         <div className="px-5">
@@ -196,8 +196,8 @@ export default function ProfilePage() {
                                     {isGenerating ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Go'}
                                 </Button>
                             </div>
-                            <div className='w-full h-28 flex items-center justify-center bg-secondary rounded-lg'>
-                                {isGenerating && <Loader2 className="w-8 h-8 text-muted-foreground animate-spin"/>}
+                            <div className='w-full h-40 flex items-center justify-center bg-secondary rounded-lg overflow-hidden'>
+                                {isGenerating && <ParticleLoader />}
                                 {generatedAvatar && (
                                 <div
                                     className="relative cursor-pointer"

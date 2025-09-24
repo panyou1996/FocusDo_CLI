@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { CheckCircle, RefreshCw, Upload, Wand2, Loader2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
+import { ParticleLoader } from '@/components/common/ParticleLoader';
 
 const avatarStyles = [
   'adventurer', 'big-ears', 'bottts', 'miniavs', 'open-peeps', 'pixel-art'
@@ -166,8 +167,8 @@ export default function SetProfilePage() {
                         {isGenerating ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Go'}
                     </Button>
                  </div>
-                 <div className='w-full h-28 flex items-center justify-center bg-secondary rounded-lg'>
-                    {isGenerating && <Loader2 className="w-8 h-8 text-muted-foreground animate-spin"/>}
+                 <div className='w-full h-40 flex items-center justify-center bg-secondary rounded-lg overflow-hidden'>
+                    {isGenerating && <ParticleLoader />}
                     {generatedAvatar && (
                        <div
                           className="relative cursor-pointer"
@@ -231,4 +232,3 @@ export default function SetProfilePage() {
     </Card>
   );
 }
-
