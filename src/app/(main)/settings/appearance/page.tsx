@@ -48,20 +48,16 @@ export default function AppearancePage() {
       
       <SettingsGroupLabel>Color Mode</SettingsGroupLabel>
       <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between h-[30px]">
             <div className='flex items-center'>
-                <Sun className="w-5 h-5 mr-3 text-muted-foreground" />
-                <p className="text-[17px]">Light Mode</p>
+                <Moon className="w-5 h-5 mr-3 text-muted-foreground" />
+                <p className="text-[17px]">Dark Mode</p>
             </div>
             <Switch
                 checked={mode === 'dark'}
                 onCheckedChange={handleModeChange}
                 aria-label="Toggle dark mode"
             />
-            <div className='flex items-center'>
-                <Moon className="w-5 h-5 ml-3 text-muted-foreground" />
-                <p className="text-[17px] ml-1">Dark Mode</p>
-            </div>
         </div>
       </Card>
       
