@@ -139,8 +139,7 @@ export default function ProfilePage() {
                 <Button variant="link" className="text-primary font-bold" onClick={handleSaveChanges}>Save</Button>
             </header>
             
-            <SettingsGroupLabel>Edit Profile</SettingsGroupLabel>
-            <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
+            <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4 mt-6">
                 <CardContent className="p-0 space-y-6">
                     <div className="flex flex-col items-center">
                         <Avatar className="w-24 h-24 mb-4">
