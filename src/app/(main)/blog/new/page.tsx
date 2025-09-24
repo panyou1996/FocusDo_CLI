@@ -49,6 +49,11 @@ export default function BlogNewPage() {
       router.push('/login');
       return;
     }
+    
+    const today = new Date();
+    const dateString = today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
+    const dayString = today.toLocaleDateString('en-US', { weekday: 'short' }).replace('.', '');
+    const formattedDate = `${dateString}, ${dayString}`;
 
     const newPost = {
       id: String(Date.now()),
@@ -58,11 +63,7 @@ export default function BlogNewPage() {
       excerpt: content.slice(0, 150) + '...',
       coverImage: coverImage, 
       author: currentUser,
-      date: new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }),
+      date: formattedDate,
       readingTime: Math.ceil(content.split(' ').length / 200),
     };
 
