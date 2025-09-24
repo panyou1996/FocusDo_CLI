@@ -17,6 +17,7 @@ import {
   Hourglass,
   ListTree,
   Plus,
+  FileText,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -310,14 +311,12 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
       {cardIsExpanded && (
         <div className="px-4 pb-4 pl-12 space-y-3 animate-accordion-down">
           <DetailRow 
-            icon={ListTree}
+            icon={FileText}
             label="Description"
             value={task.description || "Add a description..."}
             onClick={(e) => {
-                if(cardIsExpanded) {
-                  e.stopPropagation();
-                  setIsEditingDesc(true)
-                }
+                e.stopPropagation();
+                setIsEditingDesc(true);
             }}
             isEditing={isEditingDesc}
             InputComponent={
@@ -402,10 +401,8 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
             label="Start" 
             value={task.startTime || 'Not set'}
             onClick={(e) => {
-                if(cardIsExpanded) {
-                  e.stopPropagation();
-                  setIsEditingStartTime(true)
-                }
+                e.stopPropagation();
+                setIsEditingStartTime(true);
             }}
             isEditing={isEditingStartTime}
             InputComponent={
@@ -425,16 +422,14 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
             label="Due" 
             value={task.dueDate ? format(parseISO(task.dueDate), 'PPP') : 'Not set'}
             onClick={(e) => {
-                if(cardIsExpanded) {
-                  e.stopPropagation();
-                  setIsEditingDueDate(true)
-                }
+                e.stopPropagation();
+                setIsEditingDueDate(true);
             }}
             isEditing={isEditingDueDate}
             InputComponent={
               <Popover open={isEditingDueDate} onOpenChange={setIsEditingDueDate}>
                 <PopoverTrigger asChild>
-                  <button className="text-sm text-primary" onClick={(e) => e.stopPropagation()}>
+                  <button className="text-sm text-primary" onClick={(e) => {e.stopPropagation(); setIsEditingDueDate(true)}}>
                     {editingDueDate ? format(editingDueDate, 'PPP') : 'Set Date'}
                   </button>
                 </PopoverTrigger>
@@ -454,10 +449,8 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
             label="Duration" 
             value={task.duration ? `${task.duration} min` : 'Not set'}
             onClick={(e) => {
-                if(cardIsExpanded) {
-                  e.stopPropagation();
-                  setIsEditingDuration(true)
-                }
+                e.stopPropagation();
+                setIsEditingDuration(true);
             }}
             isEditing={isEditingDuration}
             InputComponent={
@@ -484,5 +477,7 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
 }
 
 
+
+    
 
     
