@@ -15,20 +15,20 @@ interface Particle {
   vx: number;
   vy: number;
   life: number;
-  targetX?: number;
-  targetY?: number;
+  color: string;
 }
+
+const COLOR_PALETTE = ['#FFFFFF', '#FFD1D1', '#C4F1F9', '#D9D2E9', '#FFECB3'];
 
 export function ParticleLoader({
   className,
-  particleCount = 500,
+  particleCount = 700,
 }: ParticleLoaderProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationFrameId = useRef<number>();
   const particles = useRef<Particle[]>([]);
   const targets = useRef<{x: number; y: number}[]>([]);
   const mouse = useRef<{x: number; y: number; radius: number}>({ x: -100, y: -100, radius: 75 });
-  const iteration = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -44,10 +44,6 @@ export function ParticleLoader({
     const width = canvas.width / dpr;
     const height = canvas.height / dpr;
 
-    // Dynamically get the primary color from CSS variables
-    const primaryColor = getComputedStyle(canvas).getPropertyValue('--primary').trim();
-    const particleColor = `hsl(${primaryColor})`;
-
     // --- Define Target Shape (Abstract Face) ---
     targets.current = [];
     const headRadius = Math.min(width, height) * 0.2;
@@ -55,8 +51,8 @@ export function ParticleLoader({
     const centerY = height / 2 - headRadius * 0.1;
 
     // Head circle
-    for (let i = 0; i < 100; i++) {
-        const angle = (i / 100) * Math.PI * 2;
+    for (let i = 0; i < 150; i++) {
+        const angle = (i / 150) * Math.PI * 2;
         targets.current.push({
             x: centerX + Math.cos(angle) * headRadius,
             y: centerY + Math.sin(angle) * headRadius,
@@ -66,9 +62,9 @@ export function ParticleLoader({
     // Neck/shoulders
     const shoulderWidth = headRadius * 1.8;
     const shoulderY = centerY + headRadius;
-    for (let i = 0; i < 50; i++) {
-        const x = centerX - shoulderWidth / 2 + (i / 49) * shoulderWidth;
-        const y = shoulderY + Math.sin((i / 49) * Math.PI) * 20;
+    for (let i = 0; i < 80; i++) {
+        const x = centerX - shoulderWidth / 2 + (i / 79) * shoulderWidth;
+        const y = shoulderY + Math.sin((i / 79) * Math.PI) * 20;
         targets.current.push({ x, y });
     }
     
@@ -82,15 +78,14 @@ export function ParticleLoader({
         vx: (Math.random() - 0.5) * 2,
         vy: (Math.random() - 0.5) * 2,
         life: Math.random() * 10,
+        color: COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)],
       });
     }
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      iteration.current++;
 
       particles.current.forEach((p, i) => {
-        // --- Attraction/Repulsion ---
         let target = targets.current[i % targets.current.length];
         
         let tx = target.x;
@@ -100,15 +95,14 @@ export function ParticleLoader({
         const dy = ty - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        const attractionForce = 0.02; 
-        const maxVelocity = 2;
+        const attractionForce = 0.025; 
+        const maxVelocity = 2.5;
 
         if (dist > 1) {
             p.vx += (dx / dist) * attractionForce;
             p.vy += (dy / dist) * attractionForce;
         }
 
-        // Mouse repulsion
         const mdx = p.x - mouse.current.x;
         const mdy = p.y - mouse.current.y;
         const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
@@ -119,8 +113,6 @@ export function ParticleLoader({
             p.vy += (mdy / mdist) * repulsionForce;
         }
 
-
-        // Limit velocity
         const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
         if (speed > maxVelocity) {
             p.vx = (p.vx / speed) * maxVelocity;
@@ -131,20 +123,17 @@ export function ParticleLoader({
         p.y += p.vy;
 
         // --- Drawing ---
-        const opacity = Math.max(0, Math.min(1, Math.sin( (iteration.current + i * 10) * 0.05) * 0.5 + 0.5));
-        
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = particleColor;
-        ctx.globalAlpha = opacity;
-        
+        // Halo
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = particleColor;
+        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + '33'; // Add alpha for halo
         ctx.fill();
-        
-        // Reset canvas context properties
-        ctx.shadowBlur = 0;
-        ctx.globalAlpha = 1.0;
+
+        // Core
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 0.75, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
       });
 
       animationFrameId.current = requestAnimationFrame(animate);
