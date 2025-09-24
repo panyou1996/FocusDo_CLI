@@ -164,8 +164,8 @@ export default function ProfilePage() {
                             <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
                             <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="select" className="pt-4 h-[180px] relative">
-                            <div className="grid grid-cols-3 gap-4">
+                        <TabsContent value="select" className="h-[180px] relative">
+                            <div className="grid grid-cols-3 gap-4 pt-4">
                             {selectableAvatars.map((avatarUrl, index) => (
                                 <div
                                 key={index}
@@ -194,7 +194,7 @@ export default function ProfilePage() {
                                 <RefreshCw className="w-4 h-4"/>
                             </Button>
                         </TabsContent>
-                        <TabsContent value="generate" className="pt-4 h-[180px] flex flex-col">
+                        <TabsContent value="generate" className="h-[180px] flex flex-col">
                             <div className='w-full h-[120px] flex items-center justify-center bg-secondary rounded-lg overflow-hidden'>
                                 {isGenerating && <ParticleLoader particleCount={500} />}
                                 {!isGenerating && generatedAvatar && (
@@ -231,7 +231,7 @@ export default function ProfilePage() {
                                 </Button>
                             </div>
                         </TabsContent>
-                        <TabsContent value="upload" className="pt-4 h-[180px] flex flex-col justify-center">
+                        <TabsContent value="upload" className="h-[180px] flex flex-col justify-center">
                             <input
                                 type="file"
                                 ref={fileInputRef}
