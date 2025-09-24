@@ -68,18 +68,18 @@ export default function FilterPage() {
 
                     <Card className="rounded-2xl shadow-soft border-none p-4 flex-shrink-0">
                         <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
-                         <RadioGroup value={tempSortBy} onValueChange={(value) => setTempSortBy(value as any)} className="space-y-2">
-                             <div className="flex items-center space-x-2">
+                         <RadioGroup value={tempSortBy} onValueChange={(value) => setTempSortBy(value as any)}>
+                             <div className="flex items-center space-x-2 py-2">
                                 <RadioGroupItem value="default" id="sort-default" />
                                 <Label htmlFor="sort-default" className="text-base font-normal flex-grow">Default</Label>
                             </div>
                              <Separator />
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-2 py-2">
                                 <RadioGroupItem value="dueDate" id="sort-due-date" />
                                 <Label htmlFor="sort-due-date" className="text-base font-normal flex-grow">Due Date</Label>
                             </div>
                              <Separator />
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-2 py-2">
                                 <RadioGroupItem value="importance" id="sort-importance" />
                                 <Label htmlFor="sort-importance" className="text-base font-normal flex-grow">Importance</Label>
                             </div>
@@ -94,4 +94,3 @@ export default function FilterPage() {
         </div>
     );
 }
-
