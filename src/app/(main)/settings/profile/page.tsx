@@ -13,6 +13,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useAppContext } from '@/context/AppContext';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
     <p className="px-1 text-[13px] font-regular text-muted-foreground uppercase mt-6 mb-2">{children}</p>
@@ -45,8 +46,20 @@ export default function ProfilePage() {
     };
 
     if (!isClient || !currentUser) {
-        // You can return a loader here
-        return null;
+        return (
+            <div className="px-5">
+                <header className="pt-10 pb-4 h-[100px] flex justify-between items-center">
+                    <Skeleton className="h-10 w-10" />
+                    <Skeleton className="h-8 w-32" />
+                    <div className="w-10"></div>
+                </header>
+                <div className="flex flex-col items-center mb-8">
+                    <Skeleton className="w-24 h-24 rounded-full mb-4" />
+                    <Skeleton className="h-8 w-40" />
+                </div>
+                <Skeleton className="h-64 w-full" />
+            </div>
+        );
     }
 
     return (
