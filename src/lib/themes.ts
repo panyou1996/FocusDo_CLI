@@ -119,4 +119,89 @@ export const themes = [
       },
     },
   },
+  {
+    name: 'Yellow',
+    cssVars: {
+      light: {
+        primary: '45 93% 47%',
+        'primary-foreground': '0 0% 100%',
+        accent: '45 95% 95%',
+        'accent-foreground': '45 93% 47%',
+      },
+      dark: {
+        primary: '45 93% 47%',
+        'primary-foreground': '0 0% 100%',
+        accent: '45 95% 20%',
+        'accent-foreground': '45 95% 90%',
+      },
+    },
+  },
+  {
+    name: 'Lime',
+    cssVars: {
+      light: {
+        primary: '83 74% 44%',
+        'primary-foreground': '0 0% 100%',
+        accent: '83 75% 95%',
+        'accent-foreground': '83 74% 44%',
+      },
+      dark: {
+        primary: '83 74% 44%',
+        'primary-foreground': '0 0% 100%',
+        accent: '83 75% 15%',
+        'accent-foreground': '83 75% 85%',
+      },
+    },
+  },
+  {
+    name: 'Teal',
+    cssVars: {
+      light: {
+        primary: '168 76% 42%',
+        'primary-foreground': '0 0% 100%',
+        accent: '168 75% 95%',
+        'accent-foreground': '168 76% 42%',
+      },
+      dark: {
+        primary: '168 76% 42%',
+        'primary-foreground': '0 0% 100%',
+        accent: '168 75% 15%',
+        'accent-foreground': '168 75% 85%',
+      },
+    },
+  },
+  {
+    name: 'Indigo',
+    cssVars: {
+      light: {
+        primary: '221 83% 53%',
+        'primary-foreground': '0 0% 100%',
+        accent: '221 85% 95%',
+        'accent-foreground': '221 83% 53%',
+      },
+      dark: {
+        primary: '221 83% 53%',
+        'primary-foreground': '0 0% 100%',
+        accent: '221 85% 20%',
+        'accent-foreground': '221 85% 90%',
+      },
+    },
+  },
+  {
+    name: 'Pink',
+    cssVars: {
+      light: {
+        primary: '322 84% 60%',
+        'primary-foreground': '0 0% 100%',
+        accent: '322 85% 95%',
+        'accent-foreground': '322 84% 60%',
+      },
+      dark: {
+        primary: '322 84% 60%',
+        'primary-foreground': '0 0% 100%',
+        accent: '322 85% 20%',
+        'accent-foreground': '322 85% 90%',
+      },
+    },
+  },
 ];
