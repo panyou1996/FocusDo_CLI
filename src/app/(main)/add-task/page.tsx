@@ -34,6 +34,7 @@ const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType
 export default function AddTaskPage() {
     const router = useRouter();
     const { addTask, lists } = useAppContext();
+    const [isMounted, setIsMounted] = React.useState(false);
 
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
@@ -50,6 +51,9 @@ export default function AddTaskPage() {
     const [editingSubtaskText, setEditingSubtaskText] = React.useState('');
     const [selectedListId, setSelectedListId] = React.useState(lists[0]?.id || 'personal');
 
+    React.useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     const handleSaveTask = () => {
         if (!title) {
@@ -115,7 +119,10 @@ export default function AddTaskPage() {
 
     return (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
-            <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
+            <div className={cn(
+                "bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl transition-transform duration-300 ease-out",
+                isMounted ? 'translate-y-0' : 'translate-y-full'
+            )}>
                 <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
                     <div className="w-10"></div>
                     <h1 className="text-[17px] font-bold">Add New Task</h1>

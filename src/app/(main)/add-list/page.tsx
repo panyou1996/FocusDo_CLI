@@ -55,11 +55,17 @@ const availableIcons: {name: string, icon: LucideIcon}[] = [
 
 export default function AddListPage() {
     const router = useRouter();
-    const { addList, lists } = useAppContext();
+    const { addList } = useAppContext();
+    const [isMounted, setIsMounted] = React.useState(false);
 
     const [name, setName] = React.useState('');
     const [selectedColor, setSelectedColor] = React.useState(availableColors[0]);
     const [selectedIcon, setSelectedIcon] = React.useState(availableIcons[0]);
+    
+    React.useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
 
     const handleSaveList = () => {
         if (!name) {
@@ -80,7 +86,10 @@ export default function AddListPage() {
 
     return (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
-            <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
+            <div className={cn(
+                "bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl transition-transform duration-300 ease-out",
+                isMounted ? 'translate-y-0' : 'translate-y-full'
+            )}>
                 <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
                     <div className="w-10"></div>
                     <h1 className="text-[17px] font-bold">Add New List</h1>

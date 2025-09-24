@@ -17,6 +17,8 @@ import { getIcon } from '@/lib/icon-utils';
 export default function BlogNewPage() {
   const router = useRouter();
   const { addBlogPost, currentUser, lists } = useAppContext();
+  const [isMounted, setIsMounted] = React.useState(false);
+  
   const [title, setTitle] = React.useState('');
   const [content, setContent] = React.useState('');
   const [coverImage, setCoverImage] = React.useState<string | null>(null);
@@ -24,6 +26,10 @@ export default function BlogNewPage() {
   const [selectedListId, setSelectedListId] = React.useState(lists[0]?.id || 'personal');
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleImageUploadClick = () => {
     fileInputRef.current?.click();
@@ -82,7 +88,10 @@ export default function BlogNewPage() {
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
-      <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
+      <div className={cn(
+          "bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl transition-transform duration-300 ease-out",
+          isMounted ? 'translate-y-0' : 'translate-y-full'
+      )}>
         <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
           <div className="w-10"></div>
           <h1 className="text-[17px] font-bold">New Blog</h1>
