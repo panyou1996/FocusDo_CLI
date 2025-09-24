@@ -52,15 +52,19 @@ export function BlogCard({ post, list }: BlogCardProps) {
           </CardHeader>
         )}
         <CardContent className="p-4">
-           {list && ListIcon && (
-             <div className="flex items-center gap-2 mb-2">
-                <ListIcon className="w-4 h-4" style={{color: list.color}} />
-                <span className="text-sm font-medium" style={{color: list.color}}>{list.name}</span>
-             </div>
-           )}
           <h3 className="text-[18px] font-bold text-foreground mb-2 leading-tight">{post.title}</h3>
           <p className="text-[15px] text-muted-foreground line-clamp-3 mb-3">{post.excerpt}</p>
-          <p className="text-[13px] text-muted-foreground">{post.date} &bull; {post.readingTime} min read</p>
+          <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
+             {list && ListIcon && (
+                <>
+                    <ListIcon className="w-4 h-4" style={{color: list.color}} />
+                    <span>&bull;</span>
+                </>
+             )}
+            <span>{post.date}</span>
+            <span>&bull;</span>
+            <span>{post.readingTime} min read</span>
+          </div>
         </CardContent>
       </Card>
     </Link>
