@@ -2,14 +2,14 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Upload } from 'lucide-react';
+import { Loader2, Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { useAppContext } from '@/context/AppContext';
+import { Card } from '@/components/ui/card';
 
 export default function BlogNewPage() {
   const router = useRouter();
@@ -67,60 +67,72 @@ export default function BlogNewPage() {
     };
 
     addBlogPost(newPost);
-    router.push('/blog');
+    router.back();
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0">
-        <Link href="/blog">
-          <Button variant="link" className="text-primary text-[17px] p-0">Cancel</Button>
-        </Link>
-        <h1 className="text-[17px] font-bold">New Blog</h1>
-        <Button variant="link" className="text-primary text-[17px] font-bold p-0" onClick={handleSave} disabled={isUploading}>Save</Button>
-      </header>
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
+      <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
+        <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
+          <div className="w-10"></div>
+          <h1 className="text-[17px] font-bold">New Blog</h1>
+          <Button variant="ghost" size="icon" aria-label="Close" onClick={() => router.back()}>
+            <X className="w-6 h-6" />
+          </Button>
+        </header>
 
-      <main className="flex-grow px-5 py-4 flex flex-col gap-6">
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          accept="image/*"
-          className="hidden"
-        />
-        <div 
-          className="w-full h-[180px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer relative overflow-hidden bg-secondary/50"
-          onClick={handleImageUploadClick}
-        >
-          {coverImage ? (
-            <Image src={coverImage} alt="Cover preview" fill className="object-cover" />
-          ) : isUploading ? (
-            <>
-              <Loader2 className="w-8 h-8 mb-2 animate-spin" />
-              <p>Processing...</p>
-            </>
-          ) : (
-            <>
-              <Upload className="w-8 h-8 mb-2" />
-              <p>Upload Cover Image</p>
-            </>
-          )}
-        </div>
+        <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
+          />
+          <div 
+            className="w-full h-[180px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer relative overflow-hidden bg-secondary/50"
+            onClick={handleImageUploadClick}
+          >
+            {coverImage ? (
+              <Image src={coverImage} alt="Cover preview" fill className="object-cover" />
+            ) : isUploading ? (
+              <>
+                <Loader2 className="w-8 h-8 mb-2 animate-spin" />
+                <p>Processing...</p>
+              </>
+            ) : (
+              <>
+                <Upload className="w-8 h-8 mb-2" />
+                <p>Upload Cover Image</p>
+              </>
+            )}
+          </div>
+          
+          <Card className="rounded-2xl shadow-soft border-none p-1">
+            <Input 
+              placeholder="Blog Title"
+              className="border-none text-[18px] font-medium h-[60px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </Card>
+
+          <Card className="rounded-2xl shadow-soft border-none p-1">
+            <Textarea 
+              placeholder="Start writing your story..."
+              className="border-none text-[17px] min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+          </Card>
+
+        </main>
         
-        <Input 
-          placeholder="Blog Title"
-          className="border-none text-[30px] font-bold h-auto p-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-
-        <Textarea 
-          placeholder="Start writing your story..."
-          className="border-none text-[17px] leading-relaxed p-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow resize-none"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-      </main>
+        <footer className="px-5 py-4 flex-shrink-0 border-t">
+          <Button className="w-full h-[50px] text-[17px] font-bold rounded-md" onClick={handleSave} disabled={isUploading}>Save Post</Button>
+        </footer>
+      </div>
     </div>
   );
 }
+
