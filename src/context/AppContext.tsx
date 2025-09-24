@@ -8,6 +8,8 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from 'next-themes';
 import { themes } from '@/lib/themes';
 
+const UI_SIZES = [14, 15, 16, 17, 18]; // Corresponds to XS, S, M, L, XL
+
 interface AppContextType {
   tasks: Task[];
   addTask: (task: Task) => void;
@@ -24,6 +26,8 @@ interface AppContextType {
   setMode: (mode: 'light' | 'dark') => void;
   lists: TaskList[];
   addList: (list: TaskList) => void;
+  uiSize: number;
+  setUiSize: (size: number) => void;
 }
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
@@ -41,6 +45,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useLocalStorage<Author>('currentUser', defaultUser);
   const { theme: mode, setTheme: setMode } = useTheme();
   const [colorTheme, setColorTheme] = useLocalStorage<string>('color-theme', 'Default');
+  const [uiSize, setUiSize] = useLocalStorage<number>('ui-size', 2); // Default to M (16px)
 
   React.useEffect(() => {
     const root = window.document.documentElement;
@@ -55,6 +60,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
   }, [colorTheme, mode]);
+
+  React.useEffect(() => {
+    const root = window.document.documentElement;
+    const newSize = UI_SIZES[uiSize] || 16;
+    root.style.fontSize = `${newSize}px`;
+  }, [uiSize]);
 
 
   const addTask = (task: Task) => {
@@ -108,7 +119,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setMode: setMode as (mode: 'light' | 'dark') => void,
     lists,
     addList,
-  }), [tasks, blogPosts, currentUser, colorTheme, mode, setMode, lists, setCurrentUser, setColorTheme]);
+    uiSize,
+    setUiSize,
+  }), [tasks, blogPosts, currentUser, colorTheme, mode, setMode, lists, uiSize, setCurrentUser, setColorTheme, setUiSize]);
 
 
   return (

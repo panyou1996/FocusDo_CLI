@@ -10,14 +10,17 @@ import { Switch } from '@/components/ui/switch';
 import { useAppContext } from '@/context/AppContext';
 import { cn } from '@/lib/utils';
 import { themes } from '@/lib/themes';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
   <p className="px-1 text-[13px] font-regular text-muted-foreground uppercase mt-6 mb-2">{children}</p>
 );
 
+const sizeSteps = ['XS', 'S', 'M', 'L', 'XL'];
+
 export default function AppearancePage() {
   const router = useRouter();
-  const { theme: currentTheme, setTheme, mode, setMode } = useAppContext();
+  const { theme: currentTheme, setTheme, mode, setMode, uiSize, setUiSize } = useAppContext();
   const [isClient, setIsClient] = React.useState(false);
 
   React.useEffect(() => {
@@ -31,6 +34,10 @@ export default function AppearancePage() {
   const handleModeChange = (isDark: boolean) => {
     setMode(isDark ? 'dark' : 'light');
   };
+
+  const handleSizeChange = (index: number) => {
+    setUiSize(index);
+  }
 
   if (!isClient) {
     return (
@@ -73,6 +80,17 @@ export default function AppearancePage() {
                     aria-label="Toggle dark mode"
                 />
             </div>
+          </Card>
+
+          <SettingsGroupLabel>UI Size</SettingsGroupLabel>
+          <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
+            <Tabs value={String(uiSize)} onValueChange={(value) => handleSizeChange(Number(value))}>
+                <TabsList className="grid w-full grid-cols-5">
+                    {sizeSteps.map((size, index) => (
+                        <TabsTrigger key={size} value={String(index)}>{size}</TabsTrigger>
+                    ))}
+                </TabsList>
+            </Tabs>
           </Card>
           
           <SettingsGroupLabel>Theme Color</SettingsGroupLabel>
