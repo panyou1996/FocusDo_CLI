@@ -17,7 +17,7 @@ export function BlogCard({ post }: BlogCardProps) {
   const imageUrl = isBase64 ? post.coverImage : placeholderImage?.imageUrl;
 
   return (
-    <Link href={`/blog/${post.slug}`}>
+    <Link href={`/blog/${post.slug}`} className="block">
       <Card className="rounded-2xl shadow-soft border-none overflow-hidden">
         {imageUrl ? (
           <CardHeader className="p-0">
