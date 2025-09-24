@@ -48,7 +48,7 @@ export default function FilterPage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <Label htmlFor="filter-status" className="text-base">Status</Label>
-                                <Tabs value={tempFilterStatus} onValueChange={(value) => setTempFilterStatus(value as any)} >
+                                <Tabs value={tempFilterStatus} onValueChange={(value) => setTempFilterStatus(value as any)} className="w-[240px]">
                                     <TabsList className="grid grid-cols-3">
                                         <TabsTrigger value="all">All</TabsTrigger>
                                         <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
@@ -62,6 +62,7 @@ export default function FilterPage() {
                                 <Tabs
                                     value={tempFilterImportance}
                                     onValueChange={(value) => setTempFilterImportance(value as any)}
+                                    className="w-[240px]"
                                 >
                                     <TabsList className="grid grid-cols-3">
                                         <TabsTrigger value="all">All</TabsTrigger>
