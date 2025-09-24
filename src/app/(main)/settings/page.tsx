@@ -47,7 +47,7 @@ export default function SettingsPage() {
           <SettingsItem icon={Palette} label="Appearance" color="#3b82f6" action="navigate" href="/settings/appearance" />
         </Card>
 
-        <SettingsGroup-label>Account Settings</SettingsGroup-label>
+        <SettingsGroupLabel>Account Settings</SettingsGroupLabel>
         <Card className="rounded-xl overflow-hidden shadow-soft border-none">
           <SettingsItem icon={User} label="Profile" color="#8b5cf6" action="navigate" href="/settings/profile" />
           <Separator />
