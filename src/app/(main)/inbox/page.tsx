@@ -294,9 +294,6 @@ export default function InboxPage() {
               />
             </div>
             <div className="space-y-3 px-5 mt-4">
-            <h2 className="font-bold text-lg">
-              Tasks for {date ? format(date, 'PPP') : 'selected date'}
-            </h2>
              {!isClient ? (
               <div className="space-y-3">
                 <Skeleton className="h-20 w-full" />
