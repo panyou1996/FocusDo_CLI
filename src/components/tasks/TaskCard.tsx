@@ -145,7 +145,7 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
     <div className="flex items-start text-sm text-muted-foreground min-h-[24px]">
       <Icon className="w-4 h-4 mr-2 mt-1 flex-shrink-0" strokeWidth={1.5} />
       <span className="font-medium w-20 flex-shrink-0">{label}:</span>
-      {isEditing && view === 'detail' ? (
+      {isEditing ? (
          InputComponent
       ) : (
         <span onClick={onClick} className={cn("flex-grow", onClick && "cursor-text")}>{value}</span>
@@ -155,16 +155,6 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
 
   React.useEffect(() => {
     setIsExpanded(view === "detail");
-  }, [view]);
-  
-  React.useEffect(() => {
-    if (view !== 'detail') {
-        setIsEditingTitle(false);
-        setIsEditingDesc(false);
-        setIsEditingStartTime(false);
-        setIsEditingDueDate(false);
-        setIsEditingDuration(false);
-    }
   }, [view]);
 
   React.useEffect(() => {
@@ -177,6 +167,8 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
 
 
   const ListIcon = list.icon;
+
+  const cardIsExpanded = isExpanded || view === 'detail';
 
   return (
     <div
@@ -205,7 +197,7 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
         )}
 
         <div className="flex-grow ml-3">
-          { isEditingTitle && view === 'detail' ? (
+          { isEditingTitle && cardIsExpanded ? (
               <Input
                 value={editingTitle}
                 onChange={handleTitleChange}
@@ -213,15 +205,21 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
                 onKeyDown={handleTitleKeyDown}
                 className="h-7 p-0 text-[17px] font-medium border-none focus-visible:ring-0"
                 autoFocus
+                onClick={(e) => e.stopPropagation()}
               />
           ) : (
             <p
               className={cn(
                 "text-[17px] font-medium text-foreground",
                 task.isCompleted && "line-through text-muted-foreground",
-                view === 'detail' && "cursor-text"
+                cardIsExpanded && "cursor-text"
               )}
-              onClick={() => view === 'detail' && setIsEditingTitle(true)}
+              onClick={(e) => {
+                if(cardIsExpanded) {
+                  e.stopPropagation();
+                  setIsEditingTitle(true)
+                }
+              }}
             >
               {task.title}
             </p>
@@ -258,13 +256,15 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
           </button>
         </div>
       </div>
-      {(isExpanded || view === 'detail') && (
+      {cardIsExpanded && (
         <div className="px-4 pb-4 pl-12 space-y-3 animate-accordion-down">
           <DetailRow 
             icon={ListTree}
             label="Description"
             value={task.description || "Add a description..."}
-            onClick={() => view === 'detail' && setIsEditingDesc(true)}
+            onClick={() => {
+                if(cardIsExpanded) setIsEditingDesc(true)
+            }}
             isEditing={isEditingDesc}
             InputComponent={
                 <Textarea
@@ -280,7 +280,9 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
             icon={Clock} 
             label="Start" 
             value={task.startTime || 'Not set'}
-            onClick={() => view === 'detail' && setIsEditingStartTime(true)}
+            onClick={() => {
+                if(cardIsExpanded) setIsEditingStartTime(true)
+            }}
             isEditing={isEditingStartTime}
             InputComponent={
                 <Input
@@ -297,7 +299,9 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
             icon={Calendar} 
             label="Due" 
             value={task.dueDate ? format(parseISO(task.dueDate), 'PPP') : 'Not set'}
-            onClick={() => view === 'detail' && setIsEditingDueDate(true)}
+            onClick={() => {
+                if(cardIsExpanded) setIsEditingDueDate(true)
+            }}
             isEditing={isEditingDueDate}
             InputComponent={
               <Popover open={isEditingDueDate} onOpenChange={setIsEditingDueDate}>
@@ -321,7 +325,9 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
             icon={Hourglass} 
             label="Duration" 
             value={task.duration ? `${task.duration} min` : 'Not set'}
-            onClick={() => view === 'detail' && setIsEditingDuration(true)}
+            onClick={() => {
+                if(cardIsExpanded) setIsEditingDuration(true)
+            }}
             isEditing={isEditingDuration}
             InputComponent={
               <div className="flex items-center gap-1">
