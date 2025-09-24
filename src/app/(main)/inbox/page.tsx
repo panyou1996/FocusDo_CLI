@@ -82,11 +82,28 @@ const TaskGroup = ({
   );
 };
 
-const FilterPopoverContent = () => {
-    const [filterStatus, setFilterStatus] = useLocalStorage<'all' | 'incomplete' | 'completed'>('inbox-filter-status', 'all');
-    const [filterImportance, setFilterImportance] = useLocalStorage<'all' | 'important' | 'not-important'>('inbox-filter-importance', 'all');
-    const [sortBy, setSortBy] = useLocalStorage<'default' | 'dueDate' | 'importance' | 'creationDate'>('inbox-sort-by', 'default');
-    
+type FilterStatus = 'all' | 'incomplete' | 'completed';
+type FilterImportance = 'all' | 'important' | 'not-important';
+type SortByType = 'default' | 'dueDate' | 'importance' | 'creationDate';
+
+interface FilterPopoverContentProps {
+  filterStatus: FilterStatus;
+  setFilterStatus: (value: FilterStatus) => void;
+  filterImportance: FilterImportance;
+  setFilterImportance: (value: FilterImportance) => void;
+  sortBy: SortByType;
+  setSortBy: (value: SortByType) => void;
+}
+
+
+const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({
+  filterStatus,
+  setFilterStatus,
+  filterImportance,
+  setFilterImportance,
+  sortBy,
+  setSortBy,
+}) => {
     return (
         <div className="p-4 space-y-4">
             <div>
@@ -145,9 +162,9 @@ export default function InboxPage() {
   const router = useRouter();
 
   // Filter and Sort States from localStorage
-  const [filterStatus] = useLocalStorage<'all' | 'incomplete' | 'completed'>('inbox-filter-status', 'all');
-  const [filterImportance] = useLocalStorage<'all' | 'important' | 'not-important'>('inbox-filter-importance', 'all');
-  const [sortBy] = useLocalStorage<'default' | 'dueDate' | 'importance' | 'creationDate'>('inbox-sort-by', 'default');
+  const [filterStatus, setFilterStatus] = useLocalStorage<FilterStatus>('inbox-filter-status', 'all');
+  const [filterImportance, setFilterImportance] = useLocalStorage<FilterImportance>('inbox-filter-importance', 'all');
+  const [sortBy, setSortBy] = useLocalStorage<SortByType>('inbox-sort-by', 'default');
 
 
   React.useEffect(() => {
@@ -219,7 +236,6 @@ export default function InboxPage() {
     if (!isClient) return {};
     const counts: { [key: string]: number } = {};
     
-    // The list to count should also respect the filters
     processedTasks.forEach(task => {
       if (task.dueDate) {
         counts[task.dueDate] = (counts[task.dueDate] || 0) + 1;
@@ -263,8 +279,6 @@ export default function InboxPage() {
   };
 
   React.useEffect(() => {
-    if (!isClient) return;
-
     const groupAndSortTasks = (tasksToSort: Task[]) => {
       const now = new Date();
       const done: Task[] = [];
@@ -295,7 +309,7 @@ export default function InboxPage() {
     };
 
     setGroupedTasks(groupAndSortTasks(processedTasks));
-  }, [processedTasks, isClient, sortBy]);
+  }, [processedTasks]);
 
   const { expired, upcoming, done } = groupedTasks;
 
@@ -328,7 +342,6 @@ export default function InboxPage() {
       );
     }
 
-    // If not sorting by default, render a single flat list
     if (sortBy !== 'default') {
       let title = "Tasks";
       if(filterStatus === 'completed') title = "Completed Tasks";
@@ -347,7 +360,6 @@ export default function InboxPage() {
       );
     }
     
-    // If sorting by default, render grouped list
     return (
       <div className="space-y-6 px-5 mt-4">
         <TaskGroup
@@ -381,7 +393,14 @@ export default function InboxPage() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent align="end" className="w-[calc(100vw-40px)] max-w-lg p-0">
-                  <FilterPopoverContent />
+                  <FilterPopoverContent
+                    filterStatus={filterStatus}
+                    setFilterStatus={setFilterStatus}
+                    filterImportance={filterImportance}
+                    setFilterImportance={setFilterImportance}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                  />
               </PopoverContent>
           </Popover>
       </header>
