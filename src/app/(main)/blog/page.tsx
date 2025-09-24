@@ -3,32 +3,99 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { BookText, Plus, Search, Filter } from "lucide-react";
+import { BookText, Plus, Search, Filter, List, type Icon as LucideIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { useAppContext } from "@/context/AppContext";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { cn } from "@/lib/utils";
+import * as Icons from 'lucide-react';
+
+type SortByType = 'newest' | 'oldest' | 'readingTime';
+
+interface FilterPopoverContentProps {
+  sortBy: SortByType;
+  setSortBy: (value: SortByType) => void;
+}
+
+const getIcon = (iconName: string): LucideIcon => {
+  const icon = (Icons as any)[iconName];
+  if (icon) {
+    return icon;
+  }
+  return Icons.HelpCircle; // Fallback icon
+};
+
+
+const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({ sortBy, setSortBy }) => {
+    return (
+        <div className="p-4 space-y-4">
+            <div>
+                 <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
+                 <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
+                    <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="newest">Newest</TabsTrigger>
+                        <TabsTrigger value="oldest">Oldest</TabsTrigger>
+                        <TabsTrigger value="readingTime">Reading Time</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+            </div>
+        </div>
+    );
+};
 
 
 export default function BlogPage() {
-  const { blogPosts } = useAppContext();
+  const { blogPosts, lists } = useAppContext();
   const [isClient, setIsClient] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
+
+  // Filter and Sort States from localStorage
+  const [selectedList, setSelectedList] = useLocalStorage('blog-selected-list', 'all');
+  const [sortBy, setSortBy] = useLocalStorage<SortByType>('blog-sort-by', 'newest');
 
   React.useEffect(() => {
     setIsClient(true);
   }, []);
 
   const filteredBlogPosts = React.useMemo(() => {
-    if (!searchQuery) {
-      return blogPosts;
+    if (!isClient) return [];
+    
+    let filtered = blogPosts;
+
+    // 1. Filter by Search Query
+    if (searchQuery) {
+      filtered = filtered.filter(post => 
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
-    return blogPosts.filter(post => 
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [blogPosts, searchQuery]);
+    
+    // 2. Filter by List
+    if (selectedList !== 'all') {
+      filtered = filtered.filter(post => post.listId === selectedList);
+    }
+
+    // 3. Sort
+    let sorted = [...filtered];
+    if (sortBy === 'oldest') {
+      sorted.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    } else if (sortBy === 'readingTime') {
+      sorted.sort((a, b) => a.readingTime - b.readingTime);
+    } else { // 'newest' is default
+      sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    }
+
+    return sorted;
+
+  }, [blogPosts, searchQuery, selectedList, sortBy, isClient]);
 
 
   return (
@@ -39,13 +106,26 @@ export default function BlogPage() {
           <h1 className="text-[28px] font-bold text-foreground">Blog</h1>
         </div>
          <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon">
-            <Filter className="w-6 h-6" strokeWidth={1.5} />
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon">
+                    <Filter className="w-6 h-6" strokeWidth={1.5} />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent 
+              align="end" 
+              className="w-[calc(100vw-40px)] max-w-lg p-0"
+            >
+                <FilterPopoverContent
+                  sortBy={sortBy}
+                  setSortBy={setSortBy}
+                />
+            </PopoverContent>
+          </Popover>
         </div>
       </header>
       
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-2">
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
           <Input 
@@ -62,7 +142,45 @@ export default function BlogPage() {
         </Link>
       </div>
 
-      <div className="space-y-4">
+       <ScrollArea className="w-full whitespace-nowrap">
+          <div className="flex gap-2 py-2">
+            <button
+              onClick={() => setSelectedList('all')}
+              className={cn(
+                'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                selectedList === 'all'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-foreground bg-secondary'
+              )}
+            >
+              <List className="w-4 h-4" />
+              <span>All</span>
+            </button>
+            {lists.map(list => {
+              const ListIcon = getIcon(list.icon as string);
+              const isSelected = selectedList === list.id;
+              return (
+                <button
+                  key={list.id}
+                  onClick={() => setSelectedList(list.id)}
+                  className={cn(
+                    'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                    isSelected ? 'text-white' : 'text-foreground bg-secondary'
+                  )}
+                  style={{
+                    backgroundColor: isSelected ? list.color : undefined,
+                  }}
+                >
+                  <ListIcon className="w-4 h-4" />
+                  <span>{list.name}</span>
+                </button>
+              );
+            })}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+
+      <div className="space-y-4 mt-2">
         {!isClient ? (
             <>
               <Skeleton className="h-[320px] w-full rounded-2xl" />
