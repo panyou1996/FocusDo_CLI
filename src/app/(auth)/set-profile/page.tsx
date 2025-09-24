@@ -125,7 +125,7 @@ export default function SetProfilePage() {
                 <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
                 <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
               </TabsList>
-              <TabsContent value="select" className="pt-4 h-[240px] relative">
+              <TabsContent value="select" className="pt-4 h-[180px] relative">
                 <div className="grid grid-cols-3 gap-4">
                   {selectableAvatars.map((avatarUrl, index) => (
                     <div
@@ -136,15 +136,15 @@ export default function SetProfilePage() {
                       <img
                         src={avatarUrl}
                         alt="Selectable Avatar"
-                        width={100}
-                        height={100}
+                        width={80}
+                        height={80}
                         className={cn(
-                          "rounded-full aspect-square object-cover border-4 transition-all bg-secondary w-full",
+                          "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto",
                           selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
                         )}
                       />
                       {selectedAvatarUrl === avatarUrl && (
-                        <div className="absolute top-0 right-0 bg-primary text-primary-foreground rounded-full p-1">
+                        <div className="absolute top-0 right-2 bg-primary text-primary-foreground rounded-full p-1">
                           <CheckCircle className="w-4 h-4" />
                         </div>
                       )}
@@ -155,10 +155,10 @@ export default function SetProfilePage() {
                     <RefreshCw className="w-4 h-4"/>
                 </Button>
               </TabsContent>
-              <TabsContent value="generate" className="pt-4 h-[240px] flex flex-col">
-                 <div className='w-full h-[180px] flex items-center justify-center bg-secondary rounded-lg overflow-hidden'>
-                    {isGenerating && <ParticleLoader />}
-                    {generatedAvatar && (
+              <TabsContent value="generate" className="pt-4 h-[180px] flex flex-col">
+                 <div className='w-full h-[120px] flex items-center justify-center bg-secondary rounded-lg overflow-hidden'>
+                    {isGenerating && <ParticleLoader particleCount={500}/>}
+                    {!isGenerating && generatedAvatar && (
                        <div
                           className="relative cursor-pointer"
                           onClick={() => setSelectedAvatarUrl(generatedAvatar)}
@@ -166,8 +166,8 @@ export default function SetProfilePage() {
                           <img
                             src={generatedAvatar}
                             alt="AI Generated Avatar"
-                            width={100}
-                            height={100}
+                            width={80}
+                            height={80}
                             className={cn(
                               "rounded-full aspect-square object-cover border-4 transition-all bg-white",
                               selectedAvatarUrl === generatedAvatar ? 'border-primary' : 'border-transparent'
@@ -192,7 +192,7 @@ export default function SetProfilePage() {
                     </Button>
                  </div>
               </TabsContent>
-              <TabsContent value="upload" className="pt-4 h-[240px] flex flex-col justify-center">
+              <TabsContent value="upload" className="pt-4 h-[180px] flex flex-col justify-center">
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -200,27 +200,29 @@ export default function SetProfilePage() {
                     accept="image/*"
                     className="hidden"
                     />
-                <div 
-                    className="w-full h-[180px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer bg-secondary/50"
-                    onClick={handleImageUploadClick}
-                >
-                    <Upload className="w-8 h-8 mb-2" />
-                    <p>Click to upload an image</p>
-                </div>
-                <div className="flex items-center gap-4 h-[60px]">
-                    <p className="text-sm text-muted-foreground">Preview:</p>
-                    <Avatar className="w-12 h-12">
-                        {isUploading ? (
-                            <div className="w-full h-full flex items-center justify-center">
-                                <Loader2 className="w-6 h-6 animate-spin"/>
-                            </div>
-                        ) : (
-                            <>
-                                <AvatarImage src={selectedAvatarUrl.startsWith('data:image/') ? selectedAvatarUrl : undefined} alt="Uploaded preview" />
-                                <AvatarFallback>{name?.charAt(0) || 'U'}</AvatarFallback>
-                            </>
-                        )}
-                    </Avatar>
+                <div className="w-full h-[120px] flex gap-4 items-center justify-center">
+                    <div 
+                        className="w-3/5 h-full border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-muted-foreground cursor-pointer bg-secondary/50"
+                        onClick={handleImageUploadClick}
+                    >
+                        <Upload className="w-8 h-8 mb-2" />
+                        <p>Click to upload</p>
+                    </div>
+                    <div className="w-2/5 h-full flex flex-col items-center justify-center">
+                         <p className="text-sm text-muted-foreground mb-2">Preview</p>
+                        <Avatar className="w-20 h-20">
+                            {isUploading ? (
+                                <div className="w-full h-full flex items-center justify-center">
+                                    <Loader2 className="w-6 h-6 animate-spin"/>
+                                </div>
+                            ) : (
+                                <>
+                                    <AvatarImage src={selectedAvatarUrl.startsWith('data:image/') ? selectedAvatarUrl : undefined} alt="Uploaded preview" />
+                                    <AvatarFallback>{name?.charAt(0) || 'U'}</AvatarFallback>
+                                </>
+                            )}
+                        </Avatar>
+                    </div>
                 </div>
               </TabsContent>
             </Tabs>
@@ -235,5 +237,3 @@ export default function SetProfilePage() {
     </Card>
   );
 }
-
-    

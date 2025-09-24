@@ -46,9 +46,9 @@ export function ParticleLoader({
 
     // --- Define Target Shape (Abstract Face) ---
     targets.current = [];
-    const headRadius = Math.min(width, height) * 0.2;
+    const headRadius = Math.min(width, height) * 0.3;
     const centerX = width / 2;
-    const centerY = height / 2 - headRadius * 0.1;
+    const centerY = height / 2;
 
     // Head circle
     for (let i = 0; i < 150; i++) {
@@ -58,16 +58,6 @@ export function ParticleLoader({
             y: centerY + Math.sin(angle) * headRadius,
         });
     }
-
-    // Neck/shoulders
-    const shoulderWidth = headRadius * 1.8;
-    const shoulderY = centerY + headRadius;
-    for (let i = 0; i < 80; i++) {
-        const x = centerX - shoulderWidth / 2 + (i / 79) * shoulderWidth;
-        const y = shoulderY + Math.sin((i / 79) * Math.PI) * 20;
-        targets.current.push({ x, y });
-    }
-    
 
     // --- Initialize Particles ---
     particles.current = [];
