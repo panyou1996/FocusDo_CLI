@@ -402,9 +402,6 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                 </div>
                 { cardIsExpanded &&
                 <div className="flex items-center gap-2 ml-2">
-                <button onClick={(e) => {e.stopPropagation(); onEdit(task.id)}}>
-                    <Pencil className="w-5 h-5 text-muted-foreground hover:text-primary" strokeWidth={1.5} />
-                </button>
                 <button onClick={(e) => {e.stopPropagation(); onToggleImportant(task.id)}}>
                     <Star
                     className={cn(
