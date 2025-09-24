@@ -15,6 +15,7 @@ import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
 import { defaultAvatarGroup } from '@/lib/default-avatars';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ParticleLoader } from '@/components/common/ParticleLoader';
 
 
 const avatarStyles = [
@@ -156,15 +157,15 @@ export default function ProfilePage() {
                             <CardContent className="p-0 space-y-6">
                                 <div className="flex flex-col items-center">
                                     <div className="relative w-24 h-24 mb-4">
-                                        <Avatar className="w-24 h-24">
-                                            <AvatarImage src={selectedAvatarUrl} alt={name} />
-                                            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        {isGenerating && (
-                                            <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center rounded-full text-center p-2">
-                                                <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                                                <p className='text-xs mt-2 text-muted-foreground'>AI is generating...</p>
+                                        {isGenerating ? (
+                                            <div className="w-24 h-24 rounded-full overflow-hidden bg-black flex items-center justify-center">
+                                                <ParticleLoader className="w-full h-full" />
                                             </div>
+                                        ) : (
+                                            <Avatar className="w-24 h-24">
+                                                <AvatarImage src={selectedAvatarUrl} alt={name} />
+                                                <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+                                            </Avatar>
                                         )}
                                     </div>
                                 </div>

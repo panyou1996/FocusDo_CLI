@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { generateAvatar } from '@/ai/flows/generate-avatar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { defaultAvatarGroup } from '@/lib/default-avatars';
+import { ParticleLoader } from '@/components/common/ParticleLoader';
 
 const avatarStyles = [
   'adventurer', 'big-ears', 'bottts', 'miniavs', 'open-peeps', 'pixel-art'
@@ -115,15 +116,16 @@ export default function SetProfilePage() {
         <CardContent className="space-y-6">
           <div className="flex justify-center">
             <div className="relative w-24 h-24">
+              {isGenerating ? (
+                  <div className="w-24 h-24 rounded-full overflow-hidden bg-black flex items-center justify-center">
+                      <ParticleLoader className="w-full h-full" />
+                  </div>
+              ) : (
                 <Avatar className="w-24 h-24">
                     <AvatarImage src={selectedAvatarUrl} alt={name} />
                     <AvatarFallback>{name?.charAt(0) || '?'}</AvatarFallback>
                 </Avatar>
-                {isGenerating && (
-                    <div className="absolute inset-0 bg-background/80 flex flex-col items-center justify-center rounded-full">
-                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                    </div>
-                )}
+              )}
             </div>
           </div>
 
