@@ -70,6 +70,7 @@ export const blogPosts: BlogPost[] = [
     title: 'Mastering Productivity in the Digital Age',
     excerpt: 'Discover the secrets to staying focused and achieving your goals in a world full of distractions. Here are five actionable tips you can implement today.',
     coverImage: 'placeholder_blog_1',
+    listId: 'personal',
     author: {
       name: 'Jane Doe',
       avatarUrl: 'placeholder_avatar_1',
@@ -95,6 +96,7 @@ export const blogPosts: BlogPost[] = [
     title: 'The Art of Digital Minimalism',
     excerpt: 'Learn how decluttering your digital life can lead to more clarity, focus, and intentionality. A guide to curating your digital space for a better life.',
     coverImage: 'placeholder_blog_2',
+    listId: 'study',
     author: {
       name: 'John Smith',
       avatarUrl: 'placeholder_avatar_2',

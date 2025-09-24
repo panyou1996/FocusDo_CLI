@@ -14,10 +14,21 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function BlogPage() {
   const { blogPosts } = useAppContext();
   const [isClient, setIsClient] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState("");
 
   React.useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const filteredBlogPosts = React.useMemo(() => {
+    if (!searchQuery) {
+      return blogPosts;
+    }
+    return blogPosts.filter(post => 
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [blogPosts, searchQuery]);
 
 
   return (
@@ -37,7 +48,12 @@ export default function BlogPage() {
       <div className="flex gap-2 mb-6">
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-          <Input placeholder="Search for a topic..." className="h-11 rounded-md pl-10 bg-secondary border-none text-base" />
+          <Input 
+            placeholder="Search for a topic..." 
+            className="h-11 rounded-md pl-10 bg-secondary border-none text-base" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
         <Link href="/blog/new">
           <Button size="icon" className="h-11 w-11 rounded-md">
@@ -52,12 +68,12 @@ export default function BlogPage() {
               <Skeleton className="h-[320px] w-full rounded-2xl" />
               <Skeleton className="h-[320px] w-full rounded-2xl" />
             </>
-        ) : blogPosts.length > 0 ? (
-          blogPosts.map((post) => (
+        ) : filteredBlogPosts.length > 0 ? (
+          filteredBlogPosts.map((post) => (
             <BlogCard key={post.id} post={post} />
           ))
         ) : (
-          <p className="text-muted-foreground text-center py-10">No blog posts yet. Create one!</p>
+          <p className="text-muted-foreground text-center py-10">No blog posts found.</p>
         )}
       </div>
     </div>

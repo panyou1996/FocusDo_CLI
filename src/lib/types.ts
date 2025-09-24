@@ -1,3 +1,4 @@
+
 import type { ElementType } from "react";
 
 export type Task = {
@@ -44,4 +45,5 @@ export type BlogPost = {
   date: string;
   readingTime: number; // in minutes
   content: string;
+  listId: string;
 };

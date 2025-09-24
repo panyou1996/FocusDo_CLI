@@ -6,18 +6,30 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Upload, X } from 'lucide-react';
+import { Loader2, Upload, X, List, type Icon as LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useAppContext } from '@/context/AppContext';
 import { Card } from '@/components/ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import * as Icons from 'lucide-react';
+
+const getIcon = (iconName: string): LucideIcon => {
+    const icon = (Icons as any)[iconName];
+    if (icon) {
+        return icon;
+    }
+    return Icons.HelpCircle; // Fallback icon
+};
 
 export default function BlogNewPage() {
   const router = useRouter();
-  const { addBlogPost, currentUser } = useAppContext();
+  const { addBlogPost, currentUser, lists } = useAppContext();
   const [title, setTitle] = React.useState('');
   const [content, setContent] = React.useState('');
   const [coverImage, setCoverImage] = React.useState<string | null>(null);
   const [isUploading, setIsUploading] = React.useState(false);
+  const [selectedListId, setSelectedListId] = React.useState(lists[0]?.id || 'personal');
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -66,11 +78,15 @@ export default function BlogNewPage() {
       author: currentUser,
       date: formattedDate,
       readingTime: Math.ceil(content.split(' ').length / 200),
+      listId: selectedListId,
     };
 
     addBlogPost(newPost);
     router.back();
   };
+
+  const selectedList = lists.find(l => l.id === selectedListId);
+  const SelectedListIcon = selectedList ? getIcon(selectedList.icon as string) : List;
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
@@ -110,10 +126,42 @@ export default function BlogNewPage() {
             )}
           </div>
           
-          <Card className="rounded-2xl shadow-soft border-none p-1 flex-shrink-0">
+          <Card className="rounded-2xl shadow-soft border-none p-1 flex items-center gap-2">
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-2 h-auto py-2 px-3 text-primary">
+                        {selectedList && (
+                            <SelectedListIcon className="w-5 h-5" style={{ color: selectedList.color }}/>
+                        )}
+                        <span className="text-sm font-medium">{selectedList?.name || 'Select List'}</span>
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-1" align="start">
+                    <div className="flex flex-col gap-1">
+                        {lists.map(listOption => {
+                            const ListOptionIcon = getIcon(listOption.icon as string);
+                            return (
+                                <Button
+                                    key={listOption.id}
+                                    variant="ghost"
+                                    className={cn(
+                                        "w-full justify-start gap-2",
+                                        selectedListId === listOption.id && 'bg-accent'
+                                    )}
+                                    onClick={() => setSelectedListId(listOption.id)}
+                                >
+                                    <ListOptionIcon className="w-4 h-4" style={{ color: listOption.color }}/>
+                                    {listOption.name}
+                                </Button>
+                            );
+                        })}
+                    </div>
+                </PopoverContent>
+            </Popover>
+
             <Input 
               placeholder="Blog Title"
-              className="border-none text-[18px] font-medium h-[60px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0"
+              className="border-none text-[18px] font-medium h-[60px] p-0 flex-grow focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
