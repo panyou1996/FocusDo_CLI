@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import type { Task, TaskList } from "@/lib/types";
+import type { Subtask, Task, TaskList } from "@/lib/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,10 +16,12 @@ import {
   Calendar,
   Hourglass,
   ListTree,
+  Plus,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format, parseISO } from 'date-fns';
+import { Button } from "../ui/button";
 
 interface TaskCardProps {
   task: Task;
@@ -52,6 +54,12 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
 
   const [isEditingDuration, setIsEditingDuration] = React.useState(false);
   const [editingDuration, setEditingDuration] = React.useState(task.duration || 0);
+
+  const [editingSubtasks, setEditingSubtasks] = React.useState<Subtask[]>(task.subtasks || []);
+  const [newSubtask, setNewSubtask] = React.useState('');
+  const [isAddingSubtask, setIsAddingSubtask] = React.useState(false);
+  const [editingSubtaskId, setEditingSubtaskId] = React.useState<string | null>(null);
+  const [editingSubtaskText, setEditingSubtaskText] = React.useState('');
 
 
   const handleToggleExpand = () => {
@@ -126,6 +134,48 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
       setIsEditingDuration(false);
   };
 
+  // --- Subtasks ---
+    const updateSubtasks = (newSubtasks: Subtask[]) => {
+        setEditingSubtasks(newSubtasks);
+        onUpdate(task.id, { subtasks: newSubtasks });
+    };
+
+    const addSubtask = () => {
+        if (newSubtask.trim()) {
+            const newSubtasks = [...editingSubtasks, { id: `sub-${Date.now()}`, title: newSubtask, isCompleted: false }];
+            updateSubtasks(newSubtasks);
+            setNewSubtask('');
+            setIsAddingSubtask(false);
+        }
+    };
+
+    const removeSubtask = (id: string) => {
+        const newSubtasks = editingSubtasks.filter(sub => sub.id !== id);
+        updateSubtasks(newSubtasks);
+    };
+
+    const toggleSubtaskCompletion = (id: string) => {
+        const newSubtasks = editingSubtasks.map(sub => sub.id === id ? { ...sub, isCompleted: !sub.isCompleted } : sub);
+        updateSubtasks(newSubtasks);
+    };
+
+    const startEditingSubtask = (subtask: Subtask) => {
+        setEditingSubtaskId(subtask.id);
+        setEditingSubtaskText(subtask.title);
+    };
+
+    const saveSubtaskEdit = (id: string) => {
+        const newSubtasks = editingSubtasks.map(sub => sub.id === id ? { ...sub, title: editingSubtaskText } : sub);
+        updateSubtasks(newSubtasks);
+        setEditingSubtaskId(null);
+        setEditingSubtaskText('');
+    };
+
+    const handleSubtaskEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string) => {
+        if (e.key === 'Enter') {
+            saveSubtaskEdit(id);
+        }
+    };
 
   const DetailRow = ({
     icon: Icon,
@@ -163,6 +213,7 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
     setEditingStartTime(task.startTime || "");
     setEditingDueDate(task.dueDate ? parseISO(task.dueDate) : undefined);
     setEditingDuration(task.duration || 0);
+    setEditingSubtasks(task.subtasks || []);
   }, [task]);
 
 
@@ -280,6 +331,72 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
                 />
             }
           />
+          <div className="space-y-2">
+            <div className="flex items-center text-sm text-muted-foreground">
+                <ListTree className="w-4 h-4 mr-2 mt-1 flex-shrink-0 self-start" strokeWidth={1.5} />
+                <span className="font-medium w-20 flex-shrink-0">Subtasks:</span>
+                <div className="flex-grow flex justify-end">
+                     <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-auto px-2 py-0 text-primary text-xs" 
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsAddingSubtask(true);
+                        }}
+                    >
+                        <Plus className="w-3 h-3 mr-1" /> Add
+                    </Button>
+                </div>
+            </div>
+             <div className="pl-[3.2rem] space-y-2">
+                {editingSubtasks.map(sub => (
+                    <div key={sub.id} className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                        <Checkbox 
+                            id={`subtask-${task.id}-${sub.id}`}
+                            checked={sub.isCompleted} 
+                            onCheckedChange={() => toggleSubtaskCompletion(sub.id)}
+                            className="w-5 h-5 rounded-full"
+                        />
+                        {editingSubtaskId === sub.id ? (
+                            <Input
+                                value={editingSubtaskText}
+                                onChange={(e) => setEditingSubtaskText(e.target.value)}
+                                onBlur={() => saveSubtaskEdit(sub.id)}
+                                onKeyDown={(e) => handleSubtaskEditKeyDown(e, sub.id)}
+                                className="h-7 flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
+                                autoFocus
+                            />
+                        ) : (
+                            <label 
+                                htmlFor={`subtask-${task.id}-${sub.id}`} 
+                                className="flex-grow text-sm cursor-text data-[completed=true]:line-through data-[completed=true]:text-muted-foreground"
+                                data-completed={sub.isCompleted}
+                                onClick={() => startEditingSubtask(sub)}
+                            >
+                                {sub.title}
+                            </label>
+                        )}
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => removeSubtask(sub.id)}>
+                            <Trash2 className="w-4 h-4 text-destructive/70" />
+                        </Button>
+                    </div>
+                ))}
+                {isAddingSubtask && (
+                    <div className="flex gap-2 pl-7" onClick={e => e.stopPropagation()}>
+                        <Input 
+                            value={newSubtask} 
+                            onChange={(e) => setNewSubtask(e.target.value)} 
+                            placeholder="Add a subtask..." 
+                            className="h-7 border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm" 
+                            onKeyDown={(e) => e.key === 'Enter' && addSubtask()}
+                            autoFocus
+                        />
+                        <Button size="sm" className="h-7" onClick={addSubtask}>Add</Button>
+                    </div>
+                )}
+            </div>
+          </div>
           <DetailRow 
             icon={Clock} 
             label="Start" 
@@ -360,16 +477,12 @@ export function TaskCard({ task, list, view, onDelete, onEdit, onUpdate, onToggl
               </div>
             }
           />
-          {task.subtasks && task.subtasks.length > 0 && (
-            <DetailRow
-              icon={ListTree}
-              label="Subtasks"
-              value={`${task.subtasks.filter((st) => st.isCompleted).length} of ${task.subtasks.length} completed`}
-            />
-          )}
         </div>
       )}
     </div>
   );
 }
 
+
+
+    
