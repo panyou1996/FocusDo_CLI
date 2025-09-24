@@ -70,6 +70,106 @@ To run this project locally, follow these steps:
 
 Now you can open `http://localhost:9002` in your browser to see the application.
 
+## 📱 Mobile Packaging (Android APK)
+
+This project can be packaged into a native Android application using [Capacitor](https://capacitorjs.com/). Capacitor wraps the web application in a native container, allowing it to be deployed to the Google Play Store.
+
+### Prerequisites
+
+- **Android Studio**: You must have Android Studio installed, along with the necessary Android SDK. This is the official IDE for Android development and the easiest way to manage the Android SDK. Download it from the [Android Developer website](https://developer.android.com/studio).
+
+### Step-by-Step Guide
+
+#### 1. Configure Next.js for Static Export
+
+Capacitor requires a set of static HTML, CSS, and JS files. You need to configure Next.js to produce a static export instead of running a server.
+
+Open `next.config.ts` and add the `output: 'export'` option:
+
+```ts
+import type {NextConfig} from 'next';
+
+const nextConfig: NextConfig = {
+  output: 'export', // <-- Add this line
+  /* ... other config ... */
+};
+
+export default nextConfig;
+```
+
+#### 2. Build the Static Web App
+
+Run the build command. This will generate a static version of your site in the `out` directory.
+
+```bash
+npm run build
+```
+
+#### 3. Install and Initialize Capacitor
+
+If this is your first time setting up Capacitor for the project, run these commands:
+
+```bash
+# Install Capacitor CLI and Core
+npm install @capacitor/cli @capacitor/core
+
+# Initialize Capacitor in the project
+npx cap init "TaskFlow" "com.yourapp.taskflow" --web-dir="out"
+```
+- **App Name**: `TaskFlow`
+- **App Package ID**: `com.yourapp.taskflow` (You should change `yourapp` to your domain or developer name).
+- **Web directory**: `out` (This is where our static build from step 2 is located).
+
+#### 4. Add the Android Platform
+
+Install the Capacitor Android library and add the Android platform to your project.
+
+```bash
+npm install @capacitor/android
+npx cap add android
+```
+This will create an `android` directory in your project root, which is a complete, native Android project.
+
+#### 5. Sync Your App
+
+Sync your web build with the Android project. You should run this command every time you make changes to your web code and rebuild.
+
+```bash
+npx cap sync android
+```
+
+#### 6. Build the APK in Android Studio
+
+1.  Open your native Android project in Android Studio:
+    ```bash
+    npx cap open android
+    ```
+2.  Wait for Android Studio to index the files and sync Gradle.
+3.  From the menu bar, select **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+4.  Once the build is complete, a notification will appear in the bottom-right corner. Click the **"locate"** link to find the generated `app-debug.apk` file.
+
+This APK file can now be installed on an Android device or emulator for testing.
+
+### Command-Line Alternative (Requires Android SDK)
+
+If you have the Android SDK installed and configured on your system PATH but prefer not to open Android Studio, you can build the APK directly from the command line:
+
+1.  Navigate to the `android` directory:
+    ```bash
+    cd android
+    ```
+2.  Run the Gradle wrapper to build the debug APK:
+    - **On macOS/Linux**:
+      ```bash
+      ./gradlew assembleDebug
+      ```
+    - **On Windows**:
+      ```bash
+      gradlew.bat assembleDebug
+      ```
+3.  The APK will be located at `android/app/build/outputs/apk/debug/app-debug.apk`.
+
+
 ## 📂 Project Structure
 
 Here is an overview of the key directories and files in the project:
