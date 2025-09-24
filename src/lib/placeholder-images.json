@@ -23,42 +23,6 @@
       "description": "A portrait of a man with glasses.",
       "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NTg1ODI4MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "man portrait"
-    },
-    {
-      "id": "selectable_avatar_1",
-      "description": "A cartoon adventurer avatar.",
-      "imageUrl": "https://api.dicebear.com/8.x/adventurer/svg?seed=Felix",
-      "imageHint": "cartoon adventurer"
-    },
-    {
-      "id": "selectable_avatar_2",
-      "description": "A cartoon avatar with big ears.",
-      "imageUrl": "https://api.dicebear.com/8.x/big-ears/svg?seed=Mimi",
-      "imageHint": "cartoon character"
-    },
-    {
-      "id": "selectable_avatar_3",
-      "description": "A friendly cartoon robot avatar.",
-      "imageUrl": "https://api.dicebear.com/8.x/bottts/svg?seed=Sparky",
-      "imageHint": "cartoon robot"
-    },
-    {
-      "id": "selectable_avatar_4",
-      "description": "A minimalist cartoon person avatar.",
-      "imageUrl": "https://api.dicebear.com/8.x/miniavs/svg?seed=Leo",
-      "imageHint": "minimalist avatar"
-    },
-    {
-      "id": "selectable_avatar_5",
-      "description": "An open-peeps style cartoon avatar.",
-      "imageUrl": "https://api.dicebear.com/8.x/open-peeps/svg?seed=Zoe",
-      "imageHint": "cartoon person"
-    },
-    {
-      "id": "selectable_avatar_6",
-      "description": "A pixel art style cartoon avatar.",
-      "imageUrl": "https://api.dicebear.com/8.x/pixel-art/svg?seed=Pixel",
-      "imageHint": "pixel art"
     }
   ]
 }
