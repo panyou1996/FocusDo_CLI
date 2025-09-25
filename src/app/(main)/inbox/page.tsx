@@ -153,6 +153,18 @@ const EmptyState = () => (
     </div>
 );
 
+const TaskCardSkeleton = () => (
+  <div className="w-full rounded-2xl custom-card py-3 px-4 flex items-center">
+    <Skeleton className="w-5 h-5 rounded-full" />
+    <Skeleton className="w-8 h-8 rounded-full ml-4" />
+    <div className="flex-grow ml-1 min-w-0">
+      <Skeleton className="h-5 w-3/4 rounded" />
+      <Skeleton className="h-4 w-1/4 mt-1 rounded" />
+    </div>
+    <Skeleton className="w-5 h-5 rounded-md ml-2" />
+  </div>
+);
+
 
 export default function InboxPage() {
   const { tasks, updateTask, deleteTask, lists } = useAppContext();
@@ -339,11 +351,11 @@ export default function InboxPage() {
   const renderListContent = () => {
     if (!isClient) {
       return (
-        <div className="space-y-4 mt-4">
-          <Skeleton className="h-16 w-full rounded-2xl" />
-          <Skeleton className="h-16 w-full rounded-2xl" />
-          <Skeleton className="h-16 w-full rounded-2xl" />
-          <Skeleton className="h-16 w-full rounded-2xl" />
+        <div className="space-y-3 mt-4">
+          <TaskCardSkeleton />
+          <TaskCardSkeleton />
+          <TaskCardSkeleton />
+          <TaskCardSkeleton />
         </div>
       );
     }
@@ -408,7 +420,7 @@ export default function InboxPage() {
       <div className="space-y-3 mt-4">
         {!isClient ? (
           <div className="space-y-3">
-            <Skeleton className="h-16 w-full rounded-2xl" />
+            <TaskCardSkeleton />
           </div>
         ) : tasksForSelectedDate.length > 0 ? (
           tasksForSelectedDate.map(task => {
@@ -476,8 +488,8 @@ export default function InboxPage() {
           </Link>
         </div>
       
-        <TabsContent value="lists" className='-mx-5'>
-          <ScrollArea className="w-full whitespace-nowrap">
+        <TabsContent value="lists">
+            <ScrollArea className="w-full whitespace-nowrap -mx-5">
               <div className="flex gap-2 py-2 px-5">
                   <button
                       onClick={() => setSelectedList('all')}
@@ -522,16 +534,16 @@ export default function InboxPage() {
                   </Link>
                   </div>
                   <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-          <div className='px-5'>
-              {renderListContent()}
-          </div>
+            </ScrollArea>
+            {renderListContent()}
         </TabsContent>
 
-        <TabsContent value="calendar" className='-mx-5 px-5'>
+        <TabsContent value="calendar">
           {renderCalendarContent()}
         </TabsContent>
       </Tabs>
     </div>
   );
 }
+
+    

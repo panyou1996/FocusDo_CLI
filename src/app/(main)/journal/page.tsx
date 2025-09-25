@@ -40,6 +40,18 @@ const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({ sortBy, set
     );
 };
 
+const JournalCardSkeleton = () => (
+  <div className="w-full rounded-2xl custom-card overflow-hidden">
+    <Skeleton className="h-[180px] w-full" />
+    <div className="p-4">
+      <Skeleton className="h-6 w-3/4 rounded-md mb-3" />
+      <Skeleton className="h-4 w-full rounded-md mb-1" />
+      <Skeleton className="h-4 w-5/6 rounded-md mb-3" />
+      <Skeleton className="h-4 w-1/2 rounded-md" />
+    </div>
+  </div>
+);
+
 
 export default function JournalPage() {
   const { journalPosts, lists } = useAppContext();
@@ -170,8 +182,8 @@ export default function JournalPage() {
       <div className="space-y-4 mt-4">
         {!isClient ? (
             <div className="space-y-4">
-              <Skeleton className="h-[280px] w-full rounded-2xl" />
-              <Skeleton className="h-[280px] w-full rounded-2xl" />
+              <JournalCardSkeleton />
+              <JournalCardSkeleton />
             </div>
         ) : filteredJournalPosts.length > 0 ? (
           filteredJournalPosts.map((post) => {
