@@ -147,7 +147,7 @@ export default function InboxPage() {
   const [filterStatus, setFilterStatus] = useLocalStorage<FilterStatus>('inbox-filter-status', 'all');
   const [filterImportance, setFilterImportance] = useLocalStorage<FilterImportance>('inbox-filter-importance', 'all');
   const [sortBy, setSortBy] = useLocalStorage<SortByType>('inbox-sort-by', 'default');
-
+  const [activeTab, setActiveTab] = React.useState("lists");
 
   React.useEffect(() => {
     setIsClient(true);
@@ -396,62 +396,68 @@ export default function InboxPage() {
           </Popover>
       </header>
 
-      <Tabs defaultValue="lists" className="w-full">
-        <div className="px-5">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="lists">Lists</TabsTrigger>
-            <TabsTrigger value="calendar">Calendar</TabsTrigger>
-          </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="flex gap-2 mb-4 px-5">
+            <TabsList className="grid w-full grid-cols-2 flex-grow">
+                <TabsTrigger value="lists">Lists</TabsTrigger>
+                <TabsTrigger value="calendar">Calendar</TabsTrigger>
+            </TabsList>
+            <Link href="/add-task">
+                <Button size="icon" className="h-11 w-11 rounded-md">
+                    <Plus className="w-6 h-6" />
+                </Button>
+            </Link>
         </div>
 
-        <ScrollArea className="w-full whitespace-nowrap mt-4">
-          <div className="flex gap-2 px-5 py-2">
-            <button
-              onClick={() => setSelectedList('all')}
-              className={cn(
-                'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                selectedList === 'all'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-foreground bg-secondary'
-              )}
-            >
-              <List className="w-4 h-4" />
-              <span>All</span>
-            </button>
-            {lists.map(list => {
-              const ListIcon = getIcon(list.icon as string);
-              const isSelected = selectedList === list.id;
-              return (
-                <button
-                  key={list.id}
-                  onClick={() => setSelectedList(list.id)}
-                  className={cn(
-                    'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                    isSelected ? 'text-white' : 'text-foreground bg-secondary'
-                  )}
-                  style={{
-                    backgroundColor: isSelected ? list.color : undefined,
-                  }}
-                >
-                  <ListIcon className="w-4 h-4" />
-                  <span>{list.name}</span>
-                </button>
-              );
-            })}
-            <Link href="/add-list">
-              <Button
-                size="icon"
-                variant="secondary"
-                className="rounded-full w-9 h-9 flex-shrink-0"
+        <TabsContent value="lists">
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-2 px-5 py-2">
+              <button
+                onClick={() => setSelectedList('all')}
+                className={cn(
+                  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                  selectedList === 'all'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-foreground bg-secondary'
+                )}
               >
-                <Plus className="w-5 h-5" />
-              </Button>
-            </Link>
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-
-        <TabsContent value="lists">{renderListContent()}</TabsContent>
+                <List className="w-4 h-4" />
+                <span>All</span>
+              </button>
+              {lists.map(list => {
+                const ListIcon = getIcon(list.icon as string);
+                const isSelected = selectedList === list.id;
+                return (
+                  <button
+                    key={list.id}
+                    onClick={() => setSelectedList(list.id)}
+                    className={cn(
+                      'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                      isSelected ? 'text-white' : 'text-foreground bg-secondary'
+                    )}
+                    style={{
+                      backgroundColor: isSelected ? list.color : undefined,
+                    }}
+                  >
+                    <ListIcon className="w-4 h-4" />
+                    <span>{list.name}</span>
+                  </button>
+                );
+              })}
+              <Link href="/add-list">
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="rounded-full w-9 h-9 flex-shrink-0"
+                >
+                  <Plus className="w-5 h-5" />
+                </Button>
+              </Link>
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+          {renderListContent()}
+        </TabsContent>
 
         <TabsContent value="calendar" className="mt-4">
           <div className="px-5">
@@ -502,5 +508,3 @@ export default function InboxPage() {
     </div>
   );
 }
-
-    

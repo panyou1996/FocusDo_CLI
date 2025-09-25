@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, Plus } from "lucide-react";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getIcon } from "@/lib/icon-utils";
+import Link from 'next/link';
 
 
 interface GroupedTasks {
@@ -86,6 +87,13 @@ export default function TodayPage() {
   const handleUpdateTask = (taskId: string, updatedFields: Partial<Task>) => {
     updateTask(taskId, updatedFields);
   };
+  
+  const handleToggleFixed = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      updateTask(taskId, { isFixed: !task.isFixed });
+    }
+  };
 
 
   React.useEffect(() => {
@@ -145,6 +153,7 @@ export default function TodayPage() {
     onUpdate: handleUpdateTask,
     onToggleImportant: handleToggleImportant,
     onToggleMyDay: handleToggleMyDay,
+    onToggleFixed: handleToggleFixed,
     onToggleCompleted: handleToggleCompleted
   };
   
@@ -194,13 +203,18 @@ export default function TodayPage() {
         </div>
       </header>
 
-      <div className="flex justify-center mb-4">
-        <Tabs value={view} onValueChange={(value) => setView(value as "compact" | "detail")} className="w-full">
+      <div className="flex gap-2 mb-4">
+        <Tabs value={view} onValueChange={(value) => setView(value as "compact" | "detail")} className="flex-grow">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="compact">Compact</TabsTrigger>
             <TabsTrigger value="detail">Detail</TabsTrigger>
           </TabsList>
         </Tabs>
+        <Link href="/add-task">
+          <Button size="icon" className="h-11 w-11 rounded-md">
+            <Plus className="w-6 h-6" />
+          </Button>
+        </Link>
       </div>
       
       {renderContent()}
