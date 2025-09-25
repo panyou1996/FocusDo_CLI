@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Home, Inbox, BookText, Settings, Plus } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import * as React from 'react';
 
 const navItems = [
@@ -42,67 +42,90 @@ export function BottomNavBar() {
   return (
     <footer className="sticky bottom-0 h-[86px] bg-transparent z-40">
       <div className="relative h-full w-full max-w-lg mx-auto">
-        <motion.div
-            variants={navBarVariants}
-            initial="visible"
-            animate={isModalPage ? "hidden" : "visible"}
-            className="absolute bottom-0 left-0 right-0 mx-4 mb-4 h-[70px] bg-card/60 backdrop-blur-xl rounded-[24px] shadow-lg"
-          >
-          <nav className="flex items-center justify-around h-full pt-1 pb-2 px-2">
-            {navItems.map((item, index) => {
-              const isActive = pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/');
-              
-              // Insert a placeholder for the FAB in the middle
-              if (index === 2) {
-                return (
-                  <React.Fragment key="fab-placeholder">
-                    <div className="flex-auto basis-1/5" />
-                    <Link href={item.href} key={item.href} className="flex-auto basis-1/5">
+        <AnimatePresence>
+          {!isModalPage && (
+             <motion.div
+                variants={navBarVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                className="absolute bottom-0 left-0 right-0 mx-4 mb-4 h-[70px] bg-card/60 backdrop-blur-xl rounded-[24px] shadow-lg"
+              >
+              <nav className="flex items-center justify-around h-full pt-1 pb-2 px-2">
+                {navItems.map((item, index) => {
+                  const isActive = pathname.startsWith(item.href);
+                  
+                  if (index === 2) {
+                    return (
+                      <React.Fragment key="fab-placeholder">
+                        <div className="flex-auto basis-1/5" />
+                        <Link href={item.href} key={item.href} className="flex-auto basis-1/5 relative flex flex-col items-center justify-center gap-1">
+                            <div
+                              className={cn(
+                                "flex flex-col items-center justify-center gap-1 transition-colors",
+                                isActive ? "text-primary" : "text-muted-foreground"
+                              )}
+                            >
+                              <item.icon strokeWidth={isActive ? 2 : 1.5} size={24} />
+                              <span className="text-[10px] font-medium">{item.label}</span>
+                            </div>
+                            {isActive && (
+                                <motion.div
+                                    layoutId="active-nav-indicator"
+                                    className="absolute top-0 w-10 h-8 bg-primary/10 rounded-full"
+                                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                />
+                            )}
+                        </Link>
+                      </React.Fragment>
+                    );
+                  }
+
+                  return (
+                    <Link href={item.href} key={item.href} className="flex-auto basis-1/5 relative flex flex-col items-center justify-center gap-1">
                       <div
                         className={cn(
-                          "flex flex-col items-center justify-center gap-1 transition-colors",
+                          "flex flex-col items-center justify-center gap-1 transition-colors z-10",
                           isActive ? "text-primary" : "text-muted-foreground"
                         )}
                       >
                         <item.icon strokeWidth={isActive ? 2 : 1.5} size={24} />
                         <span className="text-[10px] font-medium">{item.label}</span>
                       </div>
+                      {isActive && (
+                          <motion.div
+                              layoutId="active-nav-indicator"
+                              className="absolute top-0 w-10 h-8 bg-primary/10 rounded-full z-0"
+                              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                          />
+                      )}
                     </Link>
-                  </React.Fragment>
-                );
-              }
-
-              return (
-                <Link href={item.href} key={item.href} className="flex-auto basis-1/5">
-                  <div
-                    className={cn(
-                      "flex flex-col items-center justify-center gap-1 transition-colors",
-                      isActive ? "text-primary" : "text-muted-foreground"
-                    )}
-                  >
-                    <item.icon strokeWidth={isActive ? 2 : 1.5} size={24} />
-                    <span className="text-[10px] font-medium">{item.label}</span>
-                  </div>
-                </Link>
-              );
-            })}
-          </nav>
-        </motion.div>
+                  );
+                })}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[60px] h-[60px]">
-          <motion.div
-              variants={fabVariants}
-              initial="visible"
-              animate={isModalPage ? "hidden" : "visible"}
-              whileHover={{ scale: 1.1, rotate: 15 }}
-              whileTap={{ scale: 0.9 }}
-              className="w-full h-full bg-primary rounded-full flex items-center justify-center shadow-fab z-50"
-              aria-label="Add Task"
-          >
-              <Link href="/add-task">
-                  <Plus className="text-white" size={30} strokeWidth={2.5} />
-              </Link>
-          </motion.div>
+           <AnimatePresence>
+              {!isModalPage && (
+                <motion.div
+                    variants={fabVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    whileHover={{ scale: 1.1, rotate: 15 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="w-full h-full bg-primary rounded-full flex items-center justify-center shadow-fab z-50"
+                    aria-label="Add Task"
+                >
+                    <Link href="/add-task">
+                        <Plus className="text-white" size={30} strokeWidth={2.5} />
+                    </Link>
+                </motion.div>
+              )}
+           </AnimatePresence>
         </div>
       </div>
     </footer>
