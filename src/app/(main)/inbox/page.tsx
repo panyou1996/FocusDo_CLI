@@ -50,8 +50,23 @@ const TaskGroup = ({
   const { lists } = useAppContext();
 
   if (tasks.length === 0) return null;
+  
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.07
+      }
+    }
+  };
+
   return (
-    <div>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
       <h2 className="text-base font-semibold text-muted-foreground mb-2 px-1">
         {title}
       </h2>
@@ -73,7 +88,7 @@ const TaskGroup = ({
           })}
         </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -360,15 +375,15 @@ export default function InboxPage() {
   const contentVariants = {
     hidden: (direction: number) => ({
       x: direction > 0 ? '100%' : '-100%',
-      opacity: 0
+      opacity: 0,
     }),
     visible: {
       x: '0%',
-      opacity: 1
+      opacity: 1,
     },
     exit: (direction: number) => ({
       x: direction < 0 ? '100%' : '-100%',
-      opacity: 0
+      opacity: 0,
     }),
   };
 
@@ -514,8 +529,8 @@ export default function InboxPage() {
           </Link>
         </div>
       
-        <div className="relative overflow-x-hidden">
-            <AnimatePresence initial={false} custom={direction}>
+        <div className="relative overflow-hidden">
+            <AnimatePresence initial={false} custom={direction} mode="wait">
                 <motion.div
                     key={activeTab}
                     custom={direction}
@@ -524,61 +539,13 @@ export default function InboxPage() {
                     animate="visible"
                     exit="exit"
                     transition={{
-                        x: { type: "spring", stiffness: 300, damping: 30 },
-                        opacity: { duration: 0.2 }
+                        type: 'tween',
+                        ease: 'easeInOut',
+                        duration: 0.3,
                     }}
+                    className="w-full"
                 >
-                    {activeTab === 'lists' && (
-                        <div>
-                            <ScrollArea className="w-full whitespace-nowrap -mx-5">
-                                <div className="flex gap-2 py-2 px-5">
-                                    <button
-                                        onClick={() => setSelectedList('all')}
-                                        className={cn(
-                                        'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                                        selectedList === 'all'
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'text-foreground bg-secondary'
-                                        )}
-                                    >
-                                        <List className="w-4 h-4" />
-                                        <span>All</span>
-                                    </button>
-                                    {lists.map(list => {
-                                        const ListIcon = getIcon(list.icon as string);
-                                        const isSelected = selectedList === list.id;
-                                        return (
-                                        <button
-                                            key={list.id}
-                                            onClick={() => setSelectedList(list.id)}
-                                            className={cn(
-                                            'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                                            isSelected ? 'text-white' : 'text-foreground bg-secondary'
-                                            )}
-                                            style={{
-                                            backgroundColor: isSelected ? list.color : undefined,
-                                            }}
-                                        >
-                                            <ListIcon className="w-4 h-4" />
-                                            <span>{list.name}</span>
-                                        </button>
-                                        );
-                                    })}
-                                    <Link href="/add-list">
-                                        <Button
-                                        size="icon"
-                                        variant="secondary"
-                                        className="rounded-full w-9 h-9 flex-shrink-0"
-                                        >
-                                        <Plus className="w-5 h-5" />
-                                        </Button>
-                                    </Link>
-                                    </div>
-                                    <ScrollBar orientation="horizontal" />
-                            </ScrollArea>
-                            {renderListContent()}
-                        </div>
-                    )}
+                    {activeTab === 'lists' && renderListContent()}
                     {activeTab === 'calendar' && renderCalendarContent()}
                 </motion.div>
             </AnimatePresence>
