@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Home, Inbox, BookText, Settings, Plus } from "lucide-react";
+import { motion } from "framer-motion";
 import * as React from 'react';
 
 const navItems = [
@@ -22,16 +23,31 @@ export function BottomNavBar() {
   const editTaskRegex = /^\/edit-task\/.+/;
 
   React.useEffect(() => {
-    setIsModalPage(modalPaths.includes(pathname) || editTaskRegex.test(pathname));
-  }, [pathname]);
+    const isCurrentlyModal = modalPaths.includes(pathname) || editTaskRegex.test(pathname);
+    if (isCurrentlyModal !== isModalPage) {
+      setIsModalPage(isCurrentlyModal);
+    }
+  }, [pathname, isModalPage]);
+
+  const navBarVariants = {
+    visible: { y: 0, transition: { type: 'spring', stiffness: 500, damping: 30 } },
+    hidden: { y: '120%', transition: { type: 'spring', stiffness: 500, damping: 30 } },
+  };
+
+  const fabVariants = {
+    visible: { scale: 1, rotate: 0, transition: { type: 'spring', stiffness: 500, damping: 20 } },
+    hidden: { scale: 0, rotate: 45, transition: { type: 'spring', stiffness: 500, damping: 20 } },
+  };
 
   return (
     <footer className="sticky bottom-0 h-[86px] bg-transparent z-40">
       <div className="relative h-full w-full max-w-lg mx-auto">
-        <div className={cn(
-            "relative mx-4 mb-4 h-[70px] bg-card/60 backdrop-blur-xl rounded-[24px] shadow-lg transition-transform duration-300",
-            isModalPage && "translate-y-[120%]"
-            )}>
+        <motion.div
+            variants={navBarVariants}
+            initial="visible"
+            animate={isModalPage ? "hidden" : "visible"}
+            className="relative mx-4 mb-4 h-[70px] bg-card/60 backdrop-blur-xl rounded-[24px] shadow-lg"
+          >
           <nav className="flex items-center justify-around h-full pt-1 pb-2 px-5">
             {navItems.slice(0, 2).map((item) => {
               const isActive = pathname === item.href;
@@ -67,17 +83,21 @@ export function BottomNavBar() {
               );
             })}
           </nav>
-        </div>
-        <Link
-          href="/add-task"
-          className={cn(
-            "absolute left-1/2 -translate-x-1/2 top-[-14px] w-[60px] h-[60px] bg-primary rounded-full flex items-center justify-center shadow-fab z-50 transition-transform duration-300",
-            isModalPage && "scale-0"
-            )}
-          aria-label="Add Task"
+        </motion.div>
+        
+        <motion.div
+            variants={fabVariants}
+            initial="visible"
+            animate={isModalPage ? "hidden" : "visible"}
+            whileHover={{ scale: 1.1, rotate: 15 }}
+            whileTap={{ scale: 0.9 }}
+            className="absolute left-1/2 -translate-x-1/2 top-[-14px] w-[60px] h-[60px] bg-primary rounded-full flex items-center justify-center shadow-fab z-50"
+            aria-label="Add Task"
         >
-          <Plus className="text-white" size={30} strokeWidth={2.5} />
-        </Link>
+            <Link href="/add-task">
+                <Plus className="text-white" size={30} strokeWidth={2.5} />
+            </Link>
+        </motion.div>
       </div>
     </footer>
   );

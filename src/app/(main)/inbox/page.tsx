@@ -10,6 +10,7 @@ import {
   ChevronRight,
   List,
 } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { TaskCard } from '@/components/tasks/TaskCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -55,20 +56,22 @@ const TaskGroup = ({
         {title}
       </h2>
       <div className="space-y-3">
-        {tasks.map(task => {
-          const list = lists.find(l => l.id === task.listId);
-          if (!list) return null;
-          const ListIcon = getIcon(list.icon as string);
-          return (
-            <TaskCard
-              key={task.id}
-              task={task}
-              list={{ ...list, icon: ListIcon }}
-              status={status}
-              {...props}
-            />
-          );
-        })}
+        <AnimatePresence>
+          {tasks.map(task => {
+            const list = lists.find(l => l.id === task.listId);
+            if (!list) return null;
+            const ListIcon = getIcon(list.icon as string);
+            return (
+              <TaskCard
+                key={task.id}
+                task={task}
+                list={{ ...list, icon: ListIcon }}
+                status={status}
+                {...props}
+              />
+            );
+          })}
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -423,23 +426,25 @@ export default function InboxPage() {
             <TaskCardSkeleton />
           </div>
         ) : tasksForSelectedDate.length > 0 ? (
-          tasksForSelectedDate.map(task => {
-            const list = lists.find(l => l.id === task.listId);
-            if (!list) return null;
-            const ListIcon = getIcon(list.icon as string);
+          <AnimatePresence>
+            {tasksForSelectedDate.map(task => {
+              const list = lists.find(l => l.id === task.listId);
+              if (!list) return null;
+              const ListIcon = getIcon(list.icon as string);
 
-            const status = task.isCompleted ? 'done' : 'upcoming';
+              const status = task.isCompleted ? 'done' : 'upcoming';
 
-            return (
-              <TaskCard
-                key={task.id}
-                task={task}
-                list={{ ...list, icon: ListIcon }}
-                {...cardProps}
-                status={status}
-              />
-            );
-          })
+              return (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  list={{ ...list, icon: ListIcon }}
+                  {...cardProps}
+                  status={status}
+                />
+              );
+            })}
+          </AnimatePresence>
         ) : (
           <p className="text-muted-foreground text-center py-4">
             No tasks for this day.

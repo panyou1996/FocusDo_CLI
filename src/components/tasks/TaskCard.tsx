@@ -2,6 +2,7 @@
 "use client";
 
 import * as React from "react";
+import { motion, useAnimation } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { Subtask, Task, TaskList } from "@/lib/types";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -78,7 +79,9 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   const [isAddingSubtask, setIsAddingSubtask] = React.useState(false);
   const [editingSubtaskId, setEditingSubtaskId] = React.useState<string | null>(null);
   const [editingSubtaskText, setEditingSubtaskText] = React.useState('');
-
+  
+  const longPressTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const pinControls = useAnimation();
 
   const handleToggleExpand = () => {
     if (view === "compact") {
@@ -216,12 +219,36 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     setEditingSubtasks(task.subtasks || []);
   }, [task]);
 
+  const handlePointerDown = () => {
+    longPressTimeoutRef.current = setTimeout(() => {
+      if (navigator.vibrate) navigator.vibrate(50);
+      onToggleFixed(task.id);
+      longPressTimeoutRef.current = null;
+    }, 300);
+  };
+
+  const handlePointerUp = () => {
+    if (longPressTimeoutRef.current) {
+      clearTimeout(longPressTimeoutRef.current);
+      longPressTimeoutRef.current = null;
+    }
+  };
+  
+  React.useEffect(() => {
+    if (task.isFixed) {
+        pinControls.start({
+            scale: [1, 1.5, 1],
+            rotate: [0, 30, 0],
+            transition: { type: 'spring', stiffness: 500, damping: 15 }
+        });
+    }
+  }, [task.isFixed, pinControls]);
+
 
   const ListIcon = list.icon as React.ElementType;
-
   const cardIsExpanded = isExpanded || view === 'detail';
-  
   const endTime = task.startTime && task.duration ? getEndTime(task.startTime, task.duration) : null;
+  const cardLayoutId = `task-card-${task.id}`;
 
 
   const renderListIcon = () => {
@@ -271,41 +298,57 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
       </div>
     );
   };
+  
+  const cardVariants = {
+    hidden: { opacity: 0, y: -20 },
+    show: { opacity: 1, y: 0 },
+    exit: { 
+        height: 0, 
+        opacity: 0, 
+        marginTop: 0,
+        marginBottom: 0,
+        paddingTop: 0,
+        paddingBottom: 0,
+        transition: { duration: 0.3 } 
+    }
+  };
 
-  const handleLongPress = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onToggleFixed(task.id);
-  }
 
   return (
-    <div className="relative">
-      <Button
-        variant="ghost"
-        size="icon"
-        className={cn(
-          'absolute top-0 left-0 w-7 h-7 z-10 -rotate-45',
-          'transition-all duration-200',
-          task.isFixed
-            ? 'text-primary'
-            : 'text-muted-foreground/50 hover:text-muted-foreground'
-        )}
-        onClick={e => {
-          e.stopPropagation();
-          onToggleFixed(task.id);
-        }}
-      >
-        <Pin className="w-5 h-5" />
-      </Button>
-      <div
-        className={cn(
-          'w-full rounded-2xl custom-card',
-          task.isImportant
-            ? '!border-l-4 !border-l-[#F4A261]'
-            : 'border-l-4 border-l-transparent'
-        )}
-        onClick={handleToggleExpand}
-        onContextMenu={handleLongPress}
-      >
+    <motion.div
+        layout
+        variants={cardVariants}
+        initial="hidden"
+        animate="show"
+        exit="exit"
+        className="relative"
+    >
+        <motion.div
+            animate={pinControls}
+            className={cn(
+            'absolute top-0 left-0 w-7 h-7 z-10 -rotate-45',
+            task.isFixed
+                ? 'text-primary'
+                : 'text-muted-foreground/50'
+            )}
+        >
+            <Pin className="w-5 h-5" />
+        </motion.div>
+        
+        <motion.div
+            layoutId={cardLayoutId}
+            onPointerDown={handlePointerDown}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleToggleExpand}
+            className={cn(
+                'w-full rounded-2xl custom-card cursor-pointer',
+                task.isImportant
+                ? '!border-l-4 !border-l-[#F4A261]'
+                : 'border-l-4 border-l-transparent'
+            )}
+        >
         <div className="flex items-center py-3 px-4">
           <Checkbox
             id={`task-${task.id}`}
@@ -333,24 +376,32 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                 }}
               />
             ) : (
-              <p
-                className={cn(
-                  'text-base font-semibold text-foreground truncate',
-                  task.isCompleted && 'line-through text-muted-foreground'
-                )}
-              >
-                <span
-                  className={cn(cardIsExpanded && 'cursor-text')}
-                  onClick={e => {
-                    if (cardIsExpanded) {
-                      e.stopPropagation();
-                      setIsEditingTitle(true);
-                    }
-                  }}
+              <div className="relative">
+                <p
+                    className={cn(
+                    'text-base font-semibold text-foreground truncate',
+                    task.isCompleted && 'text-muted-foreground'
+                    )}
                 >
-                  {task.title}
-                </span>
-              </p>
+                    <span
+                    className={cn(cardIsExpanded && 'cursor-text')}
+                    onClick={e => {
+                        if (cardIsExpanded) {
+                        e.stopPropagation();
+                        setIsEditingTitle(true);
+                        }
+                    }}
+                    >
+                    {task.title}
+                    </span>
+                </p>
+                <motion.div
+                    className="absolute top-1/2 left-0 h-0.5 bg-muted-foreground"
+                    initial={{ width: 0 }}
+                    animate={{ width: task.isCompleted ? "100%" : 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                 />
+              </div>
             )}
 
             {!isEditingTitle &&
@@ -358,9 +409,9 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                 <p
                   className={cn(
                     'text-sm h-[18px]',
-                    status === 'expired' && 'font-bold text-destructive',
-                    status === 'upcoming' && 'font-bold text-primary',
-                    status === 'done' && 'text-muted-foreground'
+                    status === 'expired' && !task.isCompleted && 'font-bold text-destructive',
+                    status === 'upcoming' && !task.isCompleted && 'font-bold text-primary',
+                    task.isCompleted && 'text-muted-foreground'
                   )}
                 >
                   {endTime ? `${task.startTime} - ${endTime}` : task.startTime}
@@ -388,7 +439,11 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         </div>
 
         {cardIsExpanded && (
-          <div className="px-4 pb-3 pl-12 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="px-4 pb-3 pl-12"
+          >
             <div
               className="flex items-center gap-2 -ml-2 mb-2"
               onClick={e => e.stopPropagation()}
@@ -626,10 +681,10 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                   }
                 />
             </div>
-          </div>
+          </motion.div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

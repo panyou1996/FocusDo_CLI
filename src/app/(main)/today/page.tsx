@@ -3,6 +3,7 @@
 
 import * as React from "react";
 import { SlidersHorizontal, Plus } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -26,17 +27,35 @@ interface GroupedTasks {
 const TaskGroup = ({ title, tasks, status, ...props }: { title: string; tasks: Task[]; status: 'expired' | 'upcoming' | 'done', [key: string]: any }) => {
   const { lists } = useAppContext();
   if (tasks.length === 0) return null;
+  
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.07
+      }
+    }
+  };
+
   return (
     <div>
       <h2 className="text-base font-semibold text-muted-foreground mb-2 px-1">{title}</h2>
-      <div className="space-y-3">
-        {tasks.map((task) => {
-          const list = lists.find((l) => l.id === task.listId);
-          if (!list) return null;
-          const ListIcon = getIcon(list.icon as string);
-          return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} status={status} {...props} />;
-        })}
-      </div>
+      <motion.div 
+        className="space-y-3"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
+        <AnimatePresence>
+          {tasks.map((task) => {
+            const list = lists.find((l) => l.id === task.listId);
+            if (!list) return null;
+            const ListIcon = getIcon(list.icon as string);
+            return <TaskCard key={task.id} task={task} list={{...list, icon: ListIcon }} status={status} {...props} />;
+          })}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 };
