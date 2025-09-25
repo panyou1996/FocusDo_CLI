@@ -395,21 +395,22 @@ export default function InboxPage() {
               </PopoverContent>
           </Popover>
       </header>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <div className="flex gap-2 mb-4 px-5">
-            <TabsList className="grid w-full grid-cols-2 flex-grow">
+      
+      <div className="flex gap-2 mb-4 px-5">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-grow">
+            <TabsList className="grid w-full grid-cols-2 h-11">
                 <TabsTrigger value="lists">Lists</TabsTrigger>
                 <TabsTrigger value="calendar">Calendar</TabsTrigger>
             </TabsList>
-            <Link href="/add-task">
-                <Button size="icon" className="h-11 w-11 rounded-md">
-                    <Plus className="w-6 h-6" />
-                </Button>
-            </Link>
-        </div>
+        </Tabs>
+        <Link href="/add-task">
+            <Button size="icon" className="h-11 w-11 rounded-md flex-shrink-0">
+                <Plus className="w-6 h-6" />
+            </Button>
+        </Link>
+      </div>
 
-        <TabsContent value="lists">
+      <TabsContent value="lists" forceMount={true} className={cn('mt-0', activeTab !== 'lists' && 'hidden')}>
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex gap-2 px-5 py-2">
               <button
@@ -459,7 +460,7 @@ export default function InboxPage() {
           {renderListContent()}
         </TabsContent>
 
-        <TabsContent value="calendar" className="mt-4">
+        <TabsContent value="calendar" forceMount={true} className={cn('mt-4', activeTab !== 'calendar' && 'hidden')}>
           <div className="px-5">
             <Calendar
               mode="single"
@@ -504,7 +505,6 @@ export default function InboxPage() {
             )}
           </div>
         </TabsContent>
-      </Tabs>
     </div>
   );
 }

@@ -205,13 +205,13 @@ export default function TodayPage() {
 
       <div className="flex gap-2 mb-4">
         <Tabs value={view} onValueChange={(value) => setView(value as "compact" | "detail")} className="flex-grow">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-2 h-11">
             <TabsTrigger value="compact">Compact</TabsTrigger>
             <TabsTrigger value="detail">Detail</TabsTrigger>
           </TabsList>
         </Tabs>
         <Link href="/add-task">
-          <Button size="icon" className="h-11 w-11 rounded-md">
+          <Button size="icon" className="h-11 w-11 rounded-md flex-shrink-0">
             <Plus className="w-6 h-6" />
           </Button>
         </Link>
