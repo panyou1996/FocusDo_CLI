@@ -273,8 +273,10 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   return (
     <div
       className={cn(
-        "w-full rounded-l-md ml-1",
-        task.isImportant && "border-l-4 border-[#F4A261] -ml-0"
+        "w-full rounded-l-md",
+        task.isImportant
+          ? "border-l-4 border-[#F4A261]"
+          : "border-l-4 border-transparent"
       )}
       onClick={handleToggleExpand}
     >
@@ -542,6 +544,8 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </div>
   );
 }
+
+    
 
     
 
