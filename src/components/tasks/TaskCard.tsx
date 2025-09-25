@@ -329,7 +329,8 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
               </p>
           )}
 
-          {task.startTime && !isEditingTitle && (
+          {!isEditingTitle && (
+            task.startTime ? (
               <p className={cn(
                   "text-[13px]",
                   status === 'expired' && 'font-bold text-destructive',
@@ -338,6 +339,9 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
               )}>
                   {endTime ? `${task.startTime} - ${endTime}` : task.startTime}
               </p>
+            ) : (
+                <p className="text-[13px] text-muted-foreground h-[18px]">--:--</p>
+            )
           )}
         </div>
         
@@ -431,7 +435,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                       </Button>
                   </div>
               </div>
-              <div className="pl-12 space-y-2">
+              <div className="pl-7 space-y-2">
                   {editingSubtasks.map(sub => (
                       <div key={sub.id} className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
                           <Checkbox 
@@ -558,5 +562,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
     </div>
   );
 }
+
+    
 
     
