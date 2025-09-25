@@ -40,6 +40,12 @@ export default function AddTaskPage() {
     const [editingSubtaskId, setEditingSubtaskId] = React.useState<string | null>(null);
     const [editingSubtaskText, setEditingSubtaskText] = React.useState('');
     const [selectedListId, setSelectedListId] = React.useState(lists[0]?.id || 'personal');
+    
+    React.useEffect(() => {
+        // Delay to allow animation
+        const timer = setTimeout(() => setIsMounted(true), 10);
+        return () => clearTimeout(timer);
+    }, []);
 
     const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
         <div className="flex items-center h-[44px] px-4">
@@ -52,12 +58,6 @@ export default function AddTaskPage() {
             </div>
         </div>
     );
-
-    React.useEffect(() => {
-        // Delay to allow animation
-        const timer = setTimeout(() => setIsMounted(true), 10);
-        return () => clearTimeout(timer);
-    }, []);
 
     const handleClose = () => {
         setIsMounted(false);
@@ -249,7 +249,7 @@ export default function AddTaskPage() {
                         )}
                         <Separator/>
                         <AttributeRow icon={Hourglass} label="Duration">
-                            <div className="flex items-center w-24 justify-end">
+                            <div className="flex items-center w-28 justify-end">
                                 <Input 
                                     type="number" 
                                     value={duration}
@@ -258,7 +258,7 @@ export default function AddTaskPage() {
                                     min="0"
                                     step="5"
                                 />
-                                <span className="text-muted-foreground">min</span>
+                                <span className="text-muted-foreground mr-2">min</span>
                             </div>
                         </AttributeRow>
                         <Separator/>

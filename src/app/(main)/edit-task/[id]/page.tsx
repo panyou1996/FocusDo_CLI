@@ -45,18 +45,6 @@ export default function EditTaskPage() {
     const [isAddingSubtask, setIsAddingSubtask] = React.useState(false);
     const [editingSubtaskId, setEditingSubtaskId] = React.useState<string | null>(null);
     const [editingSubtaskText, setEditingSubtaskText] = React.useState('');
-
-    const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
-        <div className="flex items-center h-[44px] px-4">
-             <div className="flex items-center gap-3">
-                <Icon className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-                <Label className="text-base">{label}</Label>
-            </div>
-            <div className="flex-grow flex justify-end items-center text-base">
-                {children}
-            </div>
-        </div>
-    );
     
     React.useEffect(() => {
         if (taskToEdit) {
@@ -79,6 +67,18 @@ export default function EditTaskPage() {
         const timer = setTimeout(() => setIsMounted(true), 10);
         return () => clearTimeout(timer);
     }, [taskToEdit, router]);
+
+    const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
+        <div className="flex items-center h-[44px] px-4">
+             <div className="flex items-center gap-3">
+                <Icon className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+                <Label className="text-base">{label}</Label>
+            </div>
+            <div className="flex-grow flex justify-end items-center text-base">
+                {children}
+            </div>
+        </div>
+    );
 
     const handleClose = () => {
         setIsMounted(false);
@@ -283,7 +283,7 @@ export default function EditTaskPage() {
                         )}
                         <Separator/>
                         <AttributeRow icon={Hourglass} label="Duration">
-                            <div className="flex items-center w-24 justify-end">
+                            <div className="flex items-center w-28 justify-end">
                                 <Input 
                                     type="number" 
                                     value={duration}
@@ -292,7 +292,7 @@ export default function EditTaskPage() {
                                     min="0"
                                     step="5"
                                 />
-                                <span className="text-muted-foreground">min</span>
+                                <span className="text-muted-foreground mr-2">min</span>
                             </div>
                         </AttributeRow>
                         <Separator/>
