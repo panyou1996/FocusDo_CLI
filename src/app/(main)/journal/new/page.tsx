@@ -89,8 +89,8 @@ export default function JournalNewPage() {
   const SelectedListIcon = selectedList ? getIcon(selectedList.icon as string) : List;
   
   const modalVariants = {
-      hidden: { y: "100%", transition: { type: 'tween', ease: 'easeOut', duration: 0.3 } },
-      visible: { y: "0%", transition: { type: 'tween', ease: 'easeIn', duration: 0.3 } },
+      hidden: { y: "100%", transition: { type: 'spring', stiffness: 400, damping: 30 } },
+      visible: { y: "0%", transition: { type: 'spring', stiffness: 400, damping: 30 } },
   };
 
   return (
@@ -200,3 +200,5 @@ export default function JournalNewPage() {
     </div>
   );
 }
+
+    

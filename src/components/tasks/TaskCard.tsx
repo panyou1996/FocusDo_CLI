@@ -329,6 +329,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
 
   return (
     <motion.div
+      layout
       variants={cardVariants}
       initial="hidden"
       animate="show"
@@ -705,3 +706,5 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </motion.div>
   );
 }
+
+    
