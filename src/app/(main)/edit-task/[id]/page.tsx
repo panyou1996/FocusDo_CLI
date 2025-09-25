@@ -7,7 +7,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { X, ListTree, Hourglass, Clock, Calendar, Star, Pin, Trash2 } from 'lucide-react';
+import { X, ListTree, Hourglass, Clock, Calendar, Star, Pin, Trash2, Sun } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
@@ -41,6 +41,7 @@ export default function EditTaskPage() {
     const [description, setDescription] = React.useState('');
     const [isImportant, setIsImportant] = React.useState(false);
     const [isFixed, setIsFixed] = React.useState(false);
+    const [isMyDay, setIsMyDay] = React.useState(true);
     
     const [dueDate, setDueDate] = React.useState<Date>();
     const [startTime, setStartTime] = React.useState('');
@@ -57,6 +58,7 @@ export default function EditTaskPage() {
             setDescription(taskToEdit.description || '');
             setIsImportant(taskToEdit.isImportant);
             setIsFixed(taskToEdit.isFixed || false);
+            setIsMyDay(taskToEdit.isMyDay === undefined ? true : taskToEdit.isMyDay);
             setDueDate(taskToEdit.dueDate ? parseISO(taskToEdit.dueDate) : undefined);
             setStartTime(taskToEdit.startTime || '');
             setDuration(taskToEdit.duration || 30);
@@ -79,6 +81,7 @@ export default function EditTaskPage() {
             description,
             isImportant,
             isFixed,
+            isMyDay,
             dueDate: dueDate ? format(dueDate, 'yyyy-MM-dd') : undefined,
             startTime: startTime || undefined,
             duration: duration,
@@ -264,6 +267,10 @@ export default function EditTaskPage() {
                     </Card>
 
                     <Card className="rounded-2xl shadow-soft border-none overflow-hidden">
+                        <AttributeRow icon={Sun} label="Add to My Day">
+                            <Switch checked={isMyDay} onCheckedChange={setIsMyDay} />
+                        </AttributeRow>
+                        <Separator/>
                         <AttributeRow icon={Star} label="Mark as Important">
                             <Switch checked={isImportant} onCheckedChange={setIsImportant} />
                         </AttributeRow>
@@ -281,3 +288,5 @@ export default function EditTaskPage() {
         </div>
     );
 }
+
+    
