@@ -350,6 +350,32 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
 
         {cardIsExpanded && (
           <div className="px-4 pb-4 pl-12 space-y-3 overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+            
+            <div className="flex items-center gap-2 -ml-2" onClick={e => e.stopPropagation()}>
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className={cn(
+                        "w-8 h-8",
+                        task.isImportant ? "text-yellow-500" : "text-muted-foreground"
+                    )}
+                    onClick={() => onToggleImportant(task.id)}
+                    >
+                    <Star className={cn("w-5 h-5", task.isImportant && "fill-current")} />
+                </Button>
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className={cn(
+                        "w-8 h-8",
+                        task.isMyDay ? "text-blue-500" : "text-muted-foreground"
+                    )}
+                    onClick={() => onToggleMyDay(task.id)}
+                    >
+                    <Sun className="w-5 h-5" />
+                </Button>
+            </div>
+
             <DetailRow 
                 icon={FileText}
                 label="Description"
@@ -516,3 +542,5 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </div>
   );
 }
+
+    
