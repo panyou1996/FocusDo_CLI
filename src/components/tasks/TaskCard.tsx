@@ -283,7 +283,8 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         variant="ghost"
         size="icon"
         className={cn(
-          'absolute top-0 left-0 w-8 h-8 z-20',
+          'absolute top-0 left-0 w-8 h-8 z-10',
+          'transition-all duration-200',
           task.isFixed
             ? 'text-primary'
             : 'text-muted-foreground/50 hover:text-muted-foreground'
@@ -293,14 +294,14 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
           onToggleFixed(task.id);
         }}
       >
-        <Pin className="w-6 h-6 -rotate-45" />
+        <Pin className="w-6 h-6" />
       </Button>
       <div
         className={cn(
-          'w-full rounded-2xl custom-card',
+          'w-full rounded-2xl custom-card border-l-4',
           task.isImportant
-            ? 'border-l-4 border-[#F4A261]'
-            : 'border-l-4 border-transparent'
+            ? '!border-l-[#F4A261]'
+            : 'border-l-transparent'
         )}
         onClick={handleToggleExpand}
         onContextMenu={handleLongPress}
@@ -325,7 +326,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                 onChange={handleTitleChange}
                 onBlur={handleTitleBlur}
                 onKeyDown={handleTitleKeyDown}
-                className="h-7 p-0 text-base font-medium border-none focus-visible:ring-0"
+                className="h-7 p-0 text-base font-medium border-none focus-visible:ring-0 bg-transparent"
                 autoFocus
                 onClick={e => {
                   e.stopPropagation();
@@ -483,7 +484,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                             onChange={e => setEditingSubtaskText(e.target.value)}
                             onBlur={() => saveSubtaskEdit(sub.id)}
                             onKeyDown={e => handleSubtaskEditKeyDown(e, sub.id)}
-                            className="h-7 flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
+                            className="h-7 flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm bg-transparent"
                             autoFocus
                           />
                         ) : (
@@ -518,7 +519,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                           value={newSubtask}
                           onChange={e => setNewSubtask(e.target.value)}
                           placeholder="Add a subtask..."
-                          className="h-7 border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
+                          className="h-7 border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm bg-transparent"
                           onKeyDown={e => e.key === 'Enter' && addSubtask(e as any)}
                           autoFocus
                         />
@@ -631,5 +632,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </div>
   );
 }
+
+    
 
     
