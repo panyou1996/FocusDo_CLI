@@ -21,9 +21,12 @@ const PopoverContent = React.forwardRef<
       sideOffset={sideOffset}
       className={cn(
         "z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        "data-[align=center]:data-[side=bottom]:zoom-in-95 data-[align=center]:data-[side=top]:zoom-in-95 data-[align=end]:data-[side=bottom]:scale-in-from-top-right data-[align=start]:data-[side=bottom]:scale-in-from-top-left",
-        "data-[state=closed]:data-[align=center]:zoom-out-95 data-[state=closed]:data-[align=end]:scale-out-to-top-right data-[state=closed]:data-[align=start]:scale-out-to-top-left",
+        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
         "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "data-[state=open]:data-[side=top]:data-[align=end]:animate-scale-in-from-top-right",
+        "data-[state=closed]:data-[side=top]:data-[align=end]:animate-scale-out-to-top-right",
+        "data-[state=open]:data-[side=bottom]:data-[align=end]:animate-scale-in-from-bottom-right",
+        "data-[state=closed]:data-[side=bottom]:data-[align=end]:animate-scale-out-to-bottom-right",
         className
       )}
       {...props}

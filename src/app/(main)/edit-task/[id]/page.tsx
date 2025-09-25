@@ -30,13 +30,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { AnimatePresence, motion } from 'framer-motion';
 
 
 export default function EditTaskPage() {
     const router = useRouter();
     const params = useParams();
     const { tasks, updateTask, deleteTask, lists } = useAppContext();
-    const [isMounted, setIsMounted] = React.useState(false);
+    const [isVisible, setIsVisible] = React.useState(true);
 
     const taskId = params.id as string;
     const taskToEdit = tasks.find(t => t.id === taskId);
@@ -73,10 +74,6 @@ export default function EditTaskPage() {
             // Optional: handle case where task is not found
             // router.replace('/today'); 
         }
-        
-        // Delay to allow animation
-        const timer = setTimeout(() => setIsMounted(true), 10);
-        return () => clearTimeout(timer);
     }, [taskToEdit, router]);
 
     const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
@@ -92,8 +89,8 @@ export default function EditTaskPage() {
     );
 
     const handleClose = () => {
-        setIsMounted(false);
-        setTimeout(() => router.back(), 300); // Match transition duration
+        setIsVisible(false);
+        setTimeout(() => router.back(), 300); // Match animation duration
     };
 
     const handleSaveTask = () => {
@@ -121,7 +118,8 @@ export default function EditTaskPage() {
 
     const handleDeleteTask = () => {
         deleteTask(taskId);
-        router.push('/today');
+        setIsVisible(false);
+        setTimeout(() => router.push('/today'), 300);
     }
 
     const addSubtask = () => {
@@ -168,213 +166,224 @@ export default function EditTaskPage() {
     const selectedList = lists.find(l => l.id === selectedListId);
     const SelectedListIcon = selectedList ? getIcon(selectedList.icon as string) : List;
 
+    const modalVariants = {
+        hidden: { y: "100%", transition: { type: 'tween', ease: 'easeOut', duration: 0.3 } },
+        visible: { y: "0%", transition: { type: 'tween', ease: 'easeIn', duration: 0.3 } },
+    };
 
     return (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
-            <div className={cn(
-                "bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl transition-transform duration-300 ease-out",
-                isMounted ? 'translate-y-0' : 'translate-y-full'
-            )}>
-                <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" aria-label="Delete">
-                                <Trash2 className="w-6 h-6 text-destructive" />
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete this task.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDeleteTask} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                    Delete
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                    <h1 className="text-lg font-bold">Edit Task</h1>
-                    <Button variant="ghost" size="icon" aria-label="Close" onClick={handleClose}>
-                        <X className="w-6 h-6" />
-                    </Button>
-                </header>
-
-                <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
-                    <Card className="rounded-2xl custom-card p-1 flex-shrink-0">
-                        <Input
-                            placeholder="What do you want to do?"
-                            className="border-none text-xl font-medium h-[50px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                        />
-                    </Card>
-                    
-                    <Card className="rounded-2xl custom-card p-1 flex flex-col flex-shrink-0">
-                        <Textarea
-                            placeholder="Add a description..."
-                            className="border-none text-base min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow bg-transparent"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
-                    </Card>
-
-                    <Card className="rounded-2xl custom-card overflow-hidden flex-shrink-0">
-                         <AttributeRow icon={List} label="List">
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="text-primary flex items-center gap-2 text-base">
-                                        {selectedList && (
-                                            <SelectedListIcon className="w-4 h-4" style={{ color: selectedList.color }}/>
-                                        )}
-                                        {selectedList?.name || 'Select List'}
+            <AnimatePresence>
+                {isVisible && (
+                    <motion.div
+                        variants={modalVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                        className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl"
+                    >
+                        <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="icon" aria-label="Delete">
+                                        <Trash2 className="w-6 h-6 text-destructive" />
                                     </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-1" align="end">
-                                    <div className="flex flex-col gap-1">
-                                        {lists.map(listOption => {
-                                            const ListOptionIcon = getIcon(listOption.icon as string);
-                                            return (
-                                                <Button
-                                                    key={listOption.id}
-                                                    variant="ghost"
-                                                    className={cn(
-                                                        "w-full justify-start gap-2",
-                                                        selectedListId === listOption.id && 'bg-accent'
-                                                    )}
-                                                    onClick={() => {
-                                                        setSelectedListId(listOption.id);
-                                                    }}
-                                                >
-                                                    <ListOptionIcon className="w-4 h-4" style={{ color: listOption.color }}/>
-                                                    {listOption.name}
-                                                </Button>
-                                            );
-                                        })}
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
-                        </AttributeRow>
-                        <Separator/>
-                        <AttributeRow icon={ListTree} label="Subtasks">
-                            <div className="flex items-center gap-2">
-                                {subtasks.length > 0 && (
-                                    <span className="text-sm text-muted-foreground">{subtasks.filter(s => s.isCompleted).length}/{subtasks.length}</span>
-                                )}
-                                <Button variant="ghost" size="sm" className="text-primary text-base" onClick={() => setIsAddingSubtask(true)}>
-                                    Add
-                                </Button>
-                            </div>
-                        </AttributeRow>
-                        { (subtasks.length > 0 || isAddingSubtask) && (
-                            <div className="px-4 py-2 space-y-2">
-                                {subtasks.map(sub => (
-                                    <div key={sub.id} className="flex items-center gap-2">
-                                        <Checkbox 
-                                            id={`subtask-${sub.id}`}
-                                            checked={sub.isCompleted} 
-                                            onCheckedChange={() => toggleSubtaskCompletion(sub.id)}
-                                            className="w-5 h-5 rounded-full"
-                                        />
-                                        {editingSubtaskId === sub.id ? (
-                                            <Input
-                                                value={editingSubtaskText}
-                                                onChange={(e) => setEditingSubtaskText(e.target.value)}
-                                                onBlur={() => saveSubtaskEdit(sub.id)}
-                                                onKeyDown={(e) => handleSubtaskEditKeyDown(e, sub.id)}
-                                                className="h-9 flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
-                                                autoFocus
-                                            />
-                                        ) : (
-                                            <label 
-                                                htmlFor={`subtask-${sub.id}`} 
-                                                className="flex-grow text-sm cursor-text"
-                                                onClick={() => startEditingSubtask(sub)}
-                                            >
-                                                {sub.title}
-                                            </label>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete this task.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={handleDeleteTask} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                            Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            <h1 className="text-lg font-bold">Edit Task</h1>
+                            <Button variant="ghost" size="icon" aria-label="Close" onClick={handleClose}>
+                                <X className="w-6 h-6" />
+                            </Button>
+                        </header>
+
+                        <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
+                            <Card className="rounded-2xl custom-card p-1 flex-shrink-0">
+                                <Input
+                                    placeholder="What do you want to do?"
+                                    className="border-none text-xl font-medium h-[50px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                />
+                            </Card>
+                            
+                            <Card className="rounded-2xl custom-card p-1 flex flex-col flex-shrink-0">
+                                <Textarea
+                                    placeholder="Add a description..."
+                                    className="border-none text-base min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow bg-transparent"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                />
+                            </Card>
+
+                            <Card className="rounded-2xl custom-card overflow-hidden flex-shrink-0">
+                                <AttributeRow icon={List} label="List">
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="ghost" size="sm" className="text-primary flex items-center gap-2 text-base">
+                                                {selectedList && (
+                                                    <SelectedListIcon className="w-4 h-4" style={{ color: selectedList.color }}/>
+                                                )}
+                                                {selectedList?.name || 'Select List'}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-1" align="end">
+                                            <div className="flex flex-col gap-1">
+                                                {lists.map(listOption => {
+                                                    const ListOptionIcon = getIcon(listOption.icon as string);
+                                                    return (
+                                                        <Button
+                                                            key={listOption.id}
+                                                            variant="ghost"
+                                                            className={cn(
+                                                                "w-full justify-start gap-2",
+                                                                selectedListId === listOption.id && 'bg-accent'
+                                                            )}
+                                                            onClick={() => {
+                                                                setSelectedListId(listOption.id);
+                                                            }}
+                                                        >
+                                                            <ListOptionIcon className="w-4 h-4" style={{ color: listOption.color }}/>
+                                                            {listOption.name}
+                                                        </Button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
+                                </AttributeRow>
+                                <Separator/>
+                                <AttributeRow icon={ListTree} label="Subtasks">
+                                    <div className="flex items-center gap-2">
+                                        {subtasks.length > 0 && (
+                                            <span className="text-sm text-muted-foreground">{subtasks.filter(s => s.isCompleted).length}/{subtasks.length}</span>
                                         )}
-                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeSubtask(sub.id)}>
-                                            <Trash2 className="w-4 h-4 text-destructive" />
+                                        <Button variant="ghost" size="sm" className="text-primary text-base" onClick={() => setIsAddingSubtask(true)}>
+                                            Add
                                         </Button>
                                     </div>
-                                ))}
-                                {isAddingSubtask && (
-                                    <div className="flex gap-2">
-                                        <Input value={newSubtask} onChange={(e) => setNewSubtask(e.target.value)} placeholder="Add a subtask..." className="h-9 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent" />
-                                        <Button size="sm" onClick={addSubtask}>Add</Button>
+                                </AttributeRow>
+                                { (subtasks.length > 0 || isAddingSubtask) && (
+                                    <div className="px-4 py-2 space-y-2">
+                                        {subtasks.map(sub => (
+                                            <div key={sub.id} className="flex items-center gap-2">
+                                                <Checkbox 
+                                                    id={`subtask-${sub.id}`}
+                                                    checked={sub.isCompleted} 
+                                                    onCheckedChange={() => toggleSubtaskCompletion(sub.id)}
+                                                    className="w-5 h-5 rounded-full"
+                                                />
+                                                {editingSubtaskId === sub.id ? (
+                                                    <Input
+                                                        value={editingSubtaskText}
+                                                        onChange={(e) => setEditingSubtaskText(e.target.value)}
+                                                        onBlur={() => saveSubtaskEdit(sub.id)}
+                                                        onKeyDown={(e) => handleSubtaskEditKeyDown(e, sub.id)}
+                                                        className="h-9 flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
+                                                        autoFocus
+                                                    />
+                                                ) : (
+                                                    <label 
+                                                        htmlFor={`subtask-${sub.id}`} 
+                                                        className="flex-grow text-sm cursor-text"
+                                                        onClick={() => startEditingSubtask(sub)}
+                                                    >
+                                                        {sub.title}
+                                                    </label>
+                                                )}
+                                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeSubtask(sub.id)}>
+                                                    <Trash2 className="w-4 h-4 text-destructive" />
+                                                </Button>
+                                            </div>
+                                        ))}
+                                        {isAddingSubtask && (
+                                            <div className="flex gap-2">
+                                                <Input value={newSubtask} onChange={(e) => setNewSubtask(e.target.value)} placeholder="Add a subtask..." className="h-9 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent" />
+                                                <Button size="sm" onClick={addSubtask}>Add</Button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
-                            </div>
-                        )}
-                        <Separator/>
-                        <AttributeRow icon={Hourglass} label="Duration">
-                            <div className="flex items-center w-28 justify-end">
-                                <Input 
-                                    type="number" 
-                                    value={duration}
-                                    onChange={(e) => setDuration(Number(e.target.value))}
-                                    className="w-20 text-right h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-base"
-                                    min="0"
-                                    step="5"
-                                />
-                                <span className="text-muted-foreground mr-2">min</span>
-                            </div>
-                        </AttributeRow>
-                        <Separator/>
-                        <AttributeRow icon={Clock} label="Start Time">
-                           <div className='w-32'>
-                                <Input 
-                                    type="time"
-                                    value={startTime}
-                                    onChange={(e) => setStartTime(e.target.value)}
-                                    className="w-full h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-base"
-                                    pattern="[0-9]{2}:[0-9]{2}"
-                                />
-                           </div>
-                        </AttributeRow>
-                        <Separator/>
-                        <AttributeRow icon={Calendar} label="Deadline">
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="text-primary text-base">
-                                        {dueDate ? format(dueDate, 'PPP') : 'Set Date'}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="end">
-                                    <CalendarComponent
-                                        mode="single"
-                                        selected={dueDate}
-                                        onSelect={setDueDate}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </AttributeRow>
-                    </Card>
+                                <Separator/>
+                                <AttributeRow icon={Hourglass} label="Duration">
+                                    <div className="flex items-center w-28 justify-end">
+                                        <Input 
+                                            type="number" 
+                                            value={duration}
+                                            onChange={(e) => setDuration(Number(e.target.value))}
+                                            className="w-20 text-right h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-base"
+                                            min="0"
+                                            step="5"
+                                        />
+                                        <span className="text-muted-foreground mr-2">min</span>
+                                    </div>
+                                </AttributeRow>
+                                <Separator/>
+                                <AttributeRow icon={Clock} label="Start Time">
+                                <div className='w-32'>
+                                    <Input 
+                                            type="time"
+                                            value={startTime}
+                                            onChange={(e) => setStartTime(e.target.value)}
+                                            className="w-full h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-base"
+                                            pattern="[0-9]{2}:[0-9]{2}"
+                                        />
+                                </div>
+                                </AttributeRow>
+                                <Separator/>
+                                <AttributeRow icon={Calendar} label="Deadline">
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button variant="ghost" size="sm" className="text-primary text-base">
+                                                {dueDate ? format(dueDate, 'PPP') : 'Set Date'}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="end">
+                                            <CalendarComponent
+                                                mode="single"
+                                                selected={dueDate}
+                                                onSelect={setDueDate}
+                                                initialFocus
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </AttributeRow>
+                            </Card>
 
-                    <Card className="rounded-2xl custom-card overflow-hidden flex-shrink-0">
-                        <AttributeRow icon={Sun} label="Add to My Day">
-                            <Switch checked={isMyDay} onCheckedChange={setIsMyDay} />
-                        </AttributeRow>
-                        <Separator/>
-                        <AttributeRow icon={Star} label="Mark as Important">
-                            <Switch checked={isImportant} onCheckedChange={setIsImportant} />
-                        </AttributeRow>
-                        <Separator/>
-                        <AttributeRow icon={Pin} label="Fixed Schedule">
-                            <Switch checked={isFixed} onCheckedChange={setIsFixed} />
-                        </AttributeRow>
-                    </Card>
-                </main>
+                            <Card className="rounded-2xl custom-card overflow-hidden flex-shrink-0">
+                                <AttributeRow icon={Sun} label="Add to My Day">
+                                    <Switch checked={isMyDay} onCheckedChange={setIsMyDay} />
+                                </AttributeRow>
+                                <Separator/>
+                                <AttributeRow icon={Star} label="Mark as Important">
+                                    <Switch checked={isImportant} onCheckedChange={setIsImportant} />
+                                </AttributeRow>
+                                <Separator/>
+                                <AttributeRow icon={Pin} label="Fixed Schedule">
+                                    <Switch checked={isFixed} onCheckedChange={setIsFixed} />
+                                </AttributeRow>
+                            </Card>
+                        </main>
 
-                <footer className="px-5 py-4 flex-shrink-0 border-t">
-                    <Button className="w-full h-[50px] text-lg font-bold rounded-md" onClick={handleSaveTask}>Save Changes</Button>
-                </footer>
-            </div>
+                        <footer className="px-5 py-4 flex-shrink-0 border-t">
+                            <Button className="w-full h-[50px] text-lg font-bold rounded-md" onClick={handleSaveTask}>Save Changes</Button>
+                        </footer>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

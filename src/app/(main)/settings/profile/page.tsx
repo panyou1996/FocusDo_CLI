@@ -16,6 +16,7 @@ import { generateAvatar } from '@/ai/flows/generate-avatar';
 import { defaultAvatarGroup } from '@/lib/default-avatars';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ParticleLoader } from '@/components/common/ParticleLoader';
+import { AnimatePresence, motion } from 'framer-motion';
 
 
 const avatarStyles = [
@@ -51,6 +52,7 @@ export default function ProfilePage() {
     const [isUploading, setIsUploading] = React.useState(false);
     const [isClient, setIsClient] = React.useState(false);
     const [activeTab, setActiveTab] = React.useState('random');
+    const [isVisible, setIsVisible] = React.useState(true);
 
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     
@@ -70,7 +72,8 @@ export default function ProfilePage() {
     }, [isClient]);
 
     const handleClose = () => {
-        router.back();
+        setIsVisible(false);
+        setTimeout(() => router.back(), 300); // Match animation duration
     };
 
     const handleSaveChanges = () => {
@@ -120,6 +123,11 @@ export default function ProfilePage() {
             reader.readAsDataURL(file);
         }
     };
+    
+    const modalVariants = {
+        hidden: { y: "100%", transition: { type: 'tween', ease: 'easeOut', duration: 0.3 } },
+        visible: { y: "0%", transition: { type: 'tween', ease: 'easeIn', duration: 0.3 } },
+    };
 
     const renderLoadingState = () => (
       <div className="p-4 space-y-6">
@@ -142,141 +150,151 @@ export default function ProfilePage() {
 
     return (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
-            <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
-                <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
-                    <div className="w-10"></div>
-                    <h1 className="text-lg font-bold">Profile</h1>
-                    <Button variant="ghost" size="icon" aria-label="Close" onClick={handleClose}>
-                        <X className="w-6 h-6" />
-                    </Button>
-                </header>
+            <AnimatePresence>
+                {isVisible && (
+                    <motion.div
+                        variants={modalVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                        className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl"
+                    >
+                        <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
+                            <div className="w-10"></div>
+                            <h1 className="text-lg font-bold">Profile</h1>
+                            <Button variant="ghost" size="icon" aria-label="Close" onClick={handleClose}>
+                                <X className="w-6 h-6" />
+                            </Button>
+                        </header>
 
-                <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
-                    {!isClient ? renderLoadingState() : (
-                        <Card className="rounded-xl overflow-hidden custom-card p-4">
-                            <CardContent className="p-0 space-y-6">
-                                <div className="flex flex-col items-center">
-                                    <div className="relative w-24 h-24 mb-4">
-                                        {isGenerating ? (
-                                            <div className="w-24 h-24 rounded-full overflow-hidden bg-black flex items-center justify-center">
-                                                <ParticleLoader className="w-full h-full" />
-                                            </div>
-                                        ) : (
-                                            <Avatar className="w-24 h-24">
-                                                <AvatarImage src={selectedAvatarUrl} alt={name} />
-                                                <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
-                                            </Avatar>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">Your Name</Label>
-                                    <Input
-                                        id="name"
-                                        type="text"
-                                        placeholder="e.g., Jane Doe"
-                                        required
-                                        className="h-auto p-3 rounded-md"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Choose an Avatar</Label>
-                                    <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="random">
-                                    <TabsList className='grid w-full grid-cols-3'>
-                                        <TabsTrigger value="random"><Shuffle className='w-4 h-4 mr-2'/>Random</TabsTrigger>
-                                        <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
-                                        <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
-                                    </TabsList>
-                                    <div className='py-2 flex flex-col justify-center min-h-[90px]'>
-                                        <TabsContent value="random" className="m-0 relative">
-                                            <div className="flex items-center gap-2">
-                                                <div className="grid grid-cols-5 gap-2 flex-grow">
-                                                    {selectableAvatars.length > 0 ? selectableAvatars.map((avatarUrl, index) => (
-                                                        <div
-                                                        key={index}
-                                                        className="relative cursor-pointer"
-                                                        onClick={() => setSelectedAvatarUrl(avatarUrl)}
-                                                        >
-                                                        <img
-                                                            src={avatarUrl}
-                                                            alt="Selectable Avatar"
-                                                            width={48}
-                                                            height={48}
-                                                            className={cn(
-                                                                "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-12 h-12",
-                                                                selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
-                                                            )}
-                                                        />
-                                                        {selectedAvatarUrl === avatarUrl && (
-                                                            <div className="absolute top-[-4px] right-0 bg-primary text-primary-foreground rounded-full p-0.5">
-                                                                <CheckCircle className="w-3 h-3" />
-                                                            </div>
-                                                        )}
-                                                        </div>
-                                                    )) : defaultAvatarGroup.map((_, index) => (
-                                                        <div key={index} className="relative cursor-pointer">
-                                                          <div className="rounded-full aspect-square bg-secondary mx-auto w-12 h-12 animate-pulse" />
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={handleRandomizeAvatars} type="button">
-                                                    <RefreshCw className="w-4 h-4"/>
-                                                </Button>
-                                            </div>
-                                        </TabsContent>
-                                        <TabsContent value="generate" className='m-0'>
-                                            <div className='flex gap-2 items-center'>
-                                                <Input 
-                                                    placeholder='e.g., a happy robot'
-                                                    value={aiPrompt}
-                                                    onChange={(e) => setAiPrompt(e.target.value)}
-                                                    disabled={isGenerating}
-                                                />
-                                                <Button onClick={handleGenerateAvatar} disabled={isGenerating || !aiPrompt} type="button">
-                                                    {isGenerating ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Go'}
-                                                </Button>
-                                            </div>
-                                        </TabsContent>
-                                    <TabsContent value="upload" className='m-0'>
-                                            <input
-                                                type="file"
-                                                ref={fileInputRef}
-                                                onChange={handleFileChange}
-                                                accept="image/*"
-                                                className="hidden"
-                                                disabled={isUploading}
-                                            />
-                                            <Button 
-                                                variant="outline" 
-                                                className="w-full h-12" 
-                                                onClick={handleImageUploadClick}
-                                                disabled={isUploading}
-                                                type="button"
-                                            >
-                                                {isUploading ? (
-                                                    <Loader2 className="w-5 h-5 animate-spin mr-2"/>
+                        <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
+                            {!isClient ? renderLoadingState() : (
+                                <Card className="rounded-xl overflow-hidden custom-card p-4">
+                                    <CardContent className="p-0 space-y-6">
+                                        <div className="flex flex-col items-center">
+                                            <div className="relative w-24 h-24 mb-4">
+                                                {isGenerating ? (
+                                                    <div className="w-24 h-24 rounded-full overflow-hidden bg-black flex items-center justify-center">
+                                                        <ParticleLoader className="w-full h-full" />
+                                                    </div>
                                                 ) : (
-                                                    <Upload className="w-5 h-5 mr-2" />
+                                                    <Avatar className="w-24 h-24">
+                                                        <AvatarImage src={selectedAvatarUrl} alt={name} />
+                                                        <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+                                                    </Avatar>
                                                 )}
-                                                Upload Image
-                                            </Button>
-                                        </TabsContent>
-                                    </div>
-                                    </Tabs>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-                </main>
-                
-                <footer className="px-5 py-4 flex-shrink-0 border-t">
-                    <Button className="w-full h-[50px] text-lg font-bold rounded-md" onClick={handleSaveChanges} disabled={!isClient}>
-                        Save Changes
-                    </Button>
-                </footer>
-            </div>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="name">Your Name</Label>
+                                            <Input
+                                                id="name"
+                                                type="text"
+                                                placeholder="e.g., Jane Doe"
+                                                required
+                                                className="h-auto p-3 rounded-md"
+                                                value={name}
+                                                onChange={(e) => setName(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Choose an Avatar</Label>
+                                            <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="random">
+                                            <TabsList className='grid w-full grid-cols-3'>
+                                                <TabsTrigger value="random"><Shuffle className='w-4 h-4 mr-2'/>Random</TabsTrigger>
+                                                <TabsTrigger value="generate"><Wand2 className='w-4 h-4 mr-2'/>Generate</TabsTrigger>
+                                                <TabsTrigger value="upload"><Upload className='w-4 h-4 mr-2'/>Upload</TabsTrigger>
+                                            </TabsList>
+                                            <div className='py-2 flex flex-col justify-center min-h-[90px]'>
+                                                <TabsContent value="random" className="m-0 relative">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="grid grid-cols-5 gap-2 flex-grow">
+                                                            {selectableAvatars.length > 0 ? selectableAvatars.map((avatarUrl, index) => (
+                                                                <div
+                                                                key={index}
+                                                                className="relative cursor-pointer"
+                                                                onClick={() => setSelectedAvatarUrl(avatarUrl)}
+                                                                >
+                                                                <img
+                                                                    src={avatarUrl}
+                                                                    alt="Selectable Avatar"
+                                                                    width={48}
+                                                                    height={48}
+                                                                    className={cn(
+                                                                        "rounded-full aspect-square object-cover border-4 transition-all bg-secondary mx-auto w-12 h-12",
+                                                                        selectedAvatarUrl === avatarUrl ? 'border-primary' : 'border-transparent'
+                                                                    )}
+                                                                />
+                                                                {selectedAvatarUrl === avatarUrl && (
+                                                                    <div className="absolute top-[-4px] right-0 bg-primary text-primary-foreground rounded-full p-0.5">
+                                                                        <CheckCircle className="w-3 h-3" />
+                                                                    </div>
+                                                                )}
+                                                                </div>
+                                                            )) : defaultAvatarGroup.map((_, index) => (
+                                                                <div key={index} className="relative cursor-pointer">
+                                                                <div className="rounded-full aspect-square bg-secondary mx-auto w-12 h-12 animate-pulse" />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={handleRandomizeAvatars} type="button">
+                                                            <RefreshCw className="w-4 h-4"/>
+                                                        </Button>
+                                                    </div>
+                                                </TabsContent>
+                                                <TabsContent value="generate" className='m-0'>
+                                                    <div className='flex gap-2 items-center'>
+                                                        <Input 
+                                                            placeholder='e.g., a happy robot'
+                                                            value={aiPrompt}
+                                                            onChange={(e) => setAiPrompt(e.target.value)}
+                                                            disabled={isGenerating}
+                                                        />
+                                                        <Button onClick={handleGenerateAvatar} disabled={isGenerating || !aiPrompt} type="button">
+                                                            {isGenerating ? <Loader2 className="w-4 h-4 animate-spin"/> : 'Go'}
+                                                        </Button>
+                                                    </div>
+                                                </TabsContent>
+                                            <TabsContent value="upload" className='m-0'>
+                                                    <input
+                                                        type="file"
+                                                        ref={fileInputRef}
+                                                        onChange={handleFileChange}
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        disabled={isUploading}
+                                                    />
+                                                    <Button 
+                                                        variant="outline" 
+                                                        className="w-full h-12" 
+                                                        onClick={handleImageUploadClick}
+                                                        disabled={isUploading}
+                                                        type="button"
+                                                    >
+                                                        {isUploading ? (
+                                                            <Loader2 className="w-5 h-5 animate-spin mr-2"/>
+                                                        ) : (
+                                                            <Upload className="w-5 h-5 mr-2" />
+                                                        )}
+                                                        Upload Image
+                                                    </Button>
+                                                </TabsContent>
+                                            </div>
+                                            </Tabs>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </main>
+                        
+                        <footer className="px-5 py-4 flex-shrink-0 border-t">
+                            <Button className="w-full h-[50px] text-lg font-bold rounded-md" onClick={handleSaveChanges} disabled={!isClient}>
+                                Save Changes
+                            </Button>
+                        </footer>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
