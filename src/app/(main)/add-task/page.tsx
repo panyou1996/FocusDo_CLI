@@ -144,7 +144,7 @@ export default function AddTaskPage() {
                     <Card className="rounded-2xl shadow-soft border-none p-1 flex-shrink-0">
                         <Input
                             placeholder="What do you want to do?"
-                            className="border-none text-base font-medium h-[60px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
+                            className="border-none text-xl font-medium h-[50px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
@@ -249,7 +249,7 @@ export default function AddTaskPage() {
                         )}
                         <Separator/>
                         <AttributeRow icon={Hourglass} label="Duration">
-                             <div className="flex items-center">
+                            <div className="flex items-center w-24 justify-end">
                                 <Input 
                                     type="number" 
                                     value={duration}
@@ -258,18 +258,20 @@ export default function AddTaskPage() {
                                     min="0"
                                     step="5"
                                 />
-                                <span className="text-muted-foreground mr-2">min</span>
+                                <span className="text-muted-foreground">min</span>
                             </div>
                         </AttributeRow>
                         <Separator/>
                         <AttributeRow icon={Clock} label="Start Time">
-                           <Input 
-                                type="time"
-                                value={startTime}
-                                onChange={(e) => setStartTime(e.target.value)}
-                                className="w-28 h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-base"
-                                pattern="[0-9]{2}:[0-9]{2}"
-                            />
+                           <div className='w-32'>
+                               <Input 
+                                    type="time"
+                                    value={startTime}
+                                    onChange={(e) => setStartTime(e.target.value)}
+                                    className="w-full h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-base"
+                                    pattern="[0-9]{2}:[0-9]{2}"
+                                />
+                           </div>
                         </AttributeRow>
                         <Separator/>
                         <AttributeRow icon={Calendar} label="Deadline">
