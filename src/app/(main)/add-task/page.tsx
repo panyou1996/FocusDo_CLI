@@ -256,7 +256,7 @@ export default function AddTaskPage() {
                                     min="0"
                                     step="5"
                                 />
-                                <span className="text-muted-foreground">min</span>
+                                <span className="text-muted-foreground mr-2">min</span>
                             </div>
                         </AttributeRow>
                         <Separator/>
