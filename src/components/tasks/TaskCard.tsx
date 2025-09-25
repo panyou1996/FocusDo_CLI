@@ -92,7 +92,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   };
   
   const { isPressing, handlers } = useLongPress({
-    onLongPress: () => {
+    onLongPress: (e) => {
         if (navigator.vibrate) navigator.vibrate(50);
         onToggleFixed(task.id);
     },
@@ -330,6 +330,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
       initial="hidden"
       animate="show"
       exit="exit"
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
       className="relative"
     >
         <motion.div
