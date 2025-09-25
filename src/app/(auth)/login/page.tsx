@@ -28,7 +28,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="w-full max-w-md shadow-soft border-none rounded-lg">
+    <Card className="w-full max-w-md custom-card rounded-lg">
       <CardHeader className="text-center">
         <div className="flex justify-center items-center mb-4">
           <Logo className="h-10 w-10" />

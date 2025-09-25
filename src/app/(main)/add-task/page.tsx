@@ -141,7 +141,7 @@ export default function AddTaskPage() {
                 </header>
 
                 <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
-                    <Card className="rounded-2xl shadow-soft border-none p-1 flex-shrink-0">
+                    <Card className="rounded-2xl custom-card p-1 flex-shrink-0">
                         <Input
                             placeholder="What do you want to do?"
                             className="border-none text-xl font-medium h-[50px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
@@ -150,7 +150,7 @@ export default function AddTaskPage() {
                         />
                     </Card>
                     
-                    <Card className="rounded-2xl shadow-soft border-none p-1 flex flex-col">
+                    <Card className="rounded-2xl custom-card p-1 flex flex-col">
                         <Textarea
                             placeholder="Add a description..."
                             className="border-none text-base min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow bg-transparent"
@@ -159,7 +159,7 @@ export default function AddTaskPage() {
                         />
                     </Card>
 
-                    <Card className="rounded-2xl shadow-soft border-none overflow-hidden flex-shrink-0">
+                    <Card className="rounded-2xl custom-card overflow-hidden flex-shrink-0">
                          <AttributeRow icon={List} label="List">
                             <Popover>
                                 <PopoverTrigger asChild>
@@ -293,7 +293,7 @@ export default function AddTaskPage() {
                         </AttributeRow>
                     </Card>
 
-                    <Card className="rounded-2xl shadow-soft border-none overflow-hidden flex-shrink-0">
+                    <Card className="rounded-2xl custom-card overflow-hidden flex-shrink-0">
                         <AttributeRow icon={Sun} label="Add to My Day">
                             <Switch checked={isMyDay} onCheckedChange={setIsMyDay} />
                         </AttributeRow>

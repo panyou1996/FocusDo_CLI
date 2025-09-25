@@ -62,4 +62,24 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Card Styles */
+  .card-style-default .custom-card {
+    @apply shadow-soft border-transparent;
+  }
+  .dark .card-style-default .custom-card {
+     @apply shadow-[0px_4px_16px_rgba(0,0,0,0.2)];
+  }
+
+  .card-style-flat .custom-card {
+    @apply shadow-none border-border;
+  }
+  
+  .card-style-bordered .custom-card {
+      @apply shadow-none border-border;
+  }
+   .dark .card-style-bordered .custom-card {
+      @apply border-border;
+  }
+
 }

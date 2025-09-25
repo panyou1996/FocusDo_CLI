@@ -107,7 +107,7 @@ export default function SetProfilePage() {
   };
 
   return (
-    <Card className="w-full max-w-md shadow-soft border-none rounded-lg">
+    <Card className="w-full max-w-md custom-card rounded-lg">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold">Set Up Your Profile</CardTitle>
         <CardDescription>Choose your name and avatar.</CardDescription>

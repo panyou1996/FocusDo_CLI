@@ -49,7 +49,7 @@ export default function SettingsPage() {
 
       <div className="px-5">
         <SettingsGroupLabel>Preferences</SettingsGroupLabel>
-        <Card className="rounded-xl overflow-hidden shadow-soft border-none">
+        <Card className="rounded-xl overflow-hidden custom-card">
            <div className="flex items-center h-[50px] px-4">
               <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: "#8b5cf6" }}>
                 <Moon className="w-5 h-5 text-white" />
@@ -65,7 +65,7 @@ export default function SettingsPage() {
         </Card>
 
         <SettingsGroupLabel>Account Settings</SettingsGroupLabel>
-        <Card className="rounded-xl overflow-hidden shadow-soft border-none">
+        <Card className="rounded-xl overflow-hidden custom-card">
           <SettingsItem icon={User} label="Profile" color="#10b981" href="/settings/profile" />
           <Separator />
           <SettingsItem icon={Lock} label="Password" color="#f97316" href="#" />

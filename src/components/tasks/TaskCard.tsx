@@ -284,7 +284,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
 
   return (
     <div
-      className="bg-card w-full rounded-2xl shadow-soft transition-all duration-300 ease-in-out"
+      className="bg-card w-full rounded-2xl custom-card transition-all duration-300 ease-in-out"
       onClick={handleToggleExpand}
     >
       <div className="flex items-center p-4">
@@ -562,7 +562,3 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
     </div>
   );
 }
-
-    
-
-    

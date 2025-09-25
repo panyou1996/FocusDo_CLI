@@ -10,6 +10,7 @@ import { useAppContext } from '@/context/AppContext';
 import { cn } from '@/lib/utils';
 import { themes } from '@/lib/themes';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
 
 const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
   <p className="px-1 text-sm font-normal text-muted-foreground uppercase mt-4 mb-2">{children}</p>
@@ -24,6 +25,8 @@ export default function AppearancePage() {
     setTheme, 
     uiSize, 
     setUiSize,
+    cardStyle,
+    setCardStyle,
   } = useAppContext();
   const [isClient, setIsClient] = React.useState(false);
 
@@ -66,9 +69,10 @@ export default function AppearancePage() {
         </header>
 
         <main className="flex-grow px-5 py-4 flex flex-col gap-2 overflow-y-auto">
+          
           <SettingsGroupLabel>UI Size</SettingsGroupLabel>
-          <Card className="rounded-xl shadow-soft border-none">
-            <Tabs value={String(uiSize)} onValueChange={(value) => handleSizeChange(Number(value))} className="p-2">
+          <Card className="rounded-xl custom-card">
+             <Tabs value={String(uiSize)} onValueChange={(value) => handleSizeChange(Number(value))} className="p-2">
                 <TabsList className="grid w-full grid-cols-5">
                     {sizeSteps.map((size, index) => (
                         <TabsTrigger key={size} value={String(index)}>{size}</TabsTrigger>
@@ -77,8 +81,19 @@ export default function AppearancePage() {
             </Tabs>
           </Card>
           
+          <SettingsGroupLabel>Card Style</SettingsGroupLabel>
+          <Card className="rounded-xl custom-card">
+             <Tabs value={cardStyle} onValueChange={(value) => setCardStyle(value as any)} className="p-2">
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="default">Default</TabsTrigger>
+                    <TabsTrigger value="flat">Flat</TabsTrigger>
+                    <TabsTrigger value="bordered">Bordered</TabsTrigger>
+                </TabsList>
+            </Tabs>
+          </Card>
+
           <SettingsGroupLabel>Theme Color</SettingsGroupLabel>
-          <Card className="rounded-xl shadow-soft border-none p-4">
+          <Card className="rounded-xl custom-card p-4">
             <div className="grid grid-cols-6 gap-4">
               {themes.map((theme) => (
                 <div key={theme.name} className="flex flex-col items-center gap-2" onClick={() => handleThemeChange(theme.name)}>
@@ -93,6 +108,7 @@ export default function AppearancePage() {
               ))}
             </div>
           </Card>
+
         </main>
       </div>
     </div>

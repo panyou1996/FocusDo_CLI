@@ -9,6 +9,7 @@ import { useTheme } from 'next-themes';
 import { themes } from '@/lib/themes';
 
 const UI_SIZES = [10, 12, 14, 16, 18]; // Corresponds to XS, S, M, L, XL
+type CardStyle = 'default' | 'flat' | 'bordered';
 
 interface AppContextType {
   tasks: Task[];
@@ -28,6 +29,8 @@ interface AppContextType {
   addList: (list: TaskList) => void;
   uiSize: number;
   setUiSize: (size: number) => void;
+  cardStyle: CardStyle;
+  setCardStyle: (style: CardStyle) => void;
 }
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
@@ -46,6 +49,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const { theme: mode, setTheme: setMode } = useTheme();
   const [colorTheme, setColorTheme] = useLocalStorage<string>('color-theme', 'Default');
   const [uiSize, setUiSize] = useLocalStorage<number>('ui-size', 2); // Default to M (14px in new scale)
+  const [cardStyle, setCardStyle] = useLocalStorage<CardStyle>('card-style', 'default');
 
   React.useEffect(() => {
     const root = window.document.documentElement;
@@ -66,6 +70,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const newSize = UI_SIZES[uiSize] || 14;
     root.style.fontSize = `${newSize}px`;
   }, [uiSize]);
+
+  React.useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('card-style-default', 'card-style-flat', 'card-style-bordered');
+    root.classList.add(`card-style-${cardStyle}`);
+  }, [cardStyle]);
 
 
   const addTask = (task: Task) => {
@@ -121,7 +131,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     addList,
     uiSize,
     setUiSize,
-  }), [tasks, blogPosts, currentUser, colorTheme, mode, setMode, lists, uiSize, setCurrentUser, setColorTheme, setUiSize]);
+    cardStyle,
+    setCardStyle,
+  }), [tasks, blogPosts, currentUser, colorTheme, mode, setMode, lists, uiSize, cardStyle, setCurrentUser, setColorTheme, setUiSize, setCardStyle]);
 
 
   return (

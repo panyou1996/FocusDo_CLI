@@ -134,7 +134,7 @@ export default function BlogNewPage() {
             )}
           </div>
           
-          <Card className="rounded-2xl shadow-soft border-none p-1 flex items-center gap-2">
+          <Card className="rounded-2xl custom-card p-1 flex items-center gap-2">
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="ghost" className="flex items-center gap-2 h-auto py-2 px-3 text-primary">
@@ -175,7 +175,7 @@ export default function BlogNewPage() {
             />
           </Card>
 
-          <Card className="rounded-2xl shadow-soft border-none p-1 flex-grow flex flex-col">
+          <Card className="rounded-2xl custom-card p-1 flex-grow flex flex-col">
             <Textarea 
               placeholder="Start writing your story..."
               className="border-none text-[17px] min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow"

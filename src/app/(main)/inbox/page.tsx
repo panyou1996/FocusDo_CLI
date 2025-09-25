@@ -460,7 +460,7 @@ export default function InboxPage() {
               mode="single"
               selected={date}
               onSelect={setDate}
-              className="rounded-md border shadow-soft w-full"
+              className="rounded-md custom-card w-full"
               tasksPerDay={isClient ? tasksPerDay : {}}
               components={{
                 IconLeft: () => <ChevronLeft className="h-4 w-4" />,

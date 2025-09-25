@@ -105,7 +105,7 @@ export default function AddListPage() {
                 </header>
 
                 <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
-                    <Card className="rounded-2xl shadow-soft border-none p-4 flex-shrink-0">
+                    <Card className="rounded-2xl custom-card p-4 flex-shrink-0">
                         <Label htmlFor="list-name">List Name</Label>
                         <Input
                             id="list-name"
@@ -116,7 +116,7 @@ export default function AddListPage() {
                         />
                     </Card>
                     
-                    <Card className="rounded-2xl shadow-soft border-none p-4 flex-shrink-0">
+                    <Card className="rounded-2xl custom-card p-4 flex-shrink-0">
                          <Label>Color</Label>
                          <div className="grid grid-cols-8 gap-2 mt-2">
                             {availableColors.map(color => (
@@ -132,7 +132,7 @@ export default function AddListPage() {
                          </div>
                     </Card>
                     
-                    <Card className="rounded-2xl shadow-soft border-none p-4 flex-shrink-0">
+                    <Card className="rounded-2xl custom-card p-4 flex-shrink-0">
                          <Label>Icon</Label>
                          <div className="grid grid-cols-8 gap-2 mt-2">
                              {availableIcons.map(iconItem => {

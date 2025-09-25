@@ -24,7 +24,7 @@ export function BlogCard({ post, list }: BlogCardProps) {
 
   return (
     <Link href={`/blog/${post.slug}`} className="block">
-      <Card className="rounded-2xl shadow-soft border-none overflow-hidden transition-all duration-300 ease-in-out">
+      <Card className="rounded-2xl custom-card overflow-hidden transition-all duration-300 ease-in-out">
         {imageUrl ? (
           <CardHeader className="p-0">
             <div className="relative w-full h-[180px]">

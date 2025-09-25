@@ -153,7 +153,7 @@ export default function ProfilePage() {
 
                 <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
                     {!isClient ? renderLoadingState() : (
-                        <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
+                        <Card className="rounded-xl overflow-hidden custom-card p-4">
                             <CardContent className="p-0 space-y-6">
                                 <div className="flex flex-col items-center">
                                     <div className="relative w-24 h-24 mb-4">
