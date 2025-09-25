@@ -272,6 +272,11 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     );
   };
 
+  const handleLongPress = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onToggleFixed(task.id);
+  }
+
   return (
     <div className="relative">
       <Button
@@ -298,6 +303,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             : 'border-l-4 border-transparent'
         )}
         onClick={handleToggleExpand}
+        onContextMenu={handleLongPress}
       >
         <div className="flex items-center p-4 pl-8">
           <Checkbox
