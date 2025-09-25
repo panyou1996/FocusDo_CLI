@@ -370,27 +370,6 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                 strokeWidth={1.5} 
               />
             </button>
-             <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <button onClick={(e) => e.stopPropagation()} className="w-5 h-5">
-                    <Trash2 className="w-full h-full text-muted-foreground hover:text-destructive transition-colors" strokeWidth={1.5} />
-                </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-                  <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the task "{task.title}".
-                  </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => onDelete(task.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                      Delete
-                  </AlertDialogAction>
-                  </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
         </div>
 
       </div>
@@ -562,3 +541,5 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
     </div>
   );
 }
+
+    
