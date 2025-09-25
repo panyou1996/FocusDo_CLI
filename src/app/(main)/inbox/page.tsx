@@ -529,8 +529,8 @@ export default function InboxPage() {
           </Link>
         </div>
       
-        <div className="relative overflow-hidden">
-            <AnimatePresence initial={false} custom={direction} mode="wait">
+        <div className="relative overflow-hidden min-h-[400px]">
+            <AnimatePresence initial={false} custom={direction}>
                 <motion.div
                     key={activeTab}
                     custom={direction}
@@ -541,12 +541,11 @@ export default function InboxPage() {
                     transition={{
                         type: 'tween',
                         ease: 'easeInOut',
-                        duration: 0.3,
+                        duration: 0.25,
                     }}
-                    className="w-full"
+                    className="w-full absolute top-0 left-0"
                 >
-                    {activeTab === 'lists' && renderListContent()}
-                    {activeTab === 'calendar' && renderCalendarContent()}
+                    {activeTab === 'lists' ? renderListContent() : renderCalendarContent()}
                 </motion.div>
             </AnimatePresence>
         </div>
