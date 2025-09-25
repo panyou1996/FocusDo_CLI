@@ -59,6 +59,7 @@ export default {
       },
       boxShadow: {
         'soft': '0px 4px 16px rgba(0, 0, 0, 0.08)',
+        'soft-hover': '0px 6px 16px rgba(0, 0, 0, 0.12)',
         'fab': '0px 6px 20px rgba(88, 86, 214, 0.3)',
       },
       keyframes: {
@@ -78,6 +79,14 @@ export default {
             from: { opacity: "1", transform: "scale(1) translateY(0)", transformOrigin: "top right" },
             to: { opacity: "0", transform: "scale(0.95) translateY(-6px)", transformOrigin: "top right" },
         },
+        "scale-in-from-bottom-right": {
+            from: { opacity: "0", transform: "scale(0.95) translateY(6px)", transformOrigin: "bottom right" },
+            to: { opacity: "1", transform: "scale(1) translateY(0)", transformOrigin: "bottom right" },
+        },
+        "scale-out-to-bottom-right": {
+            from: { opacity: "1", transform: "scale(1) translateY(0)", transformOrigin: "bottom right" },
+            to: { opacity: "0", transform: "scale(0.95) translateY(6px)", transformOrigin: "bottom right" },
+        },
         "scale-in-from-top-left": {
             from: { opacity: "0", transform: "scale(0.95) translateY(-6px)", transformOrigin: "top left" },
             to: { opacity: "1", transform: "scale(1) translateY(0)", transformOrigin: "top left" },
@@ -90,12 +99,16 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "scale-in-from-top-right": "scale-in-from-top-right 0.1s ease-out",
-        "scale-out-to-top-right": "scale-out-to-top-right 0.1s ease-out",
-        "scale-in-from-top-left": "scale-in-from-top-left 0.1s ease-out",
-        "scale-out-to-top-left": "scale-out-to-top-left 0.1s ease-out",
+        "scale-in-from-top-right": "scale-in-from-top-right 0.2s ease-out",
+        "scale-out-to-top-right": "scale-out-to-top-right 0.2s ease-out",
+        "scale-in-from-bottom-right": "scale-in-from-bottom-right 0.2s ease-out",
+        "scale-out-to-bottom-right": "scale-out-to-bottom-right 0.2s ease-out",
+        "scale-in-from-top-left": "scale-in-from-top-left 0.2s ease-out",
+        "scale-out-to-top-left": "scale-out-to-top-left 0.2s ease-out",
       },
     },
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+
+    

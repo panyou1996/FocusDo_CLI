@@ -61,16 +61,23 @@ const TaskGroup = ({ title, tasks, status, ...props }: { title: string; tasks: T
 };
 
 const EmptyState = () => (
-    <div className="text-center py-10">
-        <div className="relative w-56 h-56 mx-auto mb-4">
+    <motion.div 
+      className="text-center py-10"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0, transition: { delay: 0.2, duration: 0.3 } }}
+    >
+        <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1, transition: { delay: 0.3, type: 'spring', stiffness: 200, damping: 15 } }}
+        >
             <Image 
                 src="/images/illustration-today-complete.svg" 
                 alt="All tasks complete" 
                 width={224}
                 height={224}
-                className="object-contain"
+                className="object-contain mx-auto mb-4"
             />
-        </div>
+        </motion.div>
         <h3 className="text-lg font-semibold">All Done for Today!</h3>
         <p className="text-muted-foreground mt-1">You've completed all your tasks. Enjoy your day!</p>
         <Link href="/add-task" className='mt-4 inline-block'>
@@ -79,7 +86,7 @@ const EmptyState = () => (
                 Add New Task
             </Button>
         </Link>
-    </div>
+    </motion.div>
 );
 
 
@@ -264,3 +271,5 @@ export default function TodayPage() {
     </div>
   );
 }
+
+    
