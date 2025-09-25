@@ -264,7 +264,3 @@ export default function TodayPage() {
     </div>
   );
 }
-
-    
-
-    

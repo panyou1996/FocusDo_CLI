@@ -186,6 +186,12 @@ export default function InboxPage() {
   const [filterImportance, setFilterImportance] = useLocalStorage<FilterImportance>('inbox-filter-importance', 'all');
   const [sortBy, setSortBy] = useLocalStorage<SortByType>('inbox-sort-by', 'default');
   const [activeTab, setActiveTab] = useLocalStorage("inbox-active-tab", "lists");
+  const [direction, setDirection] = React.useState(0);
+
+  const handleTabChange = (newTab: string) => {
+    setDirection(newTab === 'calendar' ? 1 : -1);
+    setActiveTab(newTab);
+  }
 
   React.useEffect(() => {
     setIsClient(true);
@@ -351,6 +357,21 @@ export default function InboxPage() {
     onToggleCompleted: handleToggleCompleted,
   };
 
+  const contentVariants = {
+    hidden: (direction: number) => ({
+      x: direction > 0 ? '100%' : '-100%',
+      opacity: 0
+    }),
+    visible: {
+      x: '0%',
+      opacity: 1
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? '100%' : '-100%',
+      opacity: 0
+    }),
+  };
+
   const renderListContent = () => {
     if (!isClient) {
       return (
@@ -480,7 +501,7 @@ export default function InboxPage() {
           </Popover>
       </header>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <div className="flex gap-2 mb-4">
           <TabsList className="grid w-full grid-cols-2 h-11 flex-grow">
               <TabsTrigger value="lists">Lists</TabsTrigger>
@@ -493,62 +514,76 @@ export default function InboxPage() {
           </Link>
         </div>
       
-        <TabsContent value="lists">
-            <ScrollArea className="w-full whitespace-nowrap -mx-5">
-              <div className="flex gap-2 py-2 px-5">
-                  <button
-                      onClick={() => setSelectedList('all')}
-                      className={cn(
-                      'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                      selectedList === 'all'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'text-foreground bg-secondary'
-                      )}
-                  >
-                      <List className="w-4 h-4" />
-                      <span>All</span>
-                  </button>
-                  {lists.map(list => {
-                      const ListIcon = getIcon(list.icon as string);
-                      const isSelected = selectedList === list.id;
-                      return (
-                      <button
-                          key={list.id}
-                          onClick={() => setSelectedList(list.id)}
-                          className={cn(
-                          'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                          isSelected ? 'text-white' : 'text-foreground bg-secondary'
-                          )}
-                          style={{
-                          backgroundColor: isSelected ? list.color : undefined,
-                          }}
-                      >
-                          <ListIcon className="w-4 h-4" />
-                          <span>{list.name}</span>
-                      </button>
-                      );
-                  })}
-                  <Link href="/add-list">
-                      <Button
-                      size="icon"
-                      variant="secondary"
-                      className="rounded-full w-9 h-9 flex-shrink-0"
-                      >
-                      <Plus className="w-5 h-5" />
-                      </Button>
-                  </Link>
-                  </div>
-                  <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-            {renderListContent()}
-        </TabsContent>
-
-        <TabsContent value="calendar">
-          {renderCalendarContent()}
-        </TabsContent>
+        <div className="relative overflow-x-hidden">
+            <AnimatePresence initial={false} custom={direction}>
+                <motion.div
+                    key={activeTab}
+                    custom={direction}
+                    variants={contentVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    transition={{
+                        x: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 }
+                    }}
+                >
+                    {activeTab === 'lists' && (
+                        <div>
+                            <ScrollArea className="w-full whitespace-nowrap -mx-5">
+                                <div className="flex gap-2 py-2 px-5">
+                                    <button
+                                        onClick={() => setSelectedList('all')}
+                                        className={cn(
+                                        'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                                        selectedList === 'all'
+                                            ? 'bg-primary text-primary-foreground'
+                                            : 'text-foreground bg-secondary'
+                                        )}
+                                    >
+                                        <List className="w-4 h-4" />
+                                        <span>All</span>
+                                    </button>
+                                    {lists.map(list => {
+                                        const ListIcon = getIcon(list.icon as string);
+                                        const isSelected = selectedList === list.id;
+                                        return (
+                                        <button
+                                            key={list.id}
+                                            onClick={() => setSelectedList(list.id)}
+                                            className={cn(
+                                            'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                                            isSelected ? 'text-white' : 'text-foreground bg-secondary'
+                                            )}
+                                            style={{
+                                            backgroundColor: isSelected ? list.color : undefined,
+                                            }}
+                                        >
+                                            <ListIcon className="w-4 h-4" />
+                                            <span>{list.name}</span>
+                                        </button>
+                                        );
+                                    })}
+                                    <Link href="/add-list">
+                                        <Button
+                                        size="icon"
+                                        variant="secondary"
+                                        className="rounded-full w-9 h-9 flex-shrink-0"
+                                        >
+                                        <Plus className="w-5 h-5" />
+                                        </Button>
+                                    </Link>
+                                    </div>
+                                    <ScrollBar orientation="horizontal" />
+                            </ScrollArea>
+                            {renderListContent()}
+                        </div>
+                    )}
+                    {activeTab === 'calendar' && renderCalendarContent()}
+                </motion.div>
+            </AnimatePresence>
+        </div>
       </Tabs>
     </div>
   );
 }
-
-    
