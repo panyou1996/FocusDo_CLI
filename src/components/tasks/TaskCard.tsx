@@ -274,7 +274,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     <div
       className={cn(
         "w-full transition-colors duration-300 ease-in-out",
-        task.isImportant && "border-l-4 border-primary rounded-l-md"
+        task.isImportant && "border-l-4 border-[#F4A261]"
       )}
       onClick={handleToggleExpand}
     >
@@ -516,6 +516,8 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </div>
   );
 }
+
+    
 
     
 
