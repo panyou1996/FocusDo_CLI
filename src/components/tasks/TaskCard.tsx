@@ -27,6 +27,7 @@ import { format, parseISO, addMinutes, parse } from 'date-fns';
 import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
 import { getIcon } from "@/lib/icon-utils";
+import { useLongPress } from "@/hooks/useLongPress";
 
 
 interface TaskCardProps {
@@ -80,7 +81,6 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   const [editingSubtaskId, setEditingSubtaskId] = React.useState<string | null>(null);
   const [editingSubtaskText, setEditingSubtaskText] = React.useState('');
   
-  const longPressTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const pinControls = useAnimation();
   const isInitialMount = React.useRef(true);
 
@@ -91,6 +91,14 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     }
   };
   
+  const { isPressing, handlers } = useLongPress({
+    onLongPress: () => {
+        if (navigator.vibrate) navigator.vibrate(50);
+        onToggleFixed(task.id);
+    },
+    onClick: handleToggleExpand,
+  });
+
   // --- Title ---
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditingTitle(e.target.value);
@@ -221,21 +229,6 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     setEditingSubtasks(task.subtasks || []);
   }, [task]);
 
-  const handlePointerDown = () => {
-    longPressTimeoutRef.current = setTimeout(() => {
-      if (navigator.vibrate) navigator.vibrate(50);
-      onToggleFixed(task.id);
-      longPressTimeoutRef.current = null;
-    }, 300);
-  };
-
-  const handlePointerUp = () => {
-    if (longPressTimeoutRef.current) {
-      clearTimeout(longPressTimeoutRef.current);
-      longPressTimeoutRef.current = null;
-    }
-  };
-  
   React.useEffect(() => {
     // Skip animation on initial mount
     if (isInitialMount.current) {
@@ -350,13 +343,10 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         </motion.div>
         
         <motion.div
-            onPointerDown={handlePointerDown}
-            onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleToggleExpand}
+            {...handlers}
+            animate={{ scale: isPressing ? 0.98 : 1 }}
+            transition={{ type: "spring", duration: 0.2 }}
             className={'w-full rounded-2xl custom-card cursor-pointer relative overflow-hidden'}
-            transition={{ type: "tween", ease: "easeInOut", duration: 0.3 }}
         >
         <motion.div 
             className="absolute left-0 top-0 bottom-0 bg-yellow-500 rounded-l-2xl"
@@ -706,5 +696,3 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </motion.div>
   );
 }
-
-    
