@@ -283,7 +283,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         variant="ghost"
         size="icon"
         className={cn(
-          'absolute top-0 left-0 h-8 w-8 z-20',
+          'absolute top-0 left-0 w-7 h-7 z-10',
           'transition-all duration-200',
           task.isFixed
             ? 'text-primary'
@@ -294,19 +294,19 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
           onToggleFixed(task.id);
         }}
       >
-        <Pin className="w-6 h-6 -rotate-45" />
+        <Pin className="w-5 h-5 -rotate-45" />
       </Button>
       <div
         className={cn(
-          'w-full rounded-2xl custom-card border-l-4',
+          'w-full rounded-2xl custom-card',
           task.isImportant
-            ? '!border-l-[#F4A261]'
-            : 'border-l-transparent'
+            ? '!border-l-4 !border-l-[#F4A261]'
+            : 'border-l-4 border-l-transparent'
         )}
         onClick={handleToggleExpand}
         onContextMenu={handleLongPress}
       >
-        <div className="flex items-center p-4 pl-8">
+        <div className="flex items-center py-3 px-4">
           <Checkbox
             id={`task-${task.id}`}
             checked={task.isCompleted}
@@ -388,7 +388,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         </div>
 
         {cardIsExpanded && (
-          <div className="px-4 pb-4 pl-12 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <div className="px-4 pb-3 pl-12 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <div
               className="flex items-center gap-2 -ml-2 mb-2"
               onClick={e => e.stopPropagation()}
@@ -632,6 +632,8 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </div>
   );
 }
+
+    
 
     
 
