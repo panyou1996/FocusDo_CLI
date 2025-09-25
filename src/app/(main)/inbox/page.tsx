@@ -128,10 +128,10 @@ const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({
                  <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
                  <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
                     <TabsList className="grid w-full grid-cols-4">
-                        <TabsTrigger value="default">Start Time</TabsTrigger>
+                        <TabsTrigger value="default">Start</TabsTrigger>
                         <TabsTrigger value="dueDate">Due Date</TabsTrigger>
-                        <TabsTrigger value="importance">Importance</TabsTrigger>
-                        <TabsTrigger value="creationDate">Created Time</TabsTrigger>
+                        <TabsTrigger value="importance">Important</TabsTrigger>
+                        <TabsTrigger value="creationDate">Created</TabsTrigger>
                     </TabsList>
                 </Tabs>
             </div>
@@ -261,6 +261,13 @@ export default function InboxPage() {
       updateTask(taskId, { isMyDay: !task.isMyDay });
     }
   };
+  
+  const handleToggleFixed = (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      updateTask(taskId, { isFixed: !task.isFixed });
+    }
+  };
 
   const handleToggleCompleted = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
@@ -311,6 +318,7 @@ export default function InboxPage() {
     onUpdate: handleUpdateTask,
     onToggleImportant: handleToggleImportant,
     onToggleMyDay: handleToggleMyDay,
+    onToggleFixed: handleToggleFixed,
     onToggleCompleted: handleToggleCompleted,
   };
 
@@ -503,3 +511,5 @@ export default function InboxPage() {
     </div>
   );
 }
+
+    
