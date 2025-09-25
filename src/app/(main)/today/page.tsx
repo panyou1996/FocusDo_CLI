@@ -191,7 +191,7 @@ export default function TodayPage() {
             <AvatarFallback>{currentUser?.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">My Day</h1>
+            <h1 className="text-3xl font-bold text-foreground">My Day</h1>
             <p className="text-sm text-muted-foreground">{`${dateString}, ${dayString}`}</p>
           </div>
         </div>
@@ -221,3 +221,5 @@ export default function TodayPage() {
     </div>
   );
 }
+
+    

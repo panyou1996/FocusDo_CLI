@@ -45,7 +45,7 @@ export function JournalCard({ post, list }: JournalCardProps) {
           </CardHeader>
         )}
         <CardContent className="p-4">
-          <h3 className="text-lg font-bold text-foreground mb-2 leading-tight">{post.title}</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-2 leading-tight">{post.title}</h3>
           <p className="text-base text-muted-foreground line-clamp-3 mb-3">{post.excerpt}</p>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
              {list && ListIcon && (
@@ -61,3 +61,5 @@ export function JournalCard({ post, list }: JournalCardProps) {
     </Link>
   );
 }
+
+    

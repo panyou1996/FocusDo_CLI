@@ -283,7 +283,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         variant="ghost"
         size="icon"
         className={cn(
-          'absolute top-0 left-0 w-7 h-7 z-10',
+          'absolute top-0 left-0 w-7 h-7 z-10 -rotate-45',
           'transition-all duration-200',
           task.isFixed
             ? 'text-primary'
@@ -294,7 +294,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
           onToggleFixed(task.id);
         }}
       >
-        <Pin className="w-5 h-5 -rotate-45" />
+        <Pin className="w-5 h-5" />
       </Button>
       <div
         className={cn(
@@ -335,7 +335,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             ) : (
               <p
                 className={cn(
-                  'text-base font-medium text-foreground truncate',
+                  'text-base font-semibold text-foreground truncate',
                   task.isCompleted && 'line-through text-muted-foreground'
                 )}
               >
@@ -632,9 +632,5 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </div>
   );
 }
-
-    
-
-    
 
     

@@ -147,7 +147,7 @@ export default function InboxPage() {
   const [filterStatus, setFilterStatus] = useLocalStorage<FilterStatus>('inbox-filter-status', 'all');
   const [filterImportance, setFilterImportance] = useLocalStorage<FilterImportance>('inbox-filter-importance', 'all');
   const [sortBy, setSortBy] = useLocalStorage<SortByType>('inbox-sort-by', 'default');
-  const [activeTab, setActiveTab] = React.useState("lists");
+  const [activeTab, setActiveTab] = useLocalStorage("inbox-active-tab", "lists");
 
   React.useEffect(() => {
     setIsClient(true);
@@ -316,7 +316,7 @@ export default function InboxPage() {
   const renderListContent = () => {
     if (!isClient) {
       return (
-        <div className="space-y-4 px-5 mt-4">
+        <div className="space-y-4 mt-4">
           <Skeleton className="h-16 w-full rounded-2xl" />
           <Skeleton className="h-16 w-full rounded-2xl" />
           <Skeleton className="h-16 w-full rounded-2xl" />
@@ -423,7 +423,7 @@ export default function InboxPage() {
       <header className="pt-10 pb-4 h-[80px] flex justify-between items-center">
           <div className="flex items-center gap-2">
             <InboxIcon className="w-7 h-7" strokeWidth={2} />
-            <h1 className="text-2xl font-bold text-foreground">Inbox</h1>
+            <h1 className="text-3xl font-bold text-foreground">Inbox</h1>
           </div>
           <Popover>
               <PopoverTrigger asChild>
@@ -457,10 +457,9 @@ export default function InboxPage() {
             </Button>
         </Link>
       </div>
-
-      {activeTab === 'lists' && (
-        <div className="-mx-5">
-            <ScrollArea className="w-full whitespace-nowrap">
+      
+      <TabsContent value="lists">
+        <ScrollArea className="w-full whitespace-nowrap -mx-5">
             <div className="flex gap-2 py-2 px-5">
                 <button
                     onClick={() => setSelectedList('all')}
@@ -505,15 +504,14 @@ export default function InboxPage() {
                 </Link>
                 </div>
                 <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-            <div className="px-5">
-              {renderListContent()}
-            </div>
-        </div>
-      )}
+        </ScrollArea>
+        {renderListContent()}
+      </TabsContent>
 
-      {activeTab === 'calendar' && renderCalendarContent()}
+      <TabsContent value="calendar">{renderCalendarContent()}</TabsContent>
 
     </div>
   );
 }
+
+    

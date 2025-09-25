@@ -88,7 +88,7 @@ export default function JournalPage() {
       <header className="pt-10 pb-4 h-[80px] flex justify-between items-center">
         <div className="flex items-center gap-3">
           <BookText className="w-7 h-7" strokeWidth={2} />
-          <h1 className="text-2xl font-bold text-foreground">Journal</h1>
+          <h1 className="text-3xl font-bold text-foreground">Journal</h1>
         </div>
          <div className="flex items-center gap-2">
           <Popover>
@@ -185,3 +185,5 @@ export default function JournalPage() {
     </div>
   );
 }
+
+    
