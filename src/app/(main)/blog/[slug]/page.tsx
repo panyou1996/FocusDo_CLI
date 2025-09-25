@@ -128,15 +128,15 @@ export default function BlogDetailPage() {
         </div>
       </header>
       <article className="px-5">
-        <h1 className="text-[30px] font-bold leading-tight mt-6 mb-4">{post.title}</h1>
+        <h1 className="text-2xl font-bold leading-tight mt-6 mb-4">{post.title}</h1>
         <div className="flex items-center gap-3 mb-6">
           <Avatar className="w-10 h-10">
              <AvatarImage src={authorAvatarUrl} alt={postAuthor.name} />
             <AvatarFallback>{postAuthor.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-[15px] font-medium">{postAuthor.name}</p>
-            <p className="text-[13px] text-muted-foreground">{post.date}</p>
+            <p className="font-medium">{postAuthor.name}</p>
+            <p className="text-sm text-muted-foreground">{post.date}</p>
           </div>
         </div>
         
@@ -153,7 +153,7 @@ export default function BlogDetailPage() {
         )}
 
         <div 
-            className="prose prose-lg max-w-none text-foreground/80 prose-p:text-[17px] prose-p:leading-relaxed prose-p:mb-4 prose-img:rounded-2xl prose-img:my-6"
+            className="prose max-w-none text-foreground/80 prose-p:text-base prose-p:leading-relaxed prose-p:mb-4 prose-img:rounded-2xl prose-img:my-6"
             dangerouslySetInnerHTML={{ __html: post.content }}
          />
 

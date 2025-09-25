@@ -48,9 +48,11 @@ export default function EditTaskPage() {
 
     const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
         <div className="flex items-center h-[44px] px-4">
-            <Icon className="w-5 h-5 text-muted-foreground mr-3" strokeWidth={1.5} />
-            <Label className="text-[17px] flex-grow">{label}</Label>
-            <div className="flex justify-end items-center text-[17px]">
+             <div className="flex items-center gap-3">
+                <Icon className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+                <Label className="text-base">{label}</Label>
+            </div>
+            <div className="flex-grow flex justify-end items-center text-base">
                 {children}
             </div>
         </div>
@@ -166,7 +168,7 @@ export default function EditTaskPage() {
                     <Button variant="ghost" size="icon" aria-label="Delete" onClick={handleDeleteTask}>
                         <Trash2 className="w-6 h-6 text-destructive" />
                     </Button>
-                    <h1 className="text-[17px] font-bold">Edit Task</h1>
+                    <h1 className="text-lg font-bold">Edit Task</h1>
                     <Button variant="ghost" size="icon" aria-label="Close" onClick={handleClose}>
                         <X className="w-6 h-6" />
                     </Button>
@@ -176,7 +178,7 @@ export default function EditTaskPage() {
                     <Card className="rounded-2xl shadow-soft border-none p-1 flex-shrink-0">
                         <Input
                             placeholder="What do you want to do?"
-                            className="border-none text-[18px] font-medium h-[60px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
+                            className="border-none text-base font-medium h-[60px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                         />
@@ -185,7 +187,7 @@ export default function EditTaskPage() {
                     <Card className="rounded-2xl shadow-soft border-none p-1 flex flex-col flex-shrink-0">
                         <Textarea
                             placeholder="Add a description..."
-                            className="border-none text-[17px] min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow bg-transparent"
+                            className="border-none text-base min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow bg-transparent"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
@@ -195,7 +197,7 @@ export default function EditTaskPage() {
                          <AttributeRow icon={List} label="List">
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="text-primary flex items-center gap-2 text-[17px]">
+                                    <Button variant="ghost" size="sm" className="text-primary flex items-center gap-2 text-base">
                                         {selectedList && (
                                             <SelectedListIcon className="w-4 h-4" style={{ color: selectedList.color }}/>
                                         )}
@@ -233,7 +235,7 @@ export default function EditTaskPage() {
                                 {subtasks.length > 0 && (
                                     <span className="text-sm text-muted-foreground">{subtasks.filter(s => s.isCompleted).length}/{subtasks.length}</span>
                                 )}
-                                <Button variant="ghost" size="sm" className="text-primary text-[17px]" onClick={() => setIsAddingSubtask(true)}>
+                                <Button variant="ghost" size="sm" className="text-primary text-base" onClick={() => setIsAddingSubtask(true)}>
                                     Add
                                 </Button>
                             </div>
@@ -286,7 +288,7 @@ export default function EditTaskPage() {
                                     type="number" 
                                     value={duration}
                                     onChange={(e) => setDuration(Number(e.target.value))}
-                                    className="w-20 text-right h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-[17px]"
+                                    className="w-20 text-right h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-base"
                                     min="0"
                                     step="5"
                                 />
@@ -299,7 +301,7 @@ export default function EditTaskPage() {
                                 type="time"
                                 value={startTime}
                                 onChange={(e) => setStartTime(e.target.value)}
-                                className="w-28 h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-[17px]"
+                                className="w-28 h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-base"
                                 pattern="[0-9]{2}:[0-9]{2}"
                             />
                         </AttributeRow>
@@ -307,7 +309,7 @@ export default function EditTaskPage() {
                         <AttributeRow icon={Calendar} label="Deadline">
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="text-primary text-[17px]">
+                                    <Button variant="ghost" size="sm" className="text-primary text-base">
                                         {dueDate ? format(dueDate, 'PPP') : 'Set Date'}
                                     </Button>
                                 </PopoverTrigger>
@@ -339,7 +341,7 @@ export default function EditTaskPage() {
                 </main>
 
                 <footer className="px-5 py-4 flex-shrink-0 border-t">
-                    <Button className="w-full h-[50px] text-[17px] font-bold rounded-md" onClick={handleSaveTask}>Save Changes</Button>
+                    <Button className="w-full h-[50px] text-lg font-bold rounded-md" onClick={handleSaveTask}>Save Changes</Button>
                 </footer>
             </div>
         </div>

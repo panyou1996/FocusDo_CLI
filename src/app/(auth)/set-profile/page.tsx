@@ -109,8 +109,8 @@ export default function SetProfilePage() {
   return (
     <Card className="w-full max-w-md shadow-soft border-none rounded-lg">
       <CardHeader className="text-center">
-        <CardTitle className="text-[22px] font-bold">Set Up Your Profile</CardTitle>
-        <CardDescription className="text-[15px]">Choose your name and avatar.</CardDescription>
+        <CardTitle className="text-2xl font-bold">Set Up Your Profile</CardTitle>
+        <CardDescription>Choose your name and avatar.</CardDescription>
       </CardHeader>
       <form onSubmit={handleSaveProfile}>
         <CardContent className="space-y-6">
@@ -230,7 +230,7 @@ export default function SetProfilePage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4 mt-4">
-          <Button type="submit" className="w-full h-[50px] text-[17px] font-bold rounded-md">
+          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-md">
             Save and Continue
           </Button>
         </CardFooter>

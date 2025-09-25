@@ -33,8 +33,8 @@ export default function LoginPage() {
         <div className="flex justify-center items-center mb-4">
           <Logo className="h-10 w-10" />
         </div>
-        <CardTitle className="text-[22px] font-bold">Welcome to TaskFlow</CardTitle>
-        <CardDescription className="text-[15px]">Organize your life, unlock your flow.</CardDescription>
+        <CardTitle className="text-2xl font-bold">Welcome to TaskFlow</CardTitle>
+        <CardDescription>Organize your life, unlock your flow.</CardDescription>
       </CardHeader>
       <form onSubmit={handleLogin}>
         <CardContent className="space-y-4">
@@ -48,7 +48,7 @@ export default function LoginPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full h-[50px] text-[17px] font-bold rounded-md">Log In</Button>
+          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-md">Log In</Button>
           <p className="text-sm text-muted-foreground">
             Don't have an account?{" "}
             <Link href="/register" className="font-medium text-primary hover:underline">

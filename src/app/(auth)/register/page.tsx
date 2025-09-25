@@ -25,8 +25,8 @@ export default function RegisterPage() {
         <div className="flex justify-center items-center mb-4">
           <Logo className="h-10 w-10" />
         </div>
-        <CardTitle className="text-[22px] font-bold">Create your Account</CardTitle>
-        <CardDescription className="text-[15px]">Start managing your tasks with AI power.</CardDescription>
+        <CardTitle className="text-2xl font-bold">Create your Account</CardTitle>
+        <CardDescription>Start managing your tasks with AI power.</CardDescription>
       </CardHeader>
       <form onSubmit={handleRegister}>
         <CardContent className="space-y-4">
@@ -40,7 +40,7 @@ export default function RegisterPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full h-[50px] text-[17px] font-bold rounded-md">Create Account</Button>
+          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-md">Create Account</Button>
           <p className="text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link href="/login" className="font-medium text-primary hover:underline">

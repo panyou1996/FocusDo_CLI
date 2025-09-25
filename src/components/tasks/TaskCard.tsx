@@ -305,7 +305,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                   onChange={handleTitleChange}
                   onBlur={handleTitleBlur}
                   onKeyDown={handleTitleKeyDown}
-                  className="h-7 p-0 text-[17px] font-medium border-none focus-visible:ring-0"
+                  className="h-7 p-0 text-base font-medium border-none focus-visible:ring-0"
                   autoFocus
                   onClick={(e) => {
                       e.stopPropagation();
@@ -314,7 +314,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
           ) : (
               <p
               className={cn(
-                  "text-[17px] font-medium text-foreground truncate",
+                  "text-base font-medium text-foreground truncate",
                   task.isCompleted && "line-through text-muted-foreground",
                   cardIsExpanded && "cursor-text"
               )}
@@ -332,7 +332,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
           {!isEditingTitle && (
             task.startTime ? (
               <p className={cn(
-                  "text-[13px]",
+                  "text-sm h-[18px]",
                   status === 'expired' && 'font-bold text-destructive',
                   status === 'upcoming' && 'font-bold text-primary',
                   status === 'done' && 'text-muted-foreground'
@@ -340,7 +340,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                   {endTime ? `${task.startTime} - ${endTime}` : task.startTime}
               </p>
             ) : (
-                <p className="text-[13px] text-muted-foreground h-[18px]">--:--</p>
+                <p className="text-sm text-muted-foreground h-[18px]">--:--</p>
             )
           )}
         </div>

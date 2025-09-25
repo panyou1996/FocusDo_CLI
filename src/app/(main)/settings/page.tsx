@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from '@/components/ui/button';
 
 const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
-  <p className="px-5 text-[13px] font-regular text-muted-foreground uppercase mt-6 mb-2">{children}</p>
+  <p className="px-5 text-sm font-regular text-muted-foreground uppercase mt-6 mb-2">{children}</p>
 );
 
 const SettingsItem = ({ icon: Icon, label, color, action, href }: { icon: React.ElementType, label: string, color: string, action: 'switch' | 'navigate', href?: string }) => {
@@ -16,7 +16,7 @@ const SettingsItem = ({ icon: Icon, label, color, action, href }: { icon: React.
       <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: color }}>
         <Icon className="w-5 h-5 text-white" />
       </div>
-      <p className="text-[17px] flex-grow">{label}</p>
+      <p className="text-base flex-grow">{label}</p>
       {action === 'switch' && <Switch />}
       {action === 'navigate' && <ChevronRight className="w-5 h-5 text-muted-foreground" />}
     </div>
@@ -33,10 +33,10 @@ const SettingsItem = ({ icon: Icon, label, color, action, href }: { icon: React.
 export default function SettingsPage() {
   return (
     <div className="">
-      <header className="px-5 pt-10 pb-4 h-[100px] flex justify-between items-center">
+      <header className="px-5 pt-10 pb-4 h-[80px] flex justify-between items-center">
         <div className="flex items-center gap-3">
           <SettingsIcon className="w-7 h-7" strokeWidth={2} />
-          <h1 className="text-[28px] font-bold text-foreground">Settings</h1>
+          <h1 className="text-2xl font-bold text-foreground">Settings</h1>
         </div>
         <div className="w-10 h-10"></div>
       </header>

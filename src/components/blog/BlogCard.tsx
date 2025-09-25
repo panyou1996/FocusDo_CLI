@@ -45,9 +45,9 @@ export function BlogCard({ post, list }: BlogCardProps) {
           </CardHeader>
         )}
         <CardContent className="p-4">
-          <h3 className="text-[18px] font-bold text-foreground mb-2 leading-tight">{post.title}</h3>
-          <p className="text-[15px] text-muted-foreground line-clamp-3 mb-3">{post.excerpt}</p>
-          <div className="flex items-center gap-2 text-[13px] text-muted-foreground">
+          <h3 className="text-lg font-bold text-foreground mb-2 leading-tight">{post.title}</h3>
+          <p className="text-base text-muted-foreground line-clamp-3 mb-3">{post.excerpt}</p>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
              {list && ListIcon && (
                 <ListIcon className="w-4 h-4" style={{color: list.color}} />
              )}

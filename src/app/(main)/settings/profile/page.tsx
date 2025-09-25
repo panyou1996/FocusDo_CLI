@@ -145,7 +145,7 @@ export default function ProfilePage() {
             <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
                 <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
                     <div className="w-10"></div>
-                    <h1 className="text-[17px] font-bold">Profile</h1>
+                    <h1 className="text-lg font-bold">Profile</h1>
                     <Button variant="ghost" size="icon" aria-label="Close" onClick={handleClose}>
                         <X className="w-6 h-6" />
                     </Button>
@@ -272,7 +272,7 @@ export default function ProfilePage() {
                 </main>
                 
                 <footer className="px-5 py-4 flex-shrink-0 border-t">
-                    <Button className="w-full h-[50px] text-[17px] font-bold rounded-md" onClick={handleSaveChanges} disabled={!isClient}>
+                    <Button className="w-full h-[50px] text-lg font-bold rounded-md" onClick={handleSaveChanges} disabled={!isClient}>
                         Save Changes
                     </Button>
                 </footer>

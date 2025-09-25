@@ -373,10 +373,10 @@ export default function InboxPage() {
 
   return (
     <div>
-      <header className="px-5 pt-10 pb-4 h-[100px] flex justify-between items-center">
+      <header className="px-5 pt-10 pb-4 h-[80px] flex justify-between items-center">
           <div className="flex items-center gap-2">
             <InboxIcon className="w-7 h-7" strokeWidth={2} />
-            <h1 className="text-[28px] font-bold text-foreground">Inbox</h1>
+            <h1 className="text-2xl font-bold text-foreground">Inbox</h1>
           </div>
           <Popover>
               <PopoverTrigger asChild>

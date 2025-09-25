@@ -175,14 +175,14 @@ export default function TodayPage() {
 
   return (
     <div className="px-5">
-      <header className="px-5 pt-10 pb-4 h-[100px] flex justify-between items-center">
+      <header className="pt-10 pb-4 h-[80px] flex justify-between items-center">
         <div className="flex items-center gap-3">
           <Avatar className="w-10 h-10">
             <AvatarImage src={currentUser?.avatarUrl} alt={currentUser?.name} />
             <AvatarFallback>{currentUser?.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-[28px] font-bold text-foreground">My Day</h1>
+            <h1 className="text-2xl font-bold text-foreground">My Day</h1>
             <p className="text-sm text-muted-foreground">{`${dateString}, ${dayString}`}</p>
           </div>
         </div>
