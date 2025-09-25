@@ -13,7 +13,7 @@ import { themes } from '@/lib/themes';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
-  <p className="px-1 text-sm font-regular text-muted-foreground uppercase mt-6 mb-2">{children}</p>
+  <p className="px-1 text-sm font-normal text-muted-foreground uppercase mt-4 mb-2">{children}</p>
 );
 
 const sizeSteps = ['XS', 'S', 'M', 'L', 'XL'];
@@ -47,7 +47,7 @@ export default function AppearancePage() {
                     <Button variant="ghost" size="icon" onClick={() => router.back()}>
                         <ArrowLeft className="w-6 h-6" />
                     </Button>
-                    <h1 className="text-lg font-bold">Appearance</h1>
+                    <h1 className="text-base font-bold">Appearance</h1>
                     <div className="w-10"></div>
                 </header>
             </div>
@@ -60,16 +60,16 @@ export default function AppearancePage() {
       <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
         <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
           <div className="w-10"></div>
-          <h1 className="text-lg font-bold">Appearance</h1>
+          <h1 className="text-base font-bold">Appearance</h1>
           <Button variant="ghost" size="icon" aria-label="Close" onClick={() => router.back()}>
             <X className="w-6 h-6" />
           </Button>
         </header>
 
-        <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
+        <main className="flex-grow px-5 py-4 flex flex-col gap-2 overflow-y-auto">
           <SettingsGroupLabel>Color Mode</SettingsGroupLabel>
           <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
-            <div className="flex items-center justify-between h-[30px]">
+            <div className="flex items-center justify-between h-[44px]">
                 <div className='flex items-center'>
                     <Moon className="w-5 h-5 mr-3 text-muted-foreground" />
                     <p className="text-base">Dark Mode</p>
