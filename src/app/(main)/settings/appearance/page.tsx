@@ -68,7 +68,7 @@ export default function AppearancePage() {
 
         <main className="flex-grow px-5 py-4 flex flex-col gap-2 overflow-y-auto">
           <SettingsGroupLabel>Color Mode</SettingsGroupLabel>
-          <Card className="rounded-xl overflow-hidden shadow-soft border-none">
+          <Card className="rounded-xl shadow-soft border-none">
             <div className="flex items-center justify-between h-[50px] px-4">
                 <div className='flex items-center'>
                     <Moon className="w-5 h-5 mr-3 text-muted-foreground" />
@@ -83,8 +83,8 @@ export default function AppearancePage() {
           </Card>
 
           <SettingsGroupLabel>UI Size</SettingsGroupLabel>
-          <Card className="rounded-xl overflow-hidden shadow-soft border-none p-2">
-            <Tabs value={String(uiSize)} onValueChange={(value) => handleSizeChange(Number(value))}>
+          <Card className="rounded-xl overflow-hidden shadow-soft border-none">
+            <Tabs value={String(uiSize)} onValueChange={(value) => handleSizeChange(Number(value))} className="p-2">
                 <TabsList className="grid w-full grid-cols-5">
                     {sizeSteps.map((size, index) => (
                         <TabsTrigger key={size} value={String(index)}>{size}</TabsTrigger>
