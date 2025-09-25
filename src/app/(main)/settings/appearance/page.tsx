@@ -16,7 +16,6 @@ const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
 );
 
 const sizeSteps = ['XS', 'S', 'M', 'L', 'XL'];
-const fontStyles = ['Sans', 'Serif', 'Mono'];
 
 export default function AppearancePage() {
   const router = useRouter();
@@ -25,8 +24,6 @@ export default function AppearancePage() {
     setTheme, 
     uiSize, 
     setUiSize,
-    fontStyle,
-    setFontStyle,
   } = useAppContext();
   const [isClient, setIsClient] = React.useState(false);
 
@@ -40,10 +37,6 @@ export default function AppearancePage() {
   
   const handleSizeChange = (index: number) => {
     setUiSize(index);
-  }
-
-  const handleFontStyleChange = (style: string) => {
-    setFontStyle(style.toLowerCase());
   }
 
   if (!isClient) {
@@ -73,17 +66,6 @@ export default function AppearancePage() {
         </header>
 
         <main className="flex-grow px-5 py-4 flex flex-col gap-2 overflow-y-auto">
-          <SettingsGroupLabel>Font Style</SettingsGroupLabel>
-          <Card className="rounded-xl shadow-soft border-none">
-            <Tabs value={fontStyle} onValueChange={handleFontStyleChange} className="p-2">
-                <TabsList className="grid w-full grid-cols-3">
-                    {fontStyles.map((style) => (
-                        <TabsTrigger key={style} value={style.toLowerCase()}>{style}</TabsTrigger>
-                    ))}
-                </TabsList>
-            </Tabs>
-          </Card>
-
           <SettingsGroupLabel>UI Size</SettingsGroupLabel>
           <Card className="rounded-xl shadow-soft border-none">
             <Tabs value={String(uiSize)} onValueChange={(value) => handleSizeChange(Number(value))} className="p-2">

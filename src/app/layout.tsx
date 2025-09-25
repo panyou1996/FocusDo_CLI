@@ -6,9 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
 import { AppProvider } from "@/context/AppContext";
 import { ThemeProvider } from "@/context/ThemeProvider";
-import { FontProvider } from "@/context/FontProvider";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "TaskFlow",
@@ -28,13 +27,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("antialiased", inter.variable)}>
+      <body className={cn("antialiased", inter.className)}>
         <AppProvider>
           <ThemeProvider>
-            <FontProvider>
-              {children}
-              <Toaster />
-            </FontProvider>
+            {children}
+            <Toaster />
           </ThemeProvider>
         </AppProvider>
       </body>
