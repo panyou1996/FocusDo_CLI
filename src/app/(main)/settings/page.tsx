@@ -15,27 +15,18 @@ const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
   <p className="px-5 text-sm font-regular text-muted-foreground uppercase mt-6 mb-2">{children}</p>
 );
 
-const SettingsItem = ({ icon: Icon, label, color, action, href, onClick, checked, onCheckedChange }: { icon: React.ElementType, label: string, color: string, action: 'switch' | 'navigate', href?: string, onClick?: () => void, checked?: boolean, onCheckedChange?: (checked: boolean) => void }) => {
-  const content = (
-    <div className="flex items-center h-[50px] px-4">
-      <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: color }}>
-        <Icon className="w-5 h-5 text-white" />
+const SettingsItem = ({ icon: Icon, label, color, href }: { icon: React.ElementType, label: string, color: string, href: string }) => {
+  return (
+    <Link href={href}>
+      <div className="flex items-center h-[50px] px-4 cursor-pointer">
+        <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: color }}>
+          <Icon className="w-5 h-5 text-white" />
+        </div>
+        <p className="text-base flex-grow">{label}</p>
+        <ChevronRight className="w-5 h-5 text-muted-foreground" />
       </div>
-      <p className="text-base flex-grow">{label}</p>
-      {action === 'switch' && <Switch checked={checked} onCheckedChange={onCheckedChange} />}
-      {action === 'navigate' && <ChevronRight className="w-5 h-5 text-muted-foreground" />}
-    </div>
+    </Link>
   );
-
-  if (action === 'navigate' && href) {
-    return <Link href={href}>{content}</Link>;
-  }
-  
-  if (onClick) {
-      return <div onClick={onClick} className="cursor-pointer">{content}</div>;
-  }
-
-  return content;
 };
 
 
@@ -59,23 +50,25 @@ export default function SettingsPage() {
       <div className="px-5">
         <SettingsGroupLabel>Preferences</SettingsGroupLabel>
         <Card className="rounded-xl overflow-hidden shadow-soft border-none">
-          <SettingsItem 
-            icon={Moon} 
-            label="Dark Mode" 
-            color="#8b5cf6"
-            action="switch" 
-            checked={mode === 'dark'}
-            onCheckedChange={handleModeChange}
-          />
+           <div className="flex items-center h-[50px] px-4">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: "#8b5cf6" }}>
+                <Moon className="w-5 h-5 text-white" />
+              </div>
+              <p className="text-base flex-grow">Dark Mode</p>
+              <Switch 
+                checked={mode === 'dark'}
+                onCheckedChange={handleModeChange}
+              />
+            </div>
           <Separator />
-          <SettingsItem icon={Palette} label="Appearance" color="#3b82f6" action="navigate" href="/settings/appearance" />
+          <SettingsItem icon={Palette} label="Appearance" color="#3b82f6" href="/settings/appearance" />
         </Card>
 
         <SettingsGroupLabel>Account Settings</SettingsGroupLabel>
         <Card className="rounded-xl overflow-hidden shadow-soft border-none">
-          <SettingsItem icon={User} label="Profile" color="#10b981" action="navigate" href="/settings/profile" />
+          <SettingsItem icon={User} label="Profile" color="#10b981" href="/settings/profile" />
           <Separator />
-          <SettingsItem icon={Lock} label="Password" color="#f97316" action="navigate" />
+          <SettingsItem icon={Lock} label="Password" color="#f97316" href="#" />
         </Card>
       </div>
     </div>
