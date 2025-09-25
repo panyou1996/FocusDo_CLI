@@ -46,15 +46,30 @@ export function BottomNavBar() {
             variants={navBarVariants}
             initial="visible"
             animate={isModalPage ? "hidden" : "visible"}
-            className="relative mx-4 mb-4 h-[70px] bg-card/60 backdrop-blur-xl rounded-[24px] shadow-lg"
+            className="absolute bottom-0 left-0 right-0 mx-4 mb-4 h-[70px] bg-card/60 backdrop-blur-xl rounded-[24px] shadow-lg"
           >
           <nav className="flex items-center justify-around h-full pt-1 pb-2 px-2">
-            {navItems.map((item) => {
+            {navItems.map((item, index) => {
               const isActive = pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/');
-              if (item.href === '/journal' && (pathname.startsWith('/journal/') || pathname.startsWith('/blog/'))) {
-                  // Special case for journal detail pages
-              } else if (item.href !== pathname && item.href !== '/journal' && pathname.startsWith(item.href) && item.href !== '/') {
-                   //
+              
+              // Insert a placeholder for the FAB in the middle
+              if (index === 2) {
+                return (
+                  <React.Fragment key="fab-placeholder">
+                    <div className="flex-auto basis-1/5" />
+                    <Link href={item.href} key={item.href} className="flex-auto basis-1/5">
+                      <div
+                        className={cn(
+                          "flex flex-col items-center justify-center gap-1 transition-colors",
+                          isActive ? "text-primary" : "text-muted-foreground"
+                        )}
+                      >
+                        <item.icon strokeWidth={isActive ? 2 : 1.5} size={24} />
+                        <span className="text-[10px] font-medium">{item.label}</span>
+                      </div>
+                    </Link>
+                  </React.Fragment>
+                );
               }
 
               return (
@@ -74,19 +89,21 @@ export function BottomNavBar() {
           </nav>
         </motion.div>
         
-        <motion.div
-            variants={fabVariants}
-            initial="visible"
-            animate={isModalPage ? "hidden" : "visible"}
-            whileHover={{ scale: 1.1, rotate: 15 }}
-            whileTap={{ scale: 0.9 }}
-            className="absolute left-1/2 -translate-x-1/2 top-[-14px] w-[60px] h-[60px] bg-primary rounded-full flex items-center justify-center shadow-fab z-50"
-            aria-label="Add Task"
-        >
-            <Link href="/add-task">
-                <Plus className="text-white" size={30} strokeWidth={2.5} />
-            </Link>
-        </motion.div>
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[60px] h-[60px]">
+          <motion.div
+              variants={fabVariants}
+              initial="visible"
+              animate={isModalPage ? "hidden" : "visible"}
+              whileHover={{ scale: 1.1, rotate: 15 }}
+              whileTap={{ scale: 0.9 }}
+              className="w-full h-full bg-primary rounded-full flex items-center justify-center shadow-fab z-50"
+              aria-label="Add Task"
+          >
+              <Link href="/add-task">
+                  <Plus className="text-white" size={30} strokeWidth={2.5} />
+              </Link>
+          </motion.div>
+        </div>
       </div>
     </footer>
   );
