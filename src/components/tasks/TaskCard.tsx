@@ -362,9 +362,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             id={`task-${task.id}`}
             checked={task.isCompleted}
             onCheckedChange={() => onToggleCompleted(task.id)}
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-              e.stopPropagation()
-            }
+            onClick={(e) => e.stopPropagation()}
             className="w-5 h-5 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
           />
 
@@ -700,4 +698,3 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </motion.div>
   );
 }
-
