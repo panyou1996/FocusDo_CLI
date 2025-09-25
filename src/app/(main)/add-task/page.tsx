@@ -20,17 +20,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { getIcon } from '@/lib/icon-utils';
 
-
-const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
-    <div className="flex items-center h-[44px] px-4">
-        <Icon className="w-5 h-5 text-muted-foreground mr-3" strokeWidth={1.5} />
-        <Label className="text-[1rem] flex-grow">{label}</Label>
-        <div className="flex justify-end items-center min-w-[120px] text-[1rem]">
-            {children}
-        </div>
-    </div>
-);
-
 export default function AddTaskPage() {
     const router = useRouter();
     const { addTask, lists } = useAppContext();
@@ -51,6 +40,16 @@ export default function AddTaskPage() {
     const [editingSubtaskId, setEditingSubtaskId] = React.useState<string | null>(null);
     const [editingSubtaskText, setEditingSubtaskText] = React.useState('');
     const [selectedListId, setSelectedListId] = React.useState(lists[0]?.id || 'personal');
+
+    const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
+        <div className="flex items-center h-[44px] px-4">
+            <Icon className="w-5 h-5 text-muted-foreground mr-3" strokeWidth={1.5} />
+            <Label className="text-[1rem] flex-grow">{label}</Label>
+            <div className="flex justify-end items-center min-w-[120px] text-[1rem]">
+                {children}
+            </div>
+        </div>
+    );
 
     React.useEffect(() => {
         // Delay to allow animation
@@ -312,5 +311,3 @@ export default function AddTaskPage() {
         </div>
     );
 }
-
-    

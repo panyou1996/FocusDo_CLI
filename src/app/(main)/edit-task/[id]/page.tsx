@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -20,16 +19,6 @@ import type { Subtask, Task } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 
-
-const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
-    <div className="flex items-center h-[44px] px-4">
-        <Icon className="w-5 h-5 text-muted-foreground mr-3" strokeWidth={1.5} />
-        <Label className="text-[1rem] flex-grow">{label}</Label>
-        <div className="flex justify-end items-center min-w-[120px] text-[1rem]">
-            {children}
-        </div>
-    </div>
-);
 
 export default function EditTaskPage() {
     const router = useRouter();
@@ -55,6 +44,16 @@ export default function EditTaskPage() {
     const [editingSubtaskId, setEditingSubtaskId] = React.useState<string | null>(null);
     const [editingSubtaskText, setEditingSubtaskText] = React.useState('');
 
+    const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
+        <div className="flex items-center h-[44px] px-4">
+            <Icon className="w-5 h-5 text-muted-foreground mr-3" strokeWidth={1.5} />
+            <Label className="text-[1rem] flex-grow">{label}</Label>
+            <div className="flex justify-end items-center min-w-[120px] text-[1rem]">
+                {children}
+            </div>
+        </div>
+    );
+    
     React.useEffect(() => {
         if (taskToEdit) {
             setTitle(taskToEdit.title);
@@ -283,7 +282,7 @@ export default function EditTaskPage() {
                     <Card className="rounded-2xl shadow-soft border-none overflow-hidden flex-shrink-0">
                         <AttributeRow icon={Sun} label="Add to My Day">
                             <Switch checked={isMyDay} onCheckedChange={setIsMyDay} />
-                        </AttributeRIow>
+                        </AttributeRow>
                         <Separator/>
                         <AttributeRow icon={Star} label="Mark as Important">
                             <Switch checked={isImportant} onCheckedChange={setIsImportant} />
