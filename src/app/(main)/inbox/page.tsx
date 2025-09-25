@@ -99,29 +99,20 @@ const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({
         <div className="p-4 space-y-4">
             <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-3">FILTER BY</h3>
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="filter-status" className="text-base">Status</Label>
-                        <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-[320px]">
-                            <TabsList className="grid grid-cols-3">
-                                <TabsTrigger value="all">All</TabsTrigger>
-                                <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
-                                <TabsTrigger value="completed">Completed</TabsTrigger>
-                            </TabsList>
-                        </Tabs>
-                    </div>
-                    <Separator />
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="show-important" className="text-base">Grade</Label>
-                        <Tabs value={filterImportance} onValueChange={(value) => setFilterImportance(value as any)} className="w-[320px]">
-                            <TabsList className="grid grid-cols-3">
-                                <TabsTrigger value="all">All</TabsTrigger>
-                                <TabsTrigger value="important">Important</TabsTrigger>
-                                <TabsTrigger value="not-important">Not Important</TabsTrigger>
-                            </TabsList>
-                        </Tabs>
-                    </div>
-                </div>
+                <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-full mb-4">
+                    <TabsList className="grid grid-cols-3 w-full">
+                        <TabsTrigger value="all">All</TabsTrigger>
+                        <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
+                        <TabsTrigger value="completed">Completed</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+                <Tabs value={filterImportance} onValueChange={(value) => setFilterImportance(value as any)} className="w-full">
+                    <TabsList className="grid grid-cols-3 w-full">
+                        <TabsTrigger value="all">All</TabsTrigger>
+                        <TabsTrigger value="important">Important</TabsTrigger>
+                        <TabsTrigger value="not-important">Not Important</TabsTrigger>
+                    </TabsList>
+                </Tabs>
             </div>
 
             <div>
