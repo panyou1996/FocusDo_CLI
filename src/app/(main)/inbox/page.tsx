@@ -99,7 +99,7 @@ const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({
         <div className="p-4 space-y-4">
             <div>
                 <h3 className="text-sm font-medium text-muted-foreground mb-3">FILTER BY</h3>
-                <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-full mb-4">
+                <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-full mb-2">
                     <TabsList className="grid grid-cols-3 w-full">
                         <TabsTrigger value="all">All</TabsTrigger>
                         <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
@@ -402,6 +402,101 @@ export default function InboxPage() {
                 <TabsTrigger value="lists">Lists</TabsTrigger>
                 <TabsTrigger value="calendar">Calendar</TabsTrigger>
             </TabsList>
+            <TabsContent value="lists" forceMount={true} className={cn('mt-0', activeTab !== 'lists' && 'hidden')}>
+              <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex gap-2 px-5 py-2">
+                  <button
+                    onClick={() => setSelectedList('all')}
+                    className={cn(
+                      'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                      selectedList === 'all'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-foreground bg-secondary'
+                    )}
+                  >
+                    <List className="w-4 h-4" />
+                    <span>All</span>
+                  </button>
+                  {lists.map(list => {
+                    const ListIcon = getIcon(list.icon as string);
+                    const isSelected = selectedList === list.id;
+                    return (
+                      <button
+                        key={list.id}
+                        onClick={() => setSelectedList(list.id)}
+                        className={cn(
+                          'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                          isSelected ? 'text-white' : 'text-foreground bg-secondary'
+                        )}
+                        style={{
+                          backgroundColor: isSelected ? list.color : undefined,
+                        }}
+                      >
+                        <ListIcon className="w-4 h-4" />
+                        <span>{list.name}</span>
+                      </button>
+                    );
+                  })}
+                  <Link href="/add-list">
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      className="rounded-full w-9 h-9 flex-shrink-0"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </Button>
+                  </Link>
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+              {renderListContent()}
+            </TabsContent>
+
+            <TabsContent value="calendar" forceMount={true} className={cn('mt-4', activeTab !== 'calendar' && 'hidden')}>
+              <div className="px-5">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  className="rounded-md custom-card w-full"
+                  tasksPerDay={isClient ? tasksPerDay : {}}
+                  components={{
+                    IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+                    IconRight: () => <ChevronRight className="h-4 w-4" />,
+                  }}
+                  disabled={!isClient}
+                />
+              </div>
+              <div className="space-y-3 px-5 mt-4">
+                {!isClient ? (
+                  <div className="space-y-3">
+                    <Skeleton className="h-16 w-full rounded-2xl" />
+                  </div>
+                ) : tasksForSelectedDate.length > 0 ? (
+                  tasksForSelectedDate.map(task => {
+                    const list = lists.find(l => l.id === task.listId);
+                    if (!list) return null;
+                    const ListIcon = getIcon(list.icon as string);
+
+                    const status = task.isCompleted ? 'done' : 'upcoming';
+
+                    return (
+                      <TaskCard
+                        key={task.id}
+                        task={task}
+                        list={{ ...list, icon: ListIcon }}
+                        {...cardProps}
+                        status={status}
+                      />
+                    );
+                  })
+                ) : (
+                  <p className="text-muted-foreground text-center py-4">
+                    No tasks for this day.
+                  </p>
+                )}
+              </div>
+            </TabsContent>
         </Tabs>
         <Link href="/add-task">
             <Button size="icon" className="h-11 w-11 rounded-md flex-shrink-0">
@@ -409,102 +504,8 @@ export default function InboxPage() {
             </Button>
         </Link>
       </div>
-
-      <TabsContent value="lists" forceMount={true} className={cn('mt-0', activeTab !== 'lists' && 'hidden')}>
-          <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex gap-2 px-5 py-2">
-              <button
-                onClick={() => setSelectedList('all')}
-                className={cn(
-                  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                  selectedList === 'all'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-foreground bg-secondary'
-                )}
-              >
-                <List className="w-4 h-4" />
-                <span>All</span>
-              </button>
-              {lists.map(list => {
-                const ListIcon = getIcon(list.icon as string);
-                const isSelected = selectedList === list.id;
-                return (
-                  <button
-                    key={list.id}
-                    onClick={() => setSelectedList(list.id)}
-                    className={cn(
-                      'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                      isSelected ? 'text-white' : 'text-foreground bg-secondary'
-                    )}
-                    style={{
-                      backgroundColor: isSelected ? list.color : undefined,
-                    }}
-                  >
-                    <ListIcon className="w-4 h-4" />
-                    <span>{list.name}</span>
-                  </button>
-                );
-              })}
-              <Link href="/add-list">
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="rounded-full w-9 h-9 flex-shrink-0"
-                >
-                  <Plus className="w-5 h-5" />
-                </Button>
-              </Link>
-            </div>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-          {renderListContent()}
-        </TabsContent>
-
-        <TabsContent value="calendar" forceMount={true} className={cn('mt-4', activeTab !== 'calendar' && 'hidden')}>
-          <div className="px-5">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="rounded-md custom-card w-full"
-              tasksPerDay={isClient ? tasksPerDay : {}}
-              components={{
-                IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-                IconRight: () => <ChevronRight className="h-4 w-4" />,
-              }}
-              disabled={!isClient}
-            />
-          </div>
-          <div className="space-y-3 px-5 mt-4">
-            {!isClient ? (
-              <div className="space-y-3">
-                <Skeleton className="h-16 w-full rounded-2xl" />
-              </div>
-            ) : tasksForSelectedDate.length > 0 ? (
-              tasksForSelectedDate.map(task => {
-                const list = lists.find(l => l.id === task.listId);
-                if (!list) return null;
-                const ListIcon = getIcon(list.icon as string);
-
-                const status = task.isCompleted ? 'done' : 'upcoming';
-
-                return (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    list={{ ...list, icon: ListIcon }}
-                    {...cardProps}
-                    status={status}
-                  />
-                );
-              })
-            ) : (
-              <p className="text-muted-foreground text-center py-4">
-                No tasks for this day.
-              </p>
-            )}
-          </div>
-        </TabsContent>
     </div>
   );
 }
+
+    
