@@ -284,7 +284,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             variant="ghost" 
             size="icon" 
             className={cn(
-                "absolute top-1 left-1 w-7 h-7 z-10",
+                "absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-7 h-7 z-20",
                 task.isFixed ? "text-primary" : "text-muted-foreground/50 hover:text-muted-foreground"
             )}
             onClick={(e) => {
