@@ -9,7 +9,7 @@ import { useAppContext } from "@/context/AppContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as React from "react";
-import type { BlogPost } from "@/lib/types";
+import type { JournalPost } from "@/lib/types";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,12 +24,12 @@ import {
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function BlogDetailPage() {
+export default function JournalDetailPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params ? (params.slug as string) : undefined;
-  const { blogPosts, deleteBlogPost, currentUser } = useAppContext();
-  const [post, setPost] = React.useState<BlogPost | undefined | null>(undefined); // undefined: loading, null: not found
+  const { journalPosts, deleteJournalPost, currentUser } = useAppContext();
+  const [post, setPost] = React.useState<JournalPost | undefined | null>(undefined); // undefined: loading, null: not found
   const [isClient, setIsClient] = React.useState(false);
 
   React.useEffect(() => {
@@ -37,17 +37,17 @@ export default function BlogDetailPage() {
   }, []);
 
   React.useEffect(() => {
-    // Only proceed if client-side, blogPosts are available and slug is available from URL
+    // Only proceed if client-side, journalPosts are available and slug is available from URL
     if (isClient && slug) {
-        const foundPost = blogPosts.find((p) => p.slug === slug);
+        const foundPost = journalPosts.find((p) => p.slug === slug);
         setPost(foundPost || null); // Set to the found post, or null if not found
     }
-  }, [blogPosts, slug, isClient]);
+  }, [journalPosts, slug, isClient]);
 
   const handleDelete = () => {
     if (post) {
-      deleteBlogPost(post.id);
-      router.push("/blog");
+      deleteJournalPost(post.id);
+      router.push("/journal");
     }
   };
 
@@ -95,7 +95,7 @@ export default function BlogDetailPage() {
   return (
     <div>
       <header className="px-5 pt-10 pb-4 flex justify-between items-center">
-        <Link href="/blog">
+        <Link href="/journal">
           <Button variant="ghost" size="icon">
             <ArrowLeft className="w-6 h-6" />
           </Button>
@@ -111,7 +111,7 @@ export default function BlogDetailPage() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete this blog post.
+                    This action cannot be undone. This will permanently delete this journal post.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

@@ -14,9 +14,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 import { getIcon } from '@/lib/icon-utils';
 
-export default function BlogNewPage() {
+export default function JournalNewPage() {
   const router = useRouter();
-  const { addBlogPost, currentUser, lists } = useAppContext();
+  const { addJournalPost, currentUser, lists } = useAppContext();
   const [isMounted, setIsMounted] = React.useState(false);
   
   const [title, setTitle] = React.useState('');
@@ -86,7 +86,7 @@ export default function BlogNewPage() {
       listId: selectedListId,
     };
 
-    addBlogPost(newPost);
+    addJournalPost(newPost);
     handleClose();
   };
 
@@ -101,7 +101,7 @@ export default function BlogNewPage() {
       )}>
         <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
           <div className="w-10"></div>
-          <h1 className="text-[17px] font-bold">New Blog</h1>
+          <h1 className="text-[17px] font-bold">New Journal Post</h1>
           <Button variant="ghost" size="icon" aria-label="Close" onClick={handleClose}>
             <X className="w-6 h-6" />
           </Button>
@@ -168,7 +168,7 @@ export default function BlogNewPage() {
             </Popover>
 
             <Input 
-              placeholder="Blog Title"
+              placeholder="Journal Title"
               className="border-none text-[18px] font-medium h-[60px] p-0 flex-grow focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
               value={title}
               onChange={(e) => setTitle(e.target.value)}

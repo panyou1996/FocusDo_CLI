@@ -1,7 +1,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { BlogPost, TaskList } from "@/lib/types";
+import type { JournalPost, TaskList } from "@/lib/types";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { BookText, type Icon as LucideIcon } from "lucide-react";
@@ -9,12 +9,12 @@ import * as Icons from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { getIcon } from "@/lib/icon-utils";
 
-interface BlogCardProps {
-  post: BlogPost;
+interface JournalCardProps {
+  post: JournalPost;
   list?: TaskList;
 }
 
-export function BlogCard({ post, list }: BlogCardProps) {
+export function JournalCard({ post, list }: JournalCardProps) {
   // Check if coverImage is a placeholder ID or a Base64 string
   const isBase64 = post.coverImage?.startsWith('data:');
   const placeholderImage = !isBase64 ? PlaceHolderImages.find(img => img.id === post.coverImage) : null;
@@ -23,7 +23,7 @@ export function BlogCard({ post, list }: BlogCardProps) {
   const ListIcon = list ? getIcon(list.icon as string) : null;
 
   return (
-    <Link href={`/blog/${post.slug}`} className="block">
+    <Link href={`/journal/${post.slug}`} className="block">
       <Card className="rounded-2xl custom-card overflow-hidden transition-all duration-300 ease-in-out">
         {imageUrl ? (
           <CardHeader className="p-0">

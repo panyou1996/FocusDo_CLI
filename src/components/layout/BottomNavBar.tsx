@@ -10,7 +10,7 @@ import * as React from 'react';
 const navItems = [
   { href: "/today", icon: Home, label: "Today" },
   { href: "/inbox", icon: Inbox, label: "Inbox" },
-  { href: "/blog", icon: BookText, label: "Blog" },
+  { href: "/journal", icon: BookText, label: "Journal" },
   { href: "/settings", icon: Settings, label: "Setting" },
 ];
 
@@ -18,7 +18,7 @@ export function BottomNavBar() {
   const pathname = usePathname();
   const [isModalPage, setIsModalPage] = React.useState(false);
 
-  const modalPaths = ['/add-task', '/blog/new', '/add-list'];
+  const modalPaths = ['/add-task', '/journal/new', '/add-list'];
   const editTaskRegex = /^\/edit-task\/.+/;
 
   React.useEffect(() => {

@@ -18,7 +18,7 @@ export type Task = {
 };
 
 export type Subtask = {
-  id: string;
+  id:string;
   title: string;
   isCompleted: boolean;
 };
@@ -35,7 +35,7 @@ export type Author = {
   avatarUrl: string;
 };
 
-export type BlogPost = {
+export type JournalPost = {
   id: string;
   slug: string;
   title: string;

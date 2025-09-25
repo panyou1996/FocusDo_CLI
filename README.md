@@ -6,15 +6,15 @@ TaskFlow is a modern, feature-rich productivity application designed to help you
 ## ✨ Core Features
 
 - **Advanced Task Management**: Create, edit, and delete tasks with detailed attributes including due dates, start times, duration, subtasks, and importance levels.
-- **Categorization with Lists**: Organize tasks and blog posts into customizable lists, each with a unique name, color, and icon for easy identification.
+- **Categorization with Lists**: Organize tasks and journal posts into customizable lists, each with a unique name, color, and icon for easy identification.
 - **AI-Powered Features**:
     - **Smart Scheduling**: An AI tool suggests the best time to complete a task based on your habits and calendar (Genkit flow integration).
     - **Task Prioritization**: An AI agent analyzes your tasks and intelligently marks them as important, providing reasoning for its decisions (Genkit flow integration).
     - **Generative Avatars**: Create unique SVG profile avatars from a text prompt using generative AI.
-- **Integrated Blog**: A fully-featured blog platform to write, publish, and manage your articles. Includes cover image uploads, content categorization, and a clean reading experience.
-- **Powerful Filtering & Sorting**: Both tasks and blog posts can be dynamically filtered by category and searched. They can also be sorted by various criteria (e.g., due date, creation time, importance), with your preferences saved locally.
+- **Integrated Journal**: A fully-featured journal platform to write, publish, and manage your articles. Includes cover image uploads, content categorization, and a clean reading experience.
+- **Powerful Filtering & Sorting**: Both tasks and journal posts can be dynamically filtered by category and searched. They can also be sorted by various criteria (e.g., due date, creation time, importance), with your preferences saved locally.
 - **Calendar View**: Visualize your tasks on a monthly calendar, with indicators for days that have scheduled tasks.
-- **Persistent Local Storage**: All your data (tasks, blogs, user profile, and preferences) is saved directly in your browser's `localStorage`, ensuring your data persists between sessions.
+- **Persistent Local Storage**: All your data (tasks, journals, user profile, and preferences) is saved directly in your browser's `localStorage`, ensuring your data persists between sessions.
 - **Highly Customizable UI**:
     - **Theme Engine**: Choose from a dozen pre-defined color themes.
     - **Dark/Light Mode**: Seamlessly switch between light and dark modes.
@@ -188,7 +188,7 @@ Here is an overview of the key directories and files in the project:
 │   │   └── genkit.ts       # Genkit initialization and configuration
 │   │
 │   ├── components/         # Reusable React components
-│   │   ├── blog/           # Components specific to the Blog feature
+│   │   ├── journal/        # Components specific to the Journal feature
 │   │   ├── layout/         # Layout components (e.g., BottomNavBar)
 │   │   ├── tasks/          # Components specific to the Task feature
 │   │   └── ui/             # Generic UI components from ShadCN

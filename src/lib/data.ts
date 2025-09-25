@@ -1,5 +1,5 @@
 
-import type { Task, TaskList, BlogPost } from '@/lib/types';
+import type { Task, TaskList, JournalPost } from '@/lib/types';
 
 export const lists: TaskList[] = [
   { id: 'work', name: 'Work', color: 'rgb(0, 122, 255)', icon: 'Briefcase' },
@@ -63,7 +63,7 @@ export const tasks: Task[] = [
   },
 ];
 
-export const blogPosts: BlogPost[] = [
+export const journalPosts: JournalPost[] = [
   {
     id: '1',
     slug: 'mastering-productivity-in-the-digital-age',
@@ -103,6 +103,6 @@ export const blogPosts: BlogPost[] = [
     },
     date: '9/5/2023',
     readingTime: 3,
-    content: '<p>Content for the blog post about digital minimalism...</p>'
+    content: '<p>Content for the journal post about digital minimalism...</p>'
   },
 ];

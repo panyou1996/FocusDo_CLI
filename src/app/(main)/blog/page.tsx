@@ -6,7 +6,7 @@ import Link from "next/link";
 import { BookText, Plus, Search, Filter, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { BlogCard } from "@/components/blog/BlogCard";
+import { JournalCard } from "@/components/blog/BlogCard";
 import { useAppContext } from "@/context/AppContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -41,22 +41,22 @@ const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({ sortBy, set
 };
 
 
-export default function BlogPage() {
-  const { blogPosts, lists } = useAppContext();
+export default function JournalPage() {
+  const { journalPosts, lists } = useAppContext();
   const [isClient, setIsClient] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  const [selectedList, setSelectedList] = useLocalStorage('blog-selected-list', 'all');
-  const [sortBy, setSortBy] = useLocalStorage<SortByType>('blog-sort-by', 'newest');
+  const [selectedList, setSelectedList] = useLocalStorage('journal-selected-list', 'all');
+  const [sortBy, setSortBy] = useLocalStorage<SortByType>('journal-sort-by', 'newest');
 
   React.useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const filteredBlogPosts = React.useMemo(() => {
+  const filteredJournalPosts = React.useMemo(() => {
     if (!isClient) return [];
     
-    let filtered = blogPosts;
+    let filtered = journalPosts;
 
     if (searchQuery) {
       filtered = filtered.filter(post => 
@@ -80,7 +80,7 @@ export default function BlogPage() {
 
     return sorted;
 
-  }, [blogPosts, searchQuery, selectedList, sortBy, isClient]);
+  }, [journalPosts, searchQuery, selectedList, sortBy, isClient]);
 
 
   return (
@@ -88,7 +88,7 @@ export default function BlogPage() {
       <header className="pt-10 pb-4 h-[80px] flex justify-between items-center">
         <div className="flex items-center gap-3">
           <BookText className="w-7 h-7" strokeWidth={2} />
-          <h1 className="text-2xl font-bold text-foreground">Blog</h1>
+          <h1 className="text-2xl font-bold text-foreground">Journal</h1>
         </div>
          <div className="flex items-center gap-2">
           <Popover>
@@ -120,7 +120,7 @@ export default function BlogPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Link href="/blog/new">
+        <Link href="/journal/new">
           <Button size="icon" className="h-11 w-11 rounded-md">
             <Plus className="w-6 h-6" />
           </Button>
@@ -173,13 +173,13 @@ export default function BlogPage() {
               <Skeleton className="h-[280px] w-full rounded-2xl" />
               <Skeleton className="h-[280px] w-full rounded-2xl" />
             </div>
-        ) : filteredBlogPosts.length > 0 ? (
-          filteredBlogPosts.map((post) => {
+        ) : filteredJournalPosts.length > 0 ? (
+          filteredJournalPosts.map((post) => {
             const list = lists.find(l => l.id === post.listId);
-            return <BlogCard key={post.id} post={post} list={list} />;
+            return <JournalCard key={post.id} post={post} list={list} />;
           })
         ) : (
-          <p className="text-muted-foreground text-center py-10">No blog posts found.</p>
+          <p className="text-muted-foreground text-center py-10">No journal posts found.</p>
         )}
       </div>
     </div>

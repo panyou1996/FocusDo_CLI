@@ -2,8 +2,8 @@
 'use client';
 
 import * as React from 'react';
-import type { Task, BlogPost, Author, TaskList } from '@/lib/types';
-import { tasks as initialTasks, blogPosts as initialBlogPosts, lists as initialLists } from '@/lib/data';
+import type { Task, JournalPost, Author, TaskList } from '@/lib/types';
+import { tasks as initialTasks, journalPosts as initialJournalPosts, lists as initialLists } from '@/lib/data';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from 'next-themes';
 import { themes } from '@/lib/themes';
@@ -16,9 +16,9 @@ interface AppContextType {
   addTask: (task: Task) => void;
   updateTask: (taskId: string, updatedTask: Partial<Task>) => void;
   deleteTask: (taskId: string) => void;
-  blogPosts: BlogPost[];
-  addBlogPost: (post: BlogPost) => void;
-  deleteBlogPost: (postId: string) => void;
+  journalPosts: JournalPost[];
+  addJournalPost: (post: JournalPost) => void;
+  deleteJournalPost: (postId: string) => void;
   currentUser: Author;
   setCurrentUser: (user: Author) => void;
   theme: string;
@@ -43,7 +43,7 @@ const defaultUser: Author = {
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [tasks, setTasks] = useLocalStorage<Task[]>('tasks', initialTasks);
-  const [blogPosts, setBlogPosts] = useLocalStorage<BlogPost[]>('blogPosts', initialBlogPosts);
+  const [journalPosts, setJournalPosts] = useLocalStorage<JournalPost[]>('journalPosts', initialJournalPosts);
   const [lists, setLists] = useLocalStorage<TaskList[]>('lists', initialLists);
   const [currentUser, setCurrentUser] = useLocalStorage<Author>('currentUser', defaultUser);
   const { theme: mode, setTheme: setMode } = useTheme();
@@ -94,12 +94,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
   };
 
-  const addBlogPost = (post: BlogPost) => {
-    setBlogPosts(prevPosts => [post, ...prevPosts]);
+  const addJournalPost = (post: JournalPost) => {
+    setJournalPosts(prevPosts => [post, ...prevPosts]);
   };
 
-  const deleteBlogPost = (postId: string) => {
-    setBlogPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+  const deleteJournalPost = (postId: string) => {
+    setJournalPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
   };
   
   const addList = (list: TaskList) => {
@@ -118,9 +118,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     addTask,
     updateTask,
     deleteTask,
-    blogPosts,
-    addBlogPost,
-    deleteBlogPost,
+    journalPosts,
+    addJournalPost,
+    deleteJournalPost,
     currentUser: currentUser || defaultUser, // Always provide a valid user object
     setCurrentUser,
     theme: colorTheme,
@@ -133,7 +133,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setUiSize,
     cardStyle,
     setCardStyle,
-  }), [tasks, blogPosts, currentUser, colorTheme, mode, setMode, lists, uiSize, cardStyle, setCurrentUser, setColorTheme, setUiSize, setCardStyle]);
+  }), [tasks, journalPosts, currentUser, colorTheme, mode, setMode, lists, uiSize, cardStyle, setCurrentUser, setColorTheme, setUiSize, setCardStyle]);
 
 
   return (
