@@ -192,8 +192,8 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     isEditing?: boolean;
     InputComponent?: React.ReactNode;
   }) => (
-    <div className="flex items-start text-sm text-muted-foreground min-h-[24px]">
-      <Icon className="w-4 h-4 mr-2 mt-1 flex-shrink-0" strokeWidth={1.5} />
+    <div className="flex items-center text-sm text-muted-foreground min-h-[24px]">
+      <Icon className="w-4 h-4 mr-2 flex-shrink-0" strokeWidth={1.5} />
       <span className="font-medium w-20 flex-shrink-0">{label}:</span>
       {isEditing ? (
          InputComponent
@@ -283,7 +283,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         variant="ghost"
         size="icon"
         className={cn(
-          'absolute top-0 left-0 w-8 h-8 z-10',
+          'absolute top-0 left-0 w-8 h-8 z-20',
           task.isFixed
             ? 'text-primary'
             : 'text-muted-foreground/50 hover:text-muted-foreground'
@@ -387,7 +387,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         </div>
 
         {cardIsExpanded && (
-          <div className="px-4 pb-4 pl-12 space-y-3 overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <div className="px-4 pb-4 pl-12 space-y-2 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <div
               className="flex items-center gap-2 -ml-2"
               onClick={e => e.stopPropagation()}
@@ -443,7 +443,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             <div className="space-y-2">
               <div className="flex items-center text-sm text-muted-foreground">
                 <ListTree
-                  className="w-4 h-4 mr-2 mt-1 flex-shrink-0 self-start"
+                  className="w-4 h-4 mr-2 self-center"
                   strokeWidth={1.5}
                 />
                 <span className="font-medium w-20 flex-shrink-0">
