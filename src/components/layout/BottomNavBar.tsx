@@ -18,7 +18,7 @@ export function BottomNavBar() {
   const pathname = usePathname();
   const [isModalPage, setIsModalPage] = React.useState(false);
 
-  const modalPaths = ['/add-task', '/journal/new', '/add-list'];
+  const modalPaths = ['/add-task', '/journal/new', '/add-list', '/settings/appearance', '/settings/profile'];
   const editTaskRegex = /^\/edit-task\/.+/;
 
   React.useEffect(() => {
@@ -26,7 +26,7 @@ export function BottomNavBar() {
   }, [pathname]);
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 h-[74px] bg-transparent z-40">
+    <footer className="sticky bottom-0 h-[74px] bg-transparent z-40">
       <div className="relative h-full w-full max-w-lg mx-auto">
         <div className={cn(
             "absolute bottom-0 left-0 right-0 h-[74px] bg-card/60 backdrop-blur-xl rounded-t-[24px] shadow-[0px_-4px_10px_rgba(0,0,0,0.05)] transition-transform duration-300",
@@ -82,5 +82,3 @@ export function BottomNavBar() {
     </footer>
   );
 }
-
-    
