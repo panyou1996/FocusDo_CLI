@@ -273,246 +273,250 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   return (
     <div
       className={cn(
-        "bg-card w-full rounded-2xl custom-card transition-all duration-300 ease-in-out overflow-hidden",
-        task.isImportant && "border-l-4 border-primary"
-        )}
+        "w-full transition-colors duration-300 ease-in-out",
+        task.isImportant && "border-l-4 border-primary rounded-l-md"
+      )}
       onClick={handleToggleExpand}
     >
-      <div className="flex items-center p-4">
-        <Checkbox
-          id={`task-${task.id}`}
-          checked={task.isCompleted}
-          onCheckedChange={() => onToggleCompleted(task.id)}
-          onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
-          className="w-5 h-5 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
-        />
-        
-        {ListIcon && renderListIcon()}
+      <div className="bg-card w-full rounded-2xl custom-card overflow-hidden">
+        <div className="flex items-center p-4">
+          <Checkbox
+            id={`task-${task.id}`}
+            checked={task.isCompleted}
+            onCheckedChange={() => onToggleCompleted(task.id)}
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
+            className="w-5 h-5 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
+          />
+          
+          {ListIcon && renderListIcon()}
 
-        <div className="flex-grow ml-1 min-w-0">
-          { isEditingTitle ? (
-              <Input
-                  value={editingTitle}
-                  onChange={handleTitleChange}
-                  onBlur={handleTitleBlur}
-                  onKeyDown={handleTitleKeyDown}
-                  className="h-7 p-0 text-base font-medium border-none focus-visible:ring-0"
-                  autoFocus
-                  onClick={(e) => {
-                      e.stopPropagation();
-                  }}
-              />
-          ) : (
-              <p
-              className={cn(
-                  "text-base font-medium text-foreground truncate",
-                  task.isCompleted && "line-through text-muted-foreground",
-                  cardIsExpanded && "cursor-text"
-              )}
-              onClick={(e) => {
-                  if(cardIsExpanded) {
-                      e.stopPropagation();
-                      setIsEditingTitle(true)
-                  }
-              }}
-              >
-              {task.title}
-              </p>
-          )}
-
-          {!isEditingTitle && (
-            task.startTime ? (
-              <p className={cn(
-                  "text-sm h-[18px]",
-                  status === 'expired' && 'font-bold text-destructive',
-                  status === 'upcoming' && 'font-bold text-primary',
-                  status === 'done' && 'text-muted-foreground'
-              )}>
-                  {endTime ? `${task.startTime} - ${endTime}` : task.startTime}
-              </p>
+          <div className="flex-grow ml-1 min-w-0">
+            { isEditingTitle ? (
+                <Input
+                    value={editingTitle}
+                    onChange={handleTitleChange}
+                    onBlur={handleTitleBlur}
+                    onKeyDown={handleTitleKeyDown}
+                    className="h-7 p-0 text-base font-medium border-none focus-visible:ring-0"
+                    autoFocus
+                    onClick={(e) => {
+                        e.stopPropagation();
+                    }}
+                />
             ) : (
-                <p className="text-sm text-muted-foreground h-[18px]">--:--</p>
-            )
-          )}
-        </div>
-        
-        <div className="flex items-center gap-2 ml-2">
-            <button onClick={(e) => {e.stopPropagation(); onEdit(task.id)}}>
-              <Pencil
-                className={"w-5 h-5 text-muted-foreground transition-colors hover:text-primary"}
-                strokeWidth={1.5}
-              />
-            </button>
-        </div>
+                <p
+                className={cn(
+                    "text-base font-medium text-foreground truncate",
+                    task.isCompleted && "line-through text-muted-foreground",
+                    cardIsExpanded && "cursor-text"
+                )}
+                onClick={(e) => {
+                    if(cardIsExpanded) {
+                        e.stopPropagation();
+                        setIsEditingTitle(true)
+                    }
+                }}
+                >
+                {task.title}
+                </p>
+            )}
 
-      </div>
-
-      {cardIsExpanded && (
-        <div className="px-4 pb-4 pl-12 space-y-3 overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-          <DetailRow 
-              icon={FileText}
-              label="Description"
-              value={task.description || "Add a description..."}
-              onClick={(e) => {
-                  e.stopPropagation();
-                  setIsEditingDesc(true);
-              }}
-              isEditing={isEditingDesc}
-              InputComponent={
-                  <Textarea
-                      value={editingDesc}
-                      onChange={handleDescChange}
-                      onBlur={handleDescBlur}
-                      className="h-auto flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm bg-transparent"
-                      autoFocus
-                      onClick={(e) => e.stopPropagation()}
-                  />
-              }
-          />
-          <div className="space-y-2">
-              <div className="flex items-center text-sm text-muted-foreground">
-                  <ListTree className="w-4 h-4 mr-2 mt-1 flex-shrink-0 self-start" strokeWidth={1.5} />
-                  <span className="font-medium w-20 flex-shrink-0">Subtasks:</span>
-                  <div className="flex-grow flex justify-end">
-                      <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-auto px-2 py-0 text-primary text-xs" 
-                          onClick={(e) => {
-                              e.stopPropagation();
-                              setIsAddingSubtask(true);
-                          }}
-                      >
-                          <Plus className="w-3 h-3 mr-1" /> Add
-                      </Button>
-                  </div>
-              </div>
-              <div className="pl-7 space-y-2">
-                  {editingSubtasks.map(sub => (
-                      <div key={sub.id} className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-                          <Checkbox 
-                              id={`subtask-${task.id}-${sub.id}`}
-                              checked={sub.isCompleted} 
-                              onCheckedChange={() => toggleSubtaskCompletion(sub.id)}
-                              className="w-5 h-5 rounded-full"
-                          />
-                          {editingSubtaskId === sub.id ? (
-                              <Input
-                                  value={editingSubtaskText}
-                                  onChange={(e) => setEditingSubtaskText(e.target.value)}
-                                  onBlur={() => saveSubtaskEdit(sub.id)}
-                                  onKeyDown={(e) => handleSubtaskEditKeyDown(e, sub.id)}
-                                  className="h-7 flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
-                                  autoFocus
-                              />
-                          ) : (
-                              <label 
-                                  htmlFor={`subtask-${task.id}-${sub.id}`} 
-                                  className="flex-grow text-sm cursor-text data-[completed=true]:line-through data-[completed=true]:text-muted-foreground"
-                                  data-completed={sub.isCompleted}
-                                  onClick={(e) => { e.stopPropagation(); startEditingSubtask(sub); }}
-                              >
-                                  {sub.title}
-                              </label>
-                          )}
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => removeSubtask(e, sub.id)}>
-                              <Trash2 className="w-4 h-4 text-destructive/70" />
-                          </Button>
-                      </div>
-                  ))}
-                  {isAddingSubtask && (
-                      <div className="flex gap-2" onClick={e => e.stopPropagation()}>
-                          <Input 
-                              value={newSubtask} 
-                              onChange={(e) => setNewSubtask(e.target.value)} 
-                              placeholder="Add a subtask..." 
-                              className="h-7 border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm" 
-                              onKeyDown={(e) => e.key === 'Enter' && addSubtask(e as any)}
-                              autoFocus
-                          />
-                          <Button size="sm" className="h-7" onClick={addSubtask}>Add</Button>
-                      </div>
-                  )}
-              </div>
+            {!isEditingTitle && (
+              task.startTime ? (
+                <p className={cn(
+                    "text-sm h-[18px]",
+                    status === 'expired' && 'font-bold text-destructive',
+                    status === 'upcoming' && 'font-bold text-primary',
+                    status === 'done' && 'text-muted-foreground'
+                )}>
+                    {endTime ? `${task.startTime} - ${endTime}` : task.startTime}
+                </p>
+              ) : (
+                  <p className="text-sm text-muted-foreground h-[18px]">--:--</p>
+              )
+            )}
           </div>
-          <DetailRow 
-              icon={Clock} 
-              label="Start" 
-              value={task.startTime || 'Not set'}
-              onClick={(e) => {
-                  e.stopPropagation();
-                  setIsEditingStartTime(true);
-              }}
-              isEditing={isEditingStartTime}
-              InputComponent={
-                  <Input
-                      type="time"
-                      value={editingStartTime}
-                      onChange={handleStartTimeChange}
-                      onBlur={handleStartTimeBlur}
-                      className="h-7 p-0 text-sm border-none focus-visible:ring-0 bg-transparent"
-                      autoFocus
-                      onClick={(e) => e.stopPropagation()}
-                  />
-              }
-          />
-          <DetailRow 
-              icon={Calendar} 
-              label="Due" 
-              value={task.dueDate ? format(parseISO(task.dueDate), 'PPP') : 'Not set'}
-              onClick={(e) => {
-                  e.stopPropagation();
-                  setIsEditingDueDate(true);
-              }}
-              isEditing={isEditingDueDate}
-              InputComponent={
-              <Popover open={isEditingDueDate} onOpenChange={setIsEditingDueDate}>
-                  <PopoverTrigger asChild>
-                  <button className="text-sm text-primary" onClick={(e) => {e.stopPropagation(); setIsEditingDueDate(true)}}>
-                      {editingDueDate ? format(editingDueDate, 'PPP') : 'Set Date'}
-                  </button>                  
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="end" onClick={(e) => e.stopPropagation()}>
-                      <CalendarComponent
-                          mode="single"
-                          selected={editingDueDate}
-                          onSelect={handleDueDateChange}
-                          initialFocus
-                      />
-                  </PopoverContent>
-              </Popover>
-              }
-          />
-          <DetailRow 
-              icon={Hourglass} 
-              label="Duration" 
-              value={task.duration ? `${task.duration} min` : 'Not set'}
-              onClick={(e) => {
-                  e.stopPropagation();
-                  setIsEditingDuration(true);
-              }}
-              isEditing={isEditingDuration}
-              InputComponent={
-              <div className="flex items-center gap-1">
-                  <Input 
-                      type="number" 
-                      value={editingDuration}
-                      onChange={handleDurationChange}
-                      onBlur={handleDurationBlur}
-                      className="w-20 h-7 p-0 text-sm text-right border-none focus-visible:ring-0 bg-transparent"
-                      min="0"
-                      step="5"
-                      autoFocus
-                      onClick={(e) => e.stopPropagation()}
-                  />
-                  <span className="text-sm">min</span>
-              </div>
-              }
-          />
+          
+          <div className="flex items-center gap-2 ml-2">
+              <button onClick={(e) => {e.stopPropagation(); onEdit(task.id)}}>
+                <Pencil
+                  className={"w-5 h-5 text-muted-foreground transition-colors hover:text-primary"}
+                  strokeWidth={1.5}
+                />
+              </button>
+          </div>
+
         </div>
-      )}
+
+        {cardIsExpanded && (
+          <div className="px-4 pb-4 pl-12 space-y-3 overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+            <DetailRow 
+                icon={FileText}
+                label="Description"
+                value={task.description || "Add a description..."}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditingDesc(true);
+                }}
+                isEditing={isEditingDesc}
+                InputComponent={
+                    <Textarea
+                        value={editingDesc}
+                        onChange={handleDescChange}
+                        onBlur={handleDescBlur}
+                        className="h-auto flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm bg-transparent"
+                        autoFocus
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                }
+            />
+            <div className="space-y-2">
+                <div className="flex items-center text-sm text-muted-foreground">
+                    <ListTree className="w-4 h-4 mr-2 mt-1 flex-shrink-0 self-start" strokeWidth={1.5} />
+                    <span className="font-medium w-20 flex-shrink-0">Subtasks:</span>
+                    <div className="flex-grow flex justify-end">
+                        <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-auto px-2 py-0 text-primary text-xs" 
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsAddingSubtask(true);
+                            }}
+                        >
+                            <Plus className="w-3 h-3 mr-1" /> Add
+                        </Button>
+                    </div>
+                </div>
+                <div className="pl-7 space-y-2">
+                    {editingSubtasks.map(sub => (
+                        <div key={sub.id} className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                            <Checkbox 
+                                id={`subtask-${task.id}-${sub.id}`}
+                                checked={sub.isCompleted} 
+                                onCheckedChange={() => toggleSubtaskCompletion(sub.id)}
+                                className="w-5 h-5 rounded-full"
+                            />
+                            {editingSubtaskId === sub.id ? (
+                                <Input
+                                    value={editingSubtaskText}
+                                    onChange={(e) => setEditingSubtaskText(e.target.value)}
+                                    onBlur={() => saveSubtaskEdit(sub.id)}
+                                    onKeyDown={(e) => handleSubtaskEditKeyDown(e, sub.id)}
+                                    className="h-7 flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
+                                    autoFocus
+                                />
+                            ) : (
+                                <label 
+                                    htmlFor={`subtask-${task.id}-${sub.id}`} 
+                                    className="flex-grow text-sm cursor-text data-[completed=true]:line-through data-[completed=true]:text-muted-foreground"
+                                    data-completed={sub.isCompleted}
+                                    onClick={(e) => { e.stopPropagation(); startEditingSubtask(sub); }}
+                                >
+                                    {sub.title}
+                                </label>
+                            )}
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => removeSubtask(e, sub.id)}>
+                                <Trash2 className="w-4 h-4 text-destructive/70" />
+                            </Button>
+                        </div>
+                    ))}
+                    {isAddingSubtask && (
+                        <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+                            <Input 
+                                value={newSubtask} 
+                                onChange={(e) => setNewSubtask(e.target.value)} 
+                                placeholder="Add a subtask..." 
+                                className="h-7 border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm" 
+                                onKeyDown={(e) => e.key === 'Enter' && addSubtask(e as any)}
+                                autoFocus
+                            />
+                            <Button size="sm" className="h-7" onClick={addSubtask}>Add</Button>
+                        </div>
+                    )}
+                </div>
+            </div>
+            <DetailRow 
+                icon={Clock} 
+                label="Start" 
+                value={task.startTime || 'Not set'}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditingStartTime(true);
+                }}
+                isEditing={isEditingStartTime}
+                InputComponent={
+                    <Input
+                        type="time"
+                        value={editingStartTime}
+                        onChange={handleStartTimeChange}
+                        onBlur={handleStartTimeBlur}
+                        className="h-7 p-0 text-sm border-none focus-visible:ring-0 bg-transparent"
+                        autoFocus
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                }
+            />
+            <DetailRow 
+                icon={Calendar} 
+                label="Due" 
+                value={task.dueDate ? format(parseISO(task.dueDate), 'PPP') : 'Not set'}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditingDueDate(true);
+                }}
+                isEditing={isEditingDueDate}
+                InputComponent={
+                <Popover open={isEditingDueDate} onOpenChange={setIsEditingDueDate}>
+                    <PopoverTrigger asChild>
+                    <button className="text-sm text-primary" onClick={(e) => {e.stopPropagation(); setIsEditingDueDate(true)}}>
+                        {editingDueDate ? format(editingDueDate, 'PPP') : 'Set Date'}
+                    </button>                  
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="end" onClick={(e) => e.stopPropagation()}>
+                        <CalendarComponent
+                            mode="single"
+                            selected={editingDueDate}
+                            onSelect={handleDueDateChange}
+                            initialFocus
+                        />
+                    </PopoverContent>
+                </Popover>
+                }
+            />
+            <DetailRow 
+                icon={Hourglass} 
+                label="Duration" 
+                value={task.duration ? `${task.duration} min` : 'Not set'}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setIsEditingDuration(true);
+                }}
+                isEditing={isEditingDuration}
+                InputComponent={
+                <div className="flex items-center gap-1">
+                    <Input 
+                        type="number" 
+                        value={editingDuration}
+                        onChange={handleDurationChange}
+                        onBlur={handleDurationBlur}
+                        className="w-20 h-7 p-0 text-sm text-right border-none focus-visible:ring-0 bg-transparent"
+                        min="0"
+                        step="5"
+                        autoFocus
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                    <span className="text-sm">min</span>
+                </div>
+                }
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
+    
 
     
