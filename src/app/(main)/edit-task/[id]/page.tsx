@@ -299,7 +299,7 @@ export default function EditTaskPage() {
                                 type="time"
                                 value={startTime}
                                 onChange={(e) => setStartTime(e.target.value)}
-                                className="w-24 h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-[17px]"
+                                className="w-28 h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-[17px]"
                                 pattern="[0-9]{2}:[0-9]{2}"
                             />
                         </AttributeRow>
