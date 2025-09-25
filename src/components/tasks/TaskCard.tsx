@@ -273,13 +273,13 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   return (
     <div
       className={cn(
-        "w-full transition-colors duration-300 ease-in-out rounded-l-md",
-        task.isImportant ? "border-l-4 border-[#F4A261]" : "border-l-4 border-transparent"
+        "w-full rounded-l-md ml-1",
+        task.isImportant && "border-l-4 border-[#F4A261] -ml-0"
       )}
       onClick={handleToggleExpand}
     >
       <div className="bg-card w-full rounded-2xl custom-card overflow-hidden">
-        <div className="flex items-center p-4 pl-1">
+        <div className="flex items-center p-4">
           <Checkbox
             id={`task-${task.id}`}
             checked={task.isCompleted}
@@ -542,6 +542,8 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </div>
   );
 }
+
+    
 
     
 
