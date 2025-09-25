@@ -27,7 +27,7 @@ export function BottomNavBar() {
     if (isCurrentlyModal !== isModalPage) {
       setIsModalPage(isCurrentlyModal);
     }
-  }, [pathname, isModalPage]);
+  }, [pathname, isModalPage, editTaskRegex]);
 
   const navBarVariants = {
     visible: { y: 0, transition: { type: 'spring', stiffness: 500, damping: 30 } },
@@ -52,7 +52,7 @@ export function BottomNavBar() {
             {navItems.slice(0, 2).map((item) => {
               const isActive = pathname === item.href;
               return (
-                <Link href={item.href} key={item.href} className="flex-1">
+                <Link href={item.href} key={item.href} className="flex-auto">
                   <div
                     className={cn(
                       "flex flex-col items-center justify-center gap-1 transition-colors",
@@ -65,11 +65,11 @@ export function BottomNavBar() {
                 </Link>
               );
             })}
-            <div className="flex-1" />
+            <div className="flex-auto" />
             {navItems.slice(2, 4).map((item) => {
               const isActive = pathname.startsWith(item.href);
               return (
-                <Link href={item.href} key={item.href} className="flex-1">
+                <Link href={item.href} key={item.href} className="flex-auto">
                   <div
                     className={cn(
                       "flex flex-col items-center justify-center gap-1 transition-colors",
