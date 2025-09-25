@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -274,7 +275,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   return (
     <div
       className={cn(
-        "w-full rounded-2xl custom-card overflow-hidden relative shadow-inner",
+        "w-full rounded-2xl custom-card overflow-hidden relative",
         task.isImportant ? 'border-l-4 border-[#F4A261]' : 'border-l-4 border-transparent'
       )}
       onClick={handleToggleExpand}
@@ -283,7 +284,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             variant="ghost" 
             size="icon" 
             className={cn(
-                "absolute top-2 left-2 w-7 h-7 z-10",
+                "absolute top-1 left-1 w-7 h-7 z-10",
                 task.isFixed ? "text-primary" : "text-muted-foreground/50 hover:text-muted-foreground"
             )}
             onClick={(e) => {
@@ -554,11 +555,3 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </div>
   );
 }
-
-    
-
-    
-
-    
-
-    
