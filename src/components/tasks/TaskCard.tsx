@@ -417,7 +417,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                       </Button>
                   </div>
               </div>
-              <div className="pl-[3.2rem] space-y-2">
+              <div className="pl-12 space-y-2">
                   {editingSubtasks.map(sub => (
                       <div key={sub.id} className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
                           <Checkbox 
@@ -451,7 +451,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                       </div>
                   ))}
                   {isAddingSubtask && (
-                      <div className="flex gap-2 pl-7" onClick={e => e.stopPropagation()}>
+                      <div className="flex gap-2" onClick={e => e.stopPropagation()}>
                           <Input 
                               value={newSubtask} 
                               onChange={(e) => setNewSubtask(e.target.value)} 
