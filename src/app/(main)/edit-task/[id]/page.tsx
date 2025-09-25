@@ -6,7 +6,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { X, ListTree, Hourglass, Clock, Calendar, Star, Pin, Trash2, Sun } from 'lucide-react';
+import { X, ListTree, Hourglass, Clock, Calendar, Star, Pin, Trash2, Sun, List } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
@@ -18,12 +18,13 @@ import { format, parseISO } from 'date-fns';
 import type { Subtask, Task } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
+import { getIcon } from '@/lib/icon-utils';
 
 
 export default function EditTaskPage() {
     const router = useRouter();
     const params = useParams();
-    const { tasks, updateTask, deleteTask } = useAppContext();
+    const { tasks, updateTask, deleteTask, lists } = useAppContext();
     const [isMounted, setIsMounted] = React.useState(false);
 
     const taskId = params.id as string;
@@ -34,6 +35,7 @@ export default function EditTaskPage() {
     const [isImportant, setIsImportant] = React.useState(false);
     const [isFixed, setIsFixed] = React.useState(false);
     const [isMyDay, setIsMyDay] = React.useState(true);
+    const [selectedListId, setSelectedListId] = React.useState('');
     
     const [dueDate, setDueDate] = React.useState<Date>();
     const [startTime, setStartTime] = React.useState('');
@@ -65,6 +67,7 @@ export default function EditTaskPage() {
             setStartTime(taskToEdit.startTime || '');
             setDuration(taskToEdit.duration || 30);
             setSubtasks(taskToEdit.subtasks || []);
+            setSelectedListId(taskToEdit.listId);
         } else {
             // Optional: handle case where task is not found
             // router.replace('/today'); 
@@ -92,6 +95,7 @@ export default function EditTaskPage() {
             isImportant,
             isFixed,
             isMyDay,
+            listId: selectedListId,
             dueDate: dueDate ? format(dueDate, 'yyyy-MM-dd') : undefined,
             startTime: startTime || undefined,
             duration: duration,
@@ -147,6 +151,10 @@ export default function EditTaskPage() {
             </div>
         );
     }
+    
+    const selectedList = lists.find(l => l.id === selectedListId);
+    const SelectedListIcon = selectedList ? getIcon(selectedList.icon as string) : List;
+
 
     return (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
@@ -184,6 +192,42 @@ export default function EditTaskPage() {
                     </Card>
 
                     <Card className="rounded-2xl shadow-soft border-none overflow-hidden flex-shrink-0">
+                         <AttributeRow icon={List} label="List">
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="text-primary flex items-center gap-2 text-[17px]">
+                                        {selectedList && (
+                                            <SelectedListIcon className="w-4 h-4" style={{ color: selectedList.color }}/>
+                                        )}
+                                        {selectedList?.name || 'Select List'}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-1" align="end">
+                                    <div className="flex flex-col gap-1">
+                                        {lists.map(listOption => {
+                                            const ListOptionIcon = getIcon(listOption.icon as string);
+                                            return (
+                                                <Button
+                                                    key={listOption.id}
+                                                    variant="ghost"
+                                                    className={cn(
+                                                        "w-full justify-start gap-2",
+                                                        selectedListId === listOption.id && 'bg-accent'
+                                                    )}
+                                                    onClick={() => {
+                                                        setSelectedListId(listOption.id);
+                                                    }}
+                                                >
+                                                    <ListOptionIcon className="w-4 h-4" style={{ color: listOption.color }}/>
+                                                    {listOption.name}
+                                                </Button>
+                                            );
+                                        })}
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                        </AttributeRow>
+                        <Separator/>
                         <AttributeRow icon={ListTree} label="Subtasks">
                             <div className="flex items-center gap-2">
                                 {subtasks.length > 0 && (
@@ -242,7 +286,7 @@ export default function EditTaskPage() {
                                     type="number" 
                                     value={duration}
                                     onChange={(e) => setDuration(Number(e.target.value))}
-                                    className="w-14 text-right h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-[17px]"
+                                    className="w-20 text-right h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-[17px]"
                                     min="0"
                                     step="5"
                                 />

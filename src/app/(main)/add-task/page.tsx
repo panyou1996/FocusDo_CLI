@@ -252,7 +252,7 @@ export default function AddTaskPage() {
                                     type="number" 
                                     value={duration}
                                     onChange={(e) => setDuration(Number(e.target.value))}
-                                    className="w-14 text-right h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-[17px]"
+                                    className="w-20 text-right h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-[17px]"
                                     min="0"
                                     step="5"
                                 />
