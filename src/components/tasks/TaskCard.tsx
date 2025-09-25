@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addMinutes, parse } from 'date-fns';
 import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
 import {
@@ -50,6 +50,17 @@ interface TaskCardProps {
   onToggleMyDay: (taskId: string) => void;
   onToggleCompleted: (taskId: string) => void;
 }
+
+const getEndTime = (startTime: string, duration: number): string => {
+    try {
+        const startDate = parse(startTime, 'HH:mm', new Date());
+        const endDate = addMinutes(startDate, duration);
+        return format(endDate, 'HH:mm');
+    } catch (error) {
+        console.error("Error calculating end time:", error);
+        return '';
+    }
+};
 
 export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
@@ -219,6 +230,9 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
   const ListIcon = list.icon as React.ElementType;
 
   const cardIsExpanded = isExpanded || view === 'detail';
+  
+  const endTime = task.startTime && task.duration ? getEndTime(task.startTime, task.duration) : null;
+
 
   const renderListIcon = () => {
     const iconElement = (
@@ -322,7 +336,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
                   status === 'upcoming' && 'font-bold text-primary',
                   status === 'done' && 'text-muted-foreground'
               )}>
-                  {task.startTime}
+                  {endTime ? `${task.startTime} - ${endTime}` : task.startTime}
               </p>
           )}
         </div>
@@ -378,7 +392,7 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
       </div>
 
       {cardIsExpanded && (
-        <div className="px-4 pb-4 pl-[4.25rem] space-y-3 overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+        <div className="px-4 pb-4 pl-12 space-y-3 overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
           <DetailRow 
               icon={FileText}
               label="Description"
@@ -544,3 +558,5 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
     </div>
   );
 }
+
+    
