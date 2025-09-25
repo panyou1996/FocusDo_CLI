@@ -68,8 +68,8 @@ export default function AppearancePage() {
 
         <main className="flex-grow px-5 py-4 flex flex-col gap-2 overflow-y-auto">
           <SettingsGroupLabel>Color Mode</SettingsGroupLabel>
-          <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
-            <div className="flex items-center justify-between h-[44px]">
+          <Card className="rounded-xl overflow-hidden shadow-soft border-none">
+            <div className="flex items-center justify-between h-[50px] px-4">
                 <div className='flex items-center'>
                     <Moon className="w-5 h-5 mr-3 text-muted-foreground" />
                     <p className="text-base">Dark Mode</p>
@@ -85,7 +85,7 @@ export default function AppearancePage() {
           <SettingsGroupLabel>UI Size</SettingsGroupLabel>
           <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
             <Tabs value={String(uiSize)} onValueChange={(value) => handleSizeChange(Number(value))}>
-                <TabsList className="grid w-full grid-cols-5">
+                <TabsList className="grid w-full grid-cols-5 h-[50px]">
                     {sizeSteps.map((size, index) => (
                         <TabsTrigger key={size} value={String(index)}>{size}</TabsTrigger>
                     ))}
