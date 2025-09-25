@@ -27,6 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { getIcon } from '@/lib/icon-utils';
+import Image from 'next/image';
 
 interface GroupedTasks {
   expired: Task[];
@@ -129,6 +130,28 @@ const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({
         </div>
     );
 };
+
+const EmptyState = () => (
+    <div className="text-center py-10">
+        <div className="relative w-48 h-48 mx-auto mb-4">
+            <Image 
+                src="/images/illustration-inbox-empty.svg" 
+                alt="Empty Inbox" 
+                width={192}
+                height={192}
+                className="object-contain"
+            />
+        </div>
+        <h3 className="text-lg font-semibold">Inbox is Clear</h3>
+        <p className="text-muted-foreground mt-1">No tasks match your current filters.</p>
+        <Link href="/add-task" className='mt-4 inline-block'>
+            <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Add New Task
+            </Button>
+        </Link>
+    </div>
+);
 
 
 export default function InboxPage() {
@@ -326,11 +349,7 @@ export default function InboxPage() {
     }
 
     if (processedTasks.length === 0) {
-      return (
-        <p className="text-muted-foreground text-center py-10">
-          No tasks match your filters.
-        </p>
-      );
+      return <EmptyState />;
     }
 
     if (sortBy !== 'default') {
@@ -458,8 +477,8 @@ export default function InboxPage() {
         </Link>
       </div>
       
-      <TabsContent value="lists">
-        <ScrollArea className="w-full whitespace-nowrap -mx-5">
+      <TabsContent value="lists" className='-mx-5'>
+        <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex gap-2 py-2 px-5">
                 <button
                     onClick={() => setSelectedList('all')}
@@ -505,13 +524,17 @@ export default function InboxPage() {
                 </div>
                 <ScrollBar orientation="horizontal" />
         </ScrollArea>
-        {renderListContent()}
+        <div className='px-5'>
+            {renderListContent()}
+        </div>
       </TabsContent>
 
-      <TabsContent value="calendar">{renderCalendarContent()}</TabsContent>
+      <TabsContent value="calendar" className='-mx-5 px-5'>{renderCalendarContent()}</TabsContent>
 
     </div>
   );
 }
+
+    
 
     

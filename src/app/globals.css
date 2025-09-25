@@ -32,10 +32,11 @@
     --chart-5: 27 87% 67%;
   }
 
+  .dark,
   .dark.theme-default {
     --background: 240 4% 11%;
     --foreground: 210 17% 98%;
-    --card: 240 4% 11%;
+    --card: 240 3% 15%;
     --card-foreground: 210 17% 98%;
     --popover: 240 4% 11%;
     --popover-foreground: 210 17% 98%;
@@ -49,7 +50,7 @@
     --accent-foreground: 241 62% 90%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3% 20%;
+    --border: 240 3% 25%;
     --input: 240 3% 20%;
     --ring: 241 62% 59%;
   }
@@ -72,16 +73,14 @@
   }
 
   .card-style-flat .custom-card {
-    @apply shadow-none border-border;
+    @apply shadow-none border;
   }
   
   .card-style-bordered .custom-card {
-      @apply shadow-none border-border;
-  }
-   .dark .card-style-bordered .custom-card {
-      @apply border-border;
+      @apply shadow-none border;
   }
 
 }
 
+    
     

@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getIcon } from "@/lib/icon-utils";
 import Link from 'next/link';
+import Image from "next/image";
 
 
 interface GroupedTasks {
@@ -39,6 +40,29 @@ const TaskGroup = ({ title, tasks, status, ...props }: { title: string; tasks: T
     </div>
   );
 };
+
+const EmptyState = () => (
+    <div className="text-center py-10">
+        <div className="relative w-56 h-56 mx-auto mb-4">
+            <Image 
+                src="/images/illustration-today-complete.svg" 
+                alt="All tasks complete" 
+                width={224}
+                height={224}
+                className="object-contain"
+            />
+        </div>
+        <h3 className="text-lg font-semibold">All Done for Today!</h3>
+        <p className="text-muted-foreground mt-1">You've completed all your tasks. Enjoy your day!</p>
+        <Link href="/add-task" className='mt-4 inline-block'>
+            <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Add New Task
+            </Button>
+        </Link>
+    </div>
+);
+
 
 export default function TodayPage() {
   const [view, setView] = React.useState<"compact" | "detail">("compact");
@@ -169,7 +193,7 @@ export default function TodayPage() {
     }
 
     if (tasks.filter(t => t.isMyDay).length === 0) {
-        return <p className="text-muted-foreground text-center py-10">No tasks for today. Add some!</p>;
+        return <EmptyState />;
     }
 
     return (
@@ -221,5 +245,7 @@ export default function TodayPage() {
     </div>
   );
 }
+
+    
 
     
