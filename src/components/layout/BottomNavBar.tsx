@@ -48,28 +48,17 @@ export function BottomNavBar() {
             animate={isModalPage ? "hidden" : "visible"}
             className="relative mx-4 mb-4 h-[70px] bg-card/60 backdrop-blur-xl rounded-[24px] shadow-lg"
           >
-          <nav className="flex items-center justify-around h-full pt-1 pb-2 px-5">
-            {navItems.slice(0, 2).map((item) => {
-              const isActive = pathname === item.href;
+          <nav className="flex items-center justify-around h-full pt-1 pb-2 px-2">
+            {navItems.map((item) => {
+              const isActive = pathname.startsWith(item.href) && (item.href !== '/' || pathname === '/');
+              if (item.href === '/journal' && (pathname.startsWith('/journal/') || pathname.startsWith('/blog/'))) {
+                  // Special case for journal detail pages
+              } else if (item.href !== pathname && item.href !== '/journal' && pathname.startsWith(item.href) && item.href !== '/') {
+                   //
+              }
+
               return (
-                <Link href={item.href} key={item.href} className="flex-auto">
-                  <div
-                    className={cn(
-                      "flex flex-col items-center justify-center gap-1 transition-colors",
-                      isActive ? "text-primary" : "text-muted-foreground"
-                    )}
-                  >
-                    <item.icon strokeWidth={isActive ? 2 : 1.5} size={24} />
-                    <span className="text-[10px] font-medium">{item.label}</span>
-                  </div>
-                </Link>
-              );
-            })}
-            <div className="flex-auto" />
-            {navItems.slice(2, 4).map((item) => {
-              const isActive = pathname.startsWith(item.href);
-              return (
-                <Link href={item.href} key={item.href} className="flex-auto">
+                <Link href={item.href} key={item.href} className="flex-auto basis-1/5">
                   <div
                     className={cn(
                       "flex flex-col items-center justify-center gap-1 transition-colors",
