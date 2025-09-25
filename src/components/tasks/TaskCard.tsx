@@ -17,23 +17,13 @@ import {
   Plus,
   FileText,
   Pencil,
+  Star,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format, parseISO, addMinutes, parse } from 'date-fns';
 import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { getIcon } from "@/lib/icon-utils";
 
 
@@ -353,15 +343,6 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                 strokeWidth={1.5}
               />
             </button>
-            <button onClick={(e) => {e.stopPropagation(); onToggleMyDay(task.id)}}>
-              <Sun 
-                className={cn(
-                  "w-5 h-5 text-muted-foreground hover:text-orange-500 transition-colors",
-                  task.isMyDay && "fill-orange-400 text-orange-500"
-                )} 
-                strokeWidth={1.5} 
-              />
-            </button>
         </div>
 
       </div>
@@ -533,3 +514,5 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </div>
   );
 }
+
+    
