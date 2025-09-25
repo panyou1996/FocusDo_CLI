@@ -283,7 +283,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         variant="ghost"
         size="icon"
         className={cn(
-          'absolute top-0 left-0 w-8 h-8 z-10',
+          'absolute top-0 left-0 h-8 w-8 z-20',
           'transition-all duration-200',
           task.isFixed
             ? 'text-primary'
@@ -294,7 +294,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
           onToggleFixed(task.id);
         }}
       >
-        <Pin className="w-6 h-6" />
+        <Pin className="w-6 h-6 -rotate-45" />
       </Button>
       <div
         className={cn(
@@ -390,7 +390,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         {cardIsExpanded && (
           <div className="px-4 pb-4 pl-12 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <div
-              className="flex items-center gap-2 -ml-2"
+              className="flex items-center gap-2 -ml-2 mb-2"
               onClick={e => e.stopPropagation()}
             >
               <Button
@@ -421,7 +421,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
               </Button>
             </div>
 
-            <div className="mt-2 space-y-2">
+            <div className="space-y-2">
                 <DetailRow
                   icon={FileText}
                   label="Description"
