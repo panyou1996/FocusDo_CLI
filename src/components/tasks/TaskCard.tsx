@@ -282,7 +282,10 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                       <Button
                           key={listOption.id}
                           variant="ghost"
-                          className="w-full justify-start gap-2"
+                          className={cn(
+                              "w-full justify-start gap-2",
+                              task.listId === listOption.id && 'bg-accent'
+                          )}
                           onClick={() => {
                               onUpdate(task.id, { listId: listOption.id });
                           }}
@@ -306,7 +309,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   };
   
   const cardVariants = {
-    hidden: { opacity: 0, y: -20 },
+    hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 },
     exit: { 
         height: 0, 
@@ -696,3 +699,4 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     </motion.div>
   );
 }
+
