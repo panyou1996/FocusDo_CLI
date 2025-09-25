@@ -340,7 +340,7 @@ export default function InboxPage() {
       if(filterImportance === 'important') title = "Important Tasks";
 
       return (
-        <div className="space-y-3 px-5 mt-4">
+        <div className="space-y-3 mt-4">
           <TaskGroup
             title={title}
             tasks={processedTasks}
@@ -352,7 +352,7 @@ export default function InboxPage() {
     }
     
     return (
-      <div className="space-y-6 px-5 mt-4">
+      <div className="space-y-6 mt-4">
         <TaskGroup
           title="Expired"
           tasks={expired}
@@ -370,9 +370,57 @@ export default function InboxPage() {
     );
   };
 
+  const renderCalendarContent = () => (
+    <div className="mt-4">
+      <div className="">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          className="rounded-md custom-card w-full"
+          tasksPerDay={isClient ? tasksPerDay : {}}
+          components={{
+            IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+            IconRight: () => <ChevronRight className="h-4 w-4" />,
+          }}
+          disabled={!isClient}
+        />
+      </div>
+      <div className="space-y-3 mt-4">
+        {!isClient ? (
+          <div className="space-y-3">
+            <Skeleton className="h-16 w-full rounded-2xl" />
+          </div>
+        ) : tasksForSelectedDate.length > 0 ? (
+          tasksForSelectedDate.map(task => {
+            const list = lists.find(l => l.id === task.listId);
+            if (!list) return null;
+            const ListIcon = getIcon(list.icon as string);
+
+            const status = task.isCompleted ? 'done' : 'upcoming';
+
+            return (
+              <TaskCard
+                key={task.id}
+                task={task}
+                list={{ ...list, icon: ListIcon }}
+                {...cardProps}
+                status={status}
+              />
+            );
+          })
+        ) : (
+          <p className="text-muted-foreground text-center py-4">
+            No tasks for this day.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+
   return (
-    <div>
-      <header className="px-5 pt-10 pb-4 h-[80px] flex justify-between items-center">
+    <div className='px-5'>
+      <header className="pt-10 pb-4 h-[80px] flex justify-between items-center">
           <div className="flex items-center gap-2">
             <InboxIcon className="w-7 h-7" strokeWidth={2} />
             <h1 className="text-2xl font-bold text-foreground">Inbox</h1>
@@ -396,107 +444,12 @@ export default function InboxPage() {
           </Popover>
       </header>
       
-      <div className="flex gap-2 mb-4 px-5">
+      <div className="flex gap-2 mb-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-grow">
             <TabsList className="grid w-full grid-cols-2 h-11">
                 <TabsTrigger value="lists">Lists</TabsTrigger>
                 <TabsTrigger value="calendar">Calendar</TabsTrigger>
             </TabsList>
-            <TabsContent value="lists" forceMount={true} className={cn('mt-0', activeTab !== 'lists' && 'hidden')}>
-              <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex gap-2 px-5 py-2">
-                  <button
-                    onClick={() => setSelectedList('all')}
-                    className={cn(
-                      'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                      selectedList === 'all'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-foreground bg-secondary'
-                    )}
-                  >
-                    <List className="w-4 h-4" />
-                    <span>All</span>
-                  </button>
-                  {lists.map(list => {
-                    const ListIcon = getIcon(list.icon as string);
-                    const isSelected = selectedList === list.id;
-                    return (
-                      <button
-                        key={list.id}
-                        onClick={() => setSelectedList(list.id)}
-                        className={cn(
-                          'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                          isSelected ? 'text-white' : 'text-foreground bg-secondary'
-                        )}
-                        style={{
-                          backgroundColor: isSelected ? list.color : undefined,
-                        }}
-                      >
-                        <ListIcon className="w-4 h-4" />
-                        <span>{list.name}</span>
-                      </button>
-                    );
-                  })}
-                  <Link href="/add-list">
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      className="rounded-full w-9 h-9 flex-shrink-0"
-                    >
-                      <Plus className="w-5 h-5" />
-                    </Button>
-                  </Link>
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-              {renderListContent()}
-            </TabsContent>
-
-            <TabsContent value="calendar" forceMount={true} className={cn('mt-4', activeTab !== 'calendar' && 'hidden')}>
-              <div className="px-5">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  className="rounded-md custom-card w-full"
-                  tasksPerDay={isClient ? tasksPerDay : {}}
-                  components={{
-                    IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-                    IconRight: () => <ChevronRight className="h-4 w-4" />,
-                  }}
-                  disabled={!isClient}
-                />
-              </div>
-              <div className="space-y-3 px-5 mt-4">
-                {!isClient ? (
-                  <div className="space-y-3">
-                    <Skeleton className="h-16 w-full rounded-2xl" />
-                  </div>
-                ) : tasksForSelectedDate.length > 0 ? (
-                  tasksForSelectedDate.map(task => {
-                    const list = lists.find(l => l.id === task.listId);
-                    if (!list) return null;
-                    const ListIcon = getIcon(list.icon as string);
-
-                    const status = task.isCompleted ? 'done' : 'upcoming';
-
-                    return (
-                      <TaskCard
-                        key={task.id}
-                        task={task}
-                        list={{ ...list, icon: ListIcon }}
-                        {...cardProps}
-                        status={status}
-                      />
-                    );
-                  })
-                ) : (
-                  <p className="text-muted-foreground text-center py-4">
-                    No tasks for this day.
-                  </p>
-                )}
-              </div>
-            </TabsContent>
         </Tabs>
         <Link href="/add-task">
             <Button size="icon" className="h-11 w-11 rounded-md flex-shrink-0">
@@ -504,8 +457,63 @@ export default function InboxPage() {
             </Button>
         </Link>
       </div>
+      
+      {activeTab === 'lists' && (
+        <>
+            <div className="-mx-5">
+                <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex gap-2 py-2 px-5">
+                    <button
+                        onClick={() => setSelectedList('all')}
+                        className={cn(
+                        'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                        selectedList === 'all'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-foreground bg-secondary'
+                        )}
+                    >
+                        <List className="w-4 h-4" />
+                        <span>All</span>
+                    </button>
+                    {lists.map(list => {
+                        const ListIcon = getIcon(list.icon as string);
+                        const isSelected = selectedList === list.id;
+                        return (
+                        <button
+                            key={list.id}
+                            onClick={() => setSelectedList(list.id)}
+                            className={cn(
+                            'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                            isSelected ? 'text-white' : 'text-foreground bg-secondary'
+                            )}
+                            style={{
+                            backgroundColor: isSelected ? list.color : undefined,
+                            }}
+                        >
+                            <ListIcon className="w-4 h-4" />
+                            <span>{list.name}</span>
+                        </button>
+                        );
+                    })}
+                    <Link href="/add-list">
+                        <Button
+                        size="icon"
+                        variant="secondary"
+                        className="rounded-full w-9 h-9 flex-shrink-0"
+                        >
+                        <Plus className="w-5 h-5" />
+                        </Button>
+                    </Link>
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+            </div>
+            {renderListContent()}
+        </>
+      )}
+
+      {activeTab === 'calendar' && renderCalendarContent()}
+
     </div>
   );
 }
-
-    
