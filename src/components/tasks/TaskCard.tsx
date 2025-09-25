@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useAnimation } from "framer-motion";
+import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { Subtask, Task, TaskList } from "@/lib/types";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -248,7 +248,6 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   const ListIcon = list.icon as React.ElementType;
   const cardIsExpanded = isExpanded || view === 'detail';
   const endTime = task.startTime && task.duration ? getEndTime(task.startTime, task.duration) : null;
-  const cardLayoutId = `task-card-${task.id}`;
 
 
   const renderListIcon = () => {
@@ -321,6 +320,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         initial="hidden"
         animate="show"
         exit="exit"
+        transition={{ layout: { duration: 0.3, ease: "easeInOut" } }}
         className="relative"
     >
         <motion.div
@@ -336,7 +336,6 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         </motion.div>
         
         <motion.div
-            layoutId={cardLayoutId}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
@@ -438,11 +437,13 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
           </div>
         </div>
 
+        <AnimatePresence>
         {cardIsExpanded && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="px-4 pb-3 pl-12"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto', transition: { duration: 0.3, ease: "easeInOut" } }}
+            exit={{ opacity: 0, height: 0, transition: { duration: 0.3, ease: "easeInOut" } }}
+            className="px-4 pb-3 pl-12 overflow-hidden"
           >
             <div
               className="flex items-center gap-2 -ml-2 mb-2"
@@ -683,9 +684,12 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             </div>
           </motion.div>
         )}
+        </AnimatePresence>
       </motion.div>
     </motion.div>
   );
 }
+
+    
 
     
