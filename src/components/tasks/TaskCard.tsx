@@ -278,7 +278,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         variant="ghost"
         size="icon"
         className={cn(
-          'absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-7 h-7 z-10',
+          'absolute top-0 left-0 w-8 h-8 z-10',
           task.isFixed
             ? 'text-primary'
             : 'text-muted-foreground/50 hover:text-muted-foreground'
@@ -288,7 +288,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
           onToggleFixed(task.id);
         }}
       >
-        <Pin className="w-5 h-5 -rotate-45" />
+        <Pin className="w-6 h-6 -rotate-45" />
       </Button>
       <div
         className={cn(
