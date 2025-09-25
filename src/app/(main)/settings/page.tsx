@@ -38,16 +38,16 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="">
-      <header className="px-5 pt-10 pb-4 h-[80px] flex justify-between items-center">
+    <div className='px-5'>
+      <header className="pt-10 pb-4 h-[80px] flex justify-between items-center">
         <div className="flex items-center gap-3">
           <SettingsIcon className="w-7 h-7" strokeWidth={2} />
-          <h1 className="text-2xl font-bold text-foreground">Settings</h1>
+          <h1 className="text-3xl font-bold text-foreground">Settings</h1>
         </div>
         <div className="w-10 h-10"></div>
       </header>
 
-      <div className="px-5">
+      <div>
         <SettingsGroupLabel>Preferences</SettingsGroupLabel>
         <Card className="rounded-xl overflow-hidden custom-card">
            <div className="flex items-center h-[50px] px-4">
