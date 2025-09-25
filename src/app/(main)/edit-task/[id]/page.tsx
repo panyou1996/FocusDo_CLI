@@ -18,6 +18,8 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format, parseISO } from 'date-fns';
 import type { Subtask, Task } from '@/lib/types';
 import { Checkbox } from '@/components/ui/checkbox';
+import { cn } from '@/lib/utils';
+
 
 const AttributeRow = ({ icon: Icon, label, children }: { icon: React.ElementType, label: string, children: React.ReactNode }) => (
     <div className="flex items-center h-[50px] px-4">
@@ -33,6 +35,7 @@ export default function EditTaskPage() {
     const router = useRouter();
     const params = useParams();
     const { tasks, updateTask, deleteTask } = useAppContext();
+    const [isMounted, setIsMounted] = React.useState(false);
 
     const taskId = params.id as string;
     const taskToEdit = tasks.find(t => t.id === taskId);
@@ -67,8 +70,16 @@ export default function EditTaskPage() {
             // Optional: handle case where task is not found
             // router.replace('/today'); 
         }
+        
+        // Delay to allow animation
+        const timer = setTimeout(() => setIsMounted(true), 10);
+        return () => clearTimeout(timer);
     }, [taskToEdit, router]);
 
+    const handleClose = () => {
+        setIsMounted(false);
+        setTimeout(() => router.back(), 300); // Match transition duration
+    };
 
     const handleSaveTask = () => {
         if (!title) {
@@ -89,7 +100,7 @@ export default function EditTaskPage() {
         };
 
         updateTask(taskId, updatedTask);
-        router.back();
+        handleClose();
     };
 
     const handleDeleteTask = () => {
@@ -140,19 +151,22 @@ export default function EditTaskPage() {
 
     return (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center">
-            <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
+            <div className={cn(
+                "bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl transition-transform duration-300 ease-out",
+                isMounted ? 'translate-y-0' : 'translate-y-full'
+            )}>
                 <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
                     <Button variant="ghost" size="icon" aria-label="Delete" onClick={handleDeleteTask}>
                         <Trash2 className="w-6 h-6 text-destructive" />
                     </Button>
                     <h1 className="text-[17px] font-bold">Edit Task</h1>
-                    <Button variant="ghost" size="icon" aria-label="Close" onClick={() => router.back()}>
+                    <Button variant="ghost" size="icon" aria-label="Close" onClick={handleClose}>
                         <X className="w-6 h-6" />
                     </Button>
                 </header>
 
                 <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
-                    <Card className="rounded-2xl shadow-soft border-none p-1">
+                    <Card className="rounded-2xl shadow-soft border-none p-1 flex-shrink-0">
                         <Input
                             placeholder="What do you want to do?"
                             className="border-none text-[18px] font-medium h-[60px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -161,16 +175,16 @@ export default function EditTaskPage() {
                         />
                     </Card>
                     
-                    <Card className="rounded-2xl shadow-soft border-none p-1">
+                    <Card className="rounded-2xl shadow-soft border-none p-1 flex flex-col flex-shrink-0">
                         <Textarea
                             placeholder="Add a description..."
-                            className="border-none text-[17px] min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0"
+                            className="border-none text-[17px] min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
                     </Card>
 
-                    <Card className="rounded-2xl shadow-soft border-none overflow-hidden">
+                    <Card className="rounded-2xl shadow-soft border-none overflow-hidden flex-shrink-0">
                         <AttributeRow icon={ListTree} label="Subtasks">
                             <div className="flex items-center gap-2">
                                 {subtasks.length > 0 && (
@@ -266,7 +280,7 @@ export default function EditTaskPage() {
                         </AttributeRow>
                     </Card>
 
-                    <Card className="rounded-2xl shadow-soft border-none overflow-hidden">
+                    <Card className="rounded-2xl shadow-soft border-none overflow-hidden flex-shrink-0">
                         <AttributeRow icon={Sun} label="Add to My Day">
                             <Switch checked={isMyDay} onCheckedChange={setIsMyDay} />
                         </AttributeRow>
@@ -288,5 +302,3 @@ export default function EditTaskPage() {
         </div>
     );
 }
-
-    
