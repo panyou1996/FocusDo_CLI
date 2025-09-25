@@ -60,7 +60,7 @@ export default function AppearancePage() {
       <div className="bg-background flex flex-col w-full max-w-lg h-[95vh] rounded-t-2xl shadow-2xl">
         <header className="px-5 h-[56px] flex justify-between items-center flex-shrink-0 border-b">
           <div className="w-10"></div>
-          <h1 className="text-base font-bold">Appearance</h1>
+          <h1 className="text-lg font-bold">Appearance</h1>
           <Button variant="ghost" size="icon" aria-label="Close" onClick={() => router.back()}>
             <X className="w-6 h-6" />
           </Button>
@@ -83,9 +83,9 @@ export default function AppearancePage() {
           </Card>
 
           <SettingsGroupLabel>UI Size</SettingsGroupLabel>
-          <Card className="rounded-xl overflow-hidden shadow-soft border-none p-4">
+          <Card className="rounded-xl overflow-hidden shadow-soft border-none p-2">
             <Tabs value={String(uiSize)} onValueChange={(value) => handleSizeChange(Number(value))}>
-                <TabsList className="grid w-full grid-cols-5 h-[50px]">
+                <TabsList className="grid w-full grid-cols-5">
                     {sizeSteps.map((size, index) => (
                         <TabsTrigger key={size} value={String(index)}>{size}</TabsTrigger>
                     ))}
