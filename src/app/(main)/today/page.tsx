@@ -27,7 +27,7 @@ const TaskGroup = ({ title, tasks, status, ...props }: { title: string; tasks: T
   if (tasks.length === 0) return null;
   return (
     <div>
-      <h2 className="text-lg font-semibold text-muted-foreground mb-2 px-1">{title}</h2>
+      <h2 className="text-base font-semibold text-muted-foreground mb-2 px-1">{title}</h2>
       <div className="space-y-3">
         {tasks.map((task) => {
           const list = lists.find((l) => l.id === task.listId);
@@ -173,7 +173,7 @@ export default function TodayPage() {
     }
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
          <TaskGroup title="Expired" tasks={expired} status="expired" {...cardProps} />
          <TaskGroup title="Upcoming" tasks={upcoming} status="upcoming" {...cardProps} />
          <TaskGroup title="Done" tasks={done} status="done" {...cardProps} />

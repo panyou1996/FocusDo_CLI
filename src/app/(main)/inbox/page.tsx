@@ -50,7 +50,7 @@ const TaskGroup = ({
   if (tasks.length === 0) return null;
   return (
     <div>
-      <h2 className="text-lg font-semibold text-muted-foreground mb-2 px-1">
+      <h2 className="text-base font-semibold text-muted-foreground mb-2 px-1">
         {title}
       </h2>
       <div className="space-y-3">
@@ -352,7 +352,7 @@ export default function InboxPage() {
     }
     
     return (
-      <div className="space-y-6 mt-4">
+      <div className="space-y-4 mt-4">
         <TaskGroup
           title="Expired"
           tasks={expired}
@@ -457,59 +457,59 @@ export default function InboxPage() {
             </Button>
         </Link>
       </div>
-      
+
       {activeTab === 'lists' && (
-        <>
-            <div className="-mx-5">
-                <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex gap-2 py-2 px-5">
+        <div className="-mx-5">
+            <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-2 py-2 px-5">
+                <button
+                    onClick={() => setSelectedList('all')}
+                    className={cn(
+                    'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                    selectedList === 'all'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-foreground bg-secondary'
+                    )}
+                >
+                    <List className="w-4 h-4" />
+                    <span>All</span>
+                </button>
+                {lists.map(list => {
+                    const ListIcon = getIcon(list.icon as string);
+                    const isSelected = selectedList === list.id;
+                    return (
                     <button
-                        onClick={() => setSelectedList('all')}
+                        key={list.id}
+                        onClick={() => setSelectedList(list.id)}
                         className={cn(
                         'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                        selectedList === 'all'
-                            ? 'bg-primary text-primary-foreground'
-                            : 'text-foreground bg-secondary'
+                        isSelected ? 'text-white' : 'text-foreground bg-secondary'
                         )}
+                        style={{
+                        backgroundColor: isSelected ? list.color : undefined,
+                        }}
                     >
-                        <List className="w-4 h-4" />
-                        <span>All</span>
+                        <ListIcon className="w-4 h-4" />
+                        <span>{list.name}</span>
                     </button>
-                    {lists.map(list => {
-                        const ListIcon = getIcon(list.icon as string);
-                        const isSelected = selectedList === list.id;
-                        return (
-                        <button
-                            key={list.id}
-                            onClick={() => setSelectedList(list.id)}
-                            className={cn(
-                            'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                            isSelected ? 'text-white' : 'text-foreground bg-secondary'
-                            )}
-                            style={{
-                            backgroundColor: isSelected ? list.color : undefined,
-                            }}
-                        >
-                            <ListIcon className="w-4 h-4" />
-                            <span>{list.name}</span>
-                        </button>
-                        );
-                    })}
-                    <Link href="/add-list">
-                        <Button
-                        size="icon"
-                        variant="secondary"
-                        className="rounded-full w-9 h-9 flex-shrink-0"
-                        >
-                        <Plus className="w-5 h-5" />
-                        </Button>
-                    </Link>
-                    </div>
-                    <ScrollBar orientation="horizontal" />
-                </ScrollArea>
+                    );
+                })}
+                <Link href="/add-list">
+                    <Button
+                    size="icon"
+                    variant="secondary"
+                    className="rounded-full w-9 h-9 flex-shrink-0"
+                    >
+                    <Plus className="w-5 h-5" />
+                    </Button>
+                </Link>
+                </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+            <div className="px-5">
+              {renderListContent()}
             </div>
-            {renderListContent()}
-        </>
+        </div>
       )}
 
       {activeTab === 'calendar' && renderCalendarContent()}
