@@ -8,7 +8,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Star,
   Sun,
   Trash2,
   Clock,
@@ -43,7 +42,6 @@ interface TaskCardProps {
   list: TaskList;
   view: "compact" | "detail";
   status: 'expired' | 'upcoming' | 'done';
-  onDelete: (taskId: string) => void;
   onEdit: (taskId: string) => void;
   onUpdate: (taskId: string, updatedTask: Partial<Task>) => void;
   onToggleImportant: (taskId: string) => void;
@@ -62,7 +60,7 @@ const getEndTime = (startTime: string, duration: number): string => {
     }
 };
 
-export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
+export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
   const { lists } = useAppContext();
   
@@ -284,7 +282,10 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
 
   return (
     <div
-      className="bg-card w-full rounded-2xl custom-card transition-all duration-300 ease-in-out"
+      className={cn(
+        "bg-card w-full rounded-2xl custom-card transition-all duration-300 ease-in-out overflow-hidden",
+        task.isImportant && "border-l-4 border-primary"
+        )}
       onClick={handleToggleExpand}
     >
       <div className="flex items-center p-4">
@@ -349,15 +350,6 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
             <button onClick={(e) => {e.stopPropagation(); onEdit(task.id)}}>
               <Pencil
                 className={"w-5 h-5 text-muted-foreground transition-colors hover:text-primary"}
-                strokeWidth={1.5}
-              />
-            </button>
-            <button onClick={(e) => {e.stopPropagation(); onToggleImportant(task.id)}}>
-              <Star
-                className={cn(
-                  "w-5 h-5 text-muted-foreground transition-colors hover:text-yellow-500",
-                  task.isImportant && "fill-yellow-400 text-yellow-500"
-                )}
                 strokeWidth={1.5}
               />
             </button>
@@ -541,5 +533,3 @@ export function TaskCard({ task, list, view, status, onDelete, onEdit, onUpdate,
     </div>
   );
 }
-
-    
