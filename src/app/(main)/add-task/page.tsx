@@ -247,7 +247,7 @@ export default function AddTaskPage() {
                         )}
                         <Separator/>
                         <AttributeRow icon={Hourglass} label="Duration">
-                             <div className="flex items-center gap-1">
+                             <div className="flex items-center">
                                 <Input 
                                     type="number" 
                                     value={duration}
@@ -256,7 +256,7 @@ export default function AddTaskPage() {
                                     min="0"
                                     step="5"
                                 />
-                                <span className="text-muted-foreground">min</span>
+                                <span className="text-muted-foreground mr-1">min</span>
                             </div>
                         </AttributeRow>
                         <Separator/>
