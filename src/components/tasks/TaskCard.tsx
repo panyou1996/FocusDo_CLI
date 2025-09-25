@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -18,6 +17,7 @@ import {
   FileText,
   Pencil,
   Star,
+  Pin,
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -36,6 +36,7 @@ interface TaskCardProps {
   onUpdate: (taskId: string, updatedTask: Partial<Task>) => void;
   onToggleImportant: (taskId: string) => void;
   onToggleMyDay: (taskId: string) => void;
+  onToggleFixed: (taskId: string) => void;
   onToggleCompleted: (taskId: string) => void;
 }
 
@@ -50,7 +51,7 @@ const getEndTime = (startTime: string, duration: number): string => {
     }
 };
 
-export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleImportant, onToggleMyDay, onToggleCompleted }: TaskCardProps) {
+export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleImportant, onToggleMyDay, onToggleFixed, onToggleCompleted }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
   const { lists } = useAppContext();
   
@@ -234,12 +235,12 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     if (cardIsExpanded) {
       return (
         <Popover>
-          <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-            <Button variant="ghost" size="icon" className="w-8 h-8">
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" className="w-8 h-8" onClick={(e) => e.stopPropagation()}>
               {iconElement}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-1" align="start">
+          <PopoverContent className="w-auto p-1" align="start" onClick={(e) => e.stopPropagation()}>
             <div className="flex flex-col gap-1">
               {lists.map(listOption => {
                   const ListOptionIcon = getIcon(listOption.icon as string);
@@ -273,15 +274,27 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   return (
     <div
       className={cn(
-        "w-full rounded-l-md",
-        task.isImportant
-          ? "border-l-4 border-[#F4A261]"
-          : "border-l-4 border-transparent"
+        "w-full rounded-2xl custom-card overflow-hidden relative shadow-inner",
+        task.isImportant ? 'border-l-4 border-[#F4A261]' : 'border-l-4 border-transparent'
       )}
       onClick={handleToggleExpand}
     >
-      <div className="bg-card w-full rounded-2xl custom-card overflow-hidden">
-        <div className="flex items-center p-4">
+        <Button 
+            variant="ghost" 
+            size="icon" 
+            className={cn(
+                "absolute top-2 left-2 w-7 h-7 z-10",
+                task.isFixed ? "text-primary" : "text-muted-foreground/50 hover:text-muted-foreground"
+            )}
+            onClick={(e) => {
+                e.stopPropagation();
+                onToggleFixed(task.id);
+            }}
+        >
+            <Pin className="w-5 h-5 -rotate-45" />
+        </Button>
+
+      <div className="flex items-center p-4 pl-8">
           <Checkbox
             id={`task-${task.id}`}
             checked={task.isCompleted}
@@ -309,17 +322,15 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                 <p
                 className={cn(
                     "text-base font-medium text-foreground truncate",
-                    task.isCompleted && "line-through text-muted-foreground",
-                    cardIsExpanded && "cursor-text"
+                    task.isCompleted && "line-through text-muted-foreground"
                 )}
-                onClick={(e) => {
+                >
+                <span className={cn(cardIsExpanded && "cursor-text")} onClick={(e) => {
                     if(cardIsExpanded) {
                         e.stopPropagation();
                         setIsEditingTitle(true)
                     }
-                }}
-                >
-                {task.title}
+                }}>{task.title}</span>
                 </p>
             )}
 
@@ -540,7 +551,6 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             />
           </div>
         )}
-      </div>
     </div>
   );
 }
