@@ -26,13 +26,13 @@ export function BottomNavBar() {
   }, [pathname]);
 
   return (
-    <footer className="sticky bottom-0 h-[74px] bg-transparent z-40">
+    <footer className="sticky bottom-0 h-[86px] bg-transparent z-40">
       <div className="relative h-full w-full max-w-lg mx-auto">
         <div className={cn(
-            "absolute bottom-0 left-0 right-0 h-[74px] bg-card/60 backdrop-blur-xl rounded-t-[24px] shadow-[0px_-4px_10px_rgba(0,0,0,0.05)] transition-transform duration-300",
-            isModalPage && "translate-y-full"
+            "relative mx-4 mb-4 h-[70px] bg-card/60 backdrop-blur-xl rounded-[24px] shadow-lg transition-transform duration-300",
+            isModalPage && "translate-y-[120%]"
             )}>
-          <nav className="flex items-center justify-around h-full pt-1 pb-[24px] px-5">
+          <nav className="flex items-center justify-around h-full pt-1 pb-2 px-5">
             {navItems.slice(0, 2).map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -71,7 +71,7 @@ export function BottomNavBar() {
         <Link
           href="/add-task"
           className={cn(
-            "absolute left-1/2 -translate-x-1/2 top-[-18px] w-[60px] h-[60px] bg-primary rounded-full flex items-center justify-center shadow-fab z-50 transition-transform duration-300",
+            "absolute left-1/2 -translate-x-1/2 top-[-14px] w-[60px] h-[60px] bg-primary rounded-full flex items-center justify-center shadow-fab z-50 transition-transform duration-300",
             isModalPage && "scale-0"
             )}
           aria-label="Add Task"
