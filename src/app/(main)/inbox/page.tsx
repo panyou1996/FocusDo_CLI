@@ -463,78 +463,75 @@ export default function InboxPage() {
           </Popover>
       </header>
       
-      <div className="flex gap-2 mb-4">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-grow">
-            <TabsList className="grid w-full grid-cols-2 h-11">
-                <TabsTrigger value="lists">Lists</TabsTrigger>
-                <TabsTrigger value="calendar">Calendar</TabsTrigger>
-            </TabsList>
-        </Tabs>
-        <Link href="/add-task">
-            <Button size="icon" className="h-11 w-11 rounded-md flex-shrink-0">
-                <Plus className="w-6 h-6" />
-            </Button>
-        </Link>
-      </div>
-      
-      <TabsContent value="lists" className='-mx-5'>
-        <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex gap-2 py-2 px-5">
-                <button
-                    onClick={() => setSelectedList('all')}
-                    className={cn(
-                    'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                    selectedList === 'all'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-foreground bg-secondary'
-                    )}
-                >
-                    <List className="w-4 h-4" />
-                    <span>All</span>
-                </button>
-                {lists.map(list => {
-                    const ListIcon = getIcon(list.icon as string);
-                    const isSelected = selectedList === list.id;
-                    return (
-                    <button
-                        key={list.id}
-                        onClick={() => setSelectedList(list.id)}
-                        className={cn(
-                        'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                        isSelected ? 'text-white' : 'text-foreground bg-secondary'
-                        )}
-                        style={{
-                        backgroundColor: isSelected ? list.color : undefined,
-                        }}
-                    >
-                        <ListIcon className="w-4 h-4" />
-                        <span>{list.name}</span>
-                    </button>
-                    );
-                })}
-                <Link href="/add-list">
-                    <Button
-                    size="icon"
-                    variant="secondary"
-                    className="rounded-full w-9 h-9 flex-shrink-0"
-                    >
-                    <Plus className="w-5 h-5" />
-                    </Button>
-                </Link>
-                </div>
-                <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-        <div className='px-5'>
-            {renderListContent()}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="flex gap-2 mb-4">
+          <TabsList className="grid w-full grid-cols-2 h-11 flex-grow">
+              <TabsTrigger value="lists">Lists</TabsTrigger>
+              <TabsTrigger value="calendar">Calendar</TabsTrigger>
+          </TabsList>
+          <Link href="/add-task">
+              <Button size="icon" className="h-11 w-11 rounded-md flex-shrink-0">
+                  <Plus className="w-6 h-6" />
+              </Button>
+          </Link>
         </div>
-      </TabsContent>
+      
+        <TabsContent value="lists" className='-mx-5'>
+          <ScrollArea className="w-full whitespace-nowrap">
+              <div className="flex gap-2 py-2 px-5">
+                  <button
+                      onClick={() => setSelectedList('all')}
+                      className={cn(
+                      'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                      selectedList === 'all'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-foreground bg-secondary'
+                      )}
+                  >
+                      <List className="w-4 h-4" />
+                      <span>All</span>
+                  </button>
+                  {lists.map(list => {
+                      const ListIcon = getIcon(list.icon as string);
+                      const isSelected = selectedList === list.id;
+                      return (
+                      <button
+                          key={list.id}
+                          onClick={() => setSelectedList(list.id)}
+                          className={cn(
+                          'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                          isSelected ? 'text-white' : 'text-foreground bg-secondary'
+                          )}
+                          style={{
+                          backgroundColor: isSelected ? list.color : undefined,
+                          }}
+                      >
+                          <ListIcon className="w-4 h-4" />
+                          <span>{list.name}</span>
+                      </button>
+                      );
+                  })}
+                  <Link href="/add-list">
+                      <Button
+                      size="icon"
+                      variant="secondary"
+                      className="rounded-full w-9 h-9 flex-shrink-0"
+                      >
+                      <Plus className="w-5 h-5" />
+                      </Button>
+                  </Link>
+                  </div>
+                  <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+          <div className='px-5'>
+              {renderListContent()}
+          </div>
+        </TabsContent>
 
-      <TabsContent value="calendar" className='-mx-5 px-5'>{renderCalendarContent()}</TabsContent>
-
+        <TabsContent value="calendar" className='-mx-5 px-5'>
+          {renderCalendarContent()}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
-
-    
-
-    
