@@ -315,12 +315,10 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
 
   return (
     <motion.div
-        layout
         variants={cardVariants}
         initial="hidden"
         animate="show"
         exit="exit"
-        transition={{ layout: { duration: 0.3, ease: "easeInOut" } }}
         className="relative"
     >
         <motion.div
@@ -437,12 +435,14 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
           </div>
         </div>
 
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
         {cardIsExpanded && (
           <motion.div 
+            key="content"
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto', transition: { duration: 0.3, ease: "easeInOut" } }}
-            exit={{ opacity: 0, height: 0, transition: { duration: 0.3, ease: "easeInOut" } }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             className="px-4 pb-3 pl-12 overflow-hidden"
           >
             <div
