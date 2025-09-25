@@ -18,8 +18,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['var(--font-inter)', 'sans-serif'],
-        headline: ['var(--font-inter)', 'sans-serif'],
+        sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['ui-serif', 'Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",

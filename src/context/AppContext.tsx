@@ -28,6 +28,8 @@ interface AppContextType {
   addList: (list: TaskList) => void;
   uiSize: number;
   setUiSize: (size: number) => void;
+  fontStyle: string;
+  setFontStyle: (style: string) => void;
 }
 
 const AppContext = React.createContext<AppContextType | undefined>(undefined);
@@ -46,6 +48,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const { theme: mode, setTheme: setMode } = useTheme();
   const [colorTheme, setColorTheme] = useLocalStorage<string>('color-theme', 'Default');
   const [uiSize, setUiSize] = useLocalStorage<number>('ui-size', 2); // Default to M (14px in new scale)
+  const [fontStyle, setFontStyle] = useLocalStorage<string>('font-style', 'sans');
 
   React.useEffect(() => {
     const root = window.document.documentElement;
@@ -121,7 +124,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     addList,
     uiSize,
     setUiSize,
-  }), [tasks, blogPosts, currentUser, colorTheme, mode, setMode, lists, uiSize, setCurrentUser, setColorTheme, setUiSize]);
+    fontStyle,
+    setFontStyle
+  }), [tasks, blogPosts, currentUser, colorTheme, mode, setMode, lists, uiSize, fontStyle, setCurrentUser, setColorTheme, setUiSize, setFontStyle]);
 
 
   return (
