@@ -28,6 +28,7 @@ import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
 import { getIcon } from "@/lib/icon-utils";
 import { useLongPress } from "@/hooks/useLongPress";
+import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 const containerVariants = {
@@ -351,7 +352,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
       initial="hidden"
       animate="show"
       exit="exit"
-      transition={{ layout: { duration: 0.3, type: "spring", stiffness: 380, damping: 30 } }}
+      transition={{ layout: { type: "spring", stiffness: 380, damping: 30 }, duration: 0.3 }}
       className="relative"
     >
         <motion.div
@@ -468,6 +469,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             initial="hidden"
             animate="show"
             exit={{ opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="px-4 pb-3 pl-12 overflow-hidden"
           >
             <motion.div
