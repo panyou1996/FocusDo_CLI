@@ -276,7 +276,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   if (isOverdue) {
     const daysDelayed = differenceInDays(startOfToday(), parseISO(task.dueDate as string));
     if (daysDelayed > 0) {
-      delayMessage = ` (Delayed ${daysDelayed} day${daysDelayed > 1 ? 's' : ''})`;
+      delayMessage = ` (delayed ${daysDelayed} day${daysDelayed > 1 ? 's' : ''})`;
     }
     if (!timeDisplay) {
       timeDisplay = `Expired on ${format(parseISO(task.dueDate as string), 'M/d')}`;
