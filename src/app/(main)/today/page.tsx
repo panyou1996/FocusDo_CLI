@@ -363,13 +363,23 @@ export default function TodayPage() {
         </div>
                 
         <div className="flex items-center">
-           <Button variant="ghost" size="icon" onClick={handleSmartSchedule} disabled={isScheduling || isUpdating}>
-                {isScheduling ? (
-                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                ) : (
-                    <WandSparkles className="w-6 h-6 text-primary" />
-                )}
-            </Button>
+           <motion.div
+              onClick={handleSmartSchedule}
+              whileHover={{ scale: 1.1, rotate: -15 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              className={cn(
+                "h-11 w-11 rounded-full flex items-center justify-center text-primary-foreground custom-card cursor-pointer",
+                (isScheduling || isUpdating) && "pointer-events-none opacity-50"
+              )}
+              style={dynamicStyle}
+            >
+              {isScheduling ? (
+                  <Loader2 className="w-6 h-6 animate-spin text-primary-foreground" />
+              ) : (
+                  <WandSparkles className="w-6 h-6" />
+              )}
+            </motion.div>
         </div>
       </header>
 
@@ -385,7 +395,9 @@ export default function TodayPage() {
             whileHover={{ scale: 1.1, rotate: 15 }}
             whileTap={{ scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            className={cn("h-11 w-11 rounded-full flex-shrink-0 flex items-center justify-center text-primary-foreground", (isScheduling || isUpdating) && "pointer-events-none opacity-50")}
+            className={cn(
+                "h-11 w-11 rounded-full flex-shrink-0 flex items-center justify-center text-primary-foreground custom-card", 
+                (isScheduling || isUpdating) && "pointer-events-none opacity-50")}
              style={dynamicStyle}
           >
             <Plus className="w-6 h-6" />
@@ -397,3 +409,5 @@ export default function TodayPage() {
     </div>
   );
 }
+
+    
