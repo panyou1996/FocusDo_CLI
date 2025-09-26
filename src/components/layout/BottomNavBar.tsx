@@ -138,7 +138,7 @@ export function BottomNavBar() {
                         exit="hidden"
                         whileHover={{ scale: 1.1, rotate: 15 }}
                         whileTap={{ scale: 0.9 }}
-                        className="w-full h-full rounded-full flex items-center justify-center text-primary-foreground z-50"
+                        className="w-full h-full rounded-full flex items-center justify-center text-primary-foreground z-50 custom-card"
                         aria-label="Add Task"
                         style={dynamicStyle}
                     >

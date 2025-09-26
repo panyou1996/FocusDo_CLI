@@ -152,7 +152,7 @@ export default function JournalPage() {
             whileHover={{ scale: 1.1, rotate: 15 }}
             whileTap={{ scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            className="h-11 w-11 rounded-full flex items-center justify-center text-primary-foreground"
+            className="h-11 w-11 rounded-full flex items-center justify-center text-primary-foreground custom-card"
             style={dynamicStyle}
           >
             <Plus className="w-6 h-6" />
