@@ -1,4 +1,3 @@
-
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -61,6 +60,7 @@ export default {
         'soft': '0px 4px 16px rgba(0, 0, 0, 0.08)',
         'soft-hover': '0px 6px 16px rgba(0, 0, 0, 0.12)',
         'fab': '0px 6px 20px rgba(88, 86, 214, 0.3)',
+        'glass': '0px 8px 32px rgba(0, 0, 0, 0.1)',
       },
       keyframes: {
         "accordion-down": {
@@ -110,5 +110,3 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
-
-    

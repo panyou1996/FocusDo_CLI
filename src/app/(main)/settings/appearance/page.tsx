@@ -115,7 +115,8 @@ export default function AppearancePage() {
               <SettingsGroupLabel>Card Style</SettingsGroupLabel>
               <Card className="rounded-xl custom-card">
                 <Tabs value={cardStyle} onValueChange={(value) => setCardStyle(value as any)} className="p-2">
-                    <TabsList className="grid w-full grid-cols-3">
+                    <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="glass">Glass</TabsTrigger>
                         <TabsTrigger value="default">Default</TabsTrigger>
                         <TabsTrigger value="flat">Flat</TabsTrigger>
                         <TabsTrigger value="bordered">Bordered</TabsTrigger>
@@ -147,5 +148,3 @@ export default function AppearancePage() {
     </div>
   );
 }
-
-    

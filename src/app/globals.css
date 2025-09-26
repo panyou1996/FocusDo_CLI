@@ -24,7 +24,7 @@
     --border: 240 8% 90%;
     --input: 240 8% 90%;
     --ring: 241 62% 59%;
-    --radius: 1rem;
+    --radius: 20px;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -80,8 +80,19 @@
   .card-style-bordered .custom-card {
       @apply shadow-none border;
   }
+  
+  .card-style-glass .custom-card {
+    background: rgba(255, 255, 255, 0.45);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.1);
+  }
 
+  .dark .card-style-glass .custom-card {
+    background: rgba(40, 40, 55, 0.35);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 }
-
-    
-    

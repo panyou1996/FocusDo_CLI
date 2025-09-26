@@ -49,7 +49,13 @@ export function BottomNavBar() {
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="absolute bottom-[env(safe-area-inset-bottom)] left-0 right-0 mx-4 mb-4 h-[70px] bg-card/60 backdrop-blur-xl rounded-[24px] shadow-lg"
+                className="absolute bottom-[env(safe-area-inset-bottom)] left-0 right-0 mx-4 mb-4 h-[70px] rounded-[20px] shadow-glass"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.45)',
+                  backdropFilter: 'blur(24px)',
+                  WebkitBackdropFilter: 'blur(24px)',
+                  border: '1px solid rgba(255, 255, 255, 0.8)',
+                }}
               >
               <nav className="flex items-center justify-around h-full pt-1 pb-2 px-2">
                 {navItems.map((item, index) => {

@@ -7,7 +7,7 @@ import { tasks as initialTasks, journalPosts as initialJournalPosts, lists as in
 import { usePersistentState } from '@/hooks/usePersistentState';
 
 const UI_SIZES = [10, 12, 14, 16, 18]; // Corresponds to XS, S, M, L, XL
-type CardStyle = 'default' | 'flat' | 'bordered';
+type CardStyle = 'default' | 'flat' | 'bordered' | 'glass';
 
 interface AppContextType {
   tasks: Task[];
@@ -42,7 +42,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [lists, setLists] = usePersistentState<TaskList[]>('lists', initialLists);
   const [currentUser, setCurrentUser] = usePersistentState<Author>('currentUser', defaultUser);
   const [uiSize, setUiSize] = usePersistentState<number>('ui-size', 2); // Default to M (14px in new scale)
-  const [cardStyle, setCardStyle] = usePersistentState<CardStyle>('card-style', 'default');
+  const [cardStyle, setCardStyle] = usePersistentState<CardStyle>('card-style', 'glass');
 
   React.useEffect(() => {
     const root = window.document.documentElement;
@@ -52,7 +52,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   React.useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('card-style-default', 'card-style-flat', 'card-style-bordered');
+    root.classList.remove('card-style-default', 'card-style-flat', 'card-style-bordered', 'card-style-glass');
     root.classList.add(`card-style-${cardStyle}`);
   }, [cardStyle]);
 
