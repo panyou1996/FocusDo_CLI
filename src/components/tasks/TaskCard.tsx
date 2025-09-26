@@ -243,15 +243,6 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   }, [view]);
 
   React.useEffect(() => {
-    setEditingTitle(task.title);
-    setEditingDesc(task.description || "");
-    setEditingStartTime(task.startTime || "");
-    setEditingDueDate(task.dueDate ? parseISO(task.dueDate) : undefined);
-    setEditingDuration(task.duration || 0);
-    setEditingSubtasks(task.subtasks || []);
-  }, [task]);
-
-  React.useEffect(() => {
     // Skip animation on initial mount
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -285,7 +276,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   if (isOverdue) {
     const daysDelayed = differenceInDays(startOfToday(), parseISO(task.dueDate as string));
     if (daysDelayed > 0) {
-      delayMessage = ` (delayed ${daysDelayed} day${daysDelayed > 1 ? 's' : ''})`;
+      delayMessage = ` (Delayed ${daysDelayed} day${daysDelayed > 1 ? 's' : ''})`;
     }
     if (!timeDisplay) {
       timeDisplay = `Expired on ${format(parseISO(task.dueDate as string), 'M/d')}`;
@@ -428,6 +419,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                     className={cn(cardIsExpanded && 'cursor-text')}
                     onClick={() => {
                         if (cardIsExpanded) {
+                          setEditingTitle(task.title);
                           setIsEditingTitle(true);
                         }
                     }}
@@ -530,6 +522,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                     label="Description"
                     value={task.description || 'Add a description...'}
                     onClick={() => {
+                      setEditingDesc(task.description || "");
                       setIsEditingDesc(true);
                     }}
                     isEditing={isEditingDesc}
@@ -559,6 +552,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                         size="sm"
                         className="h-auto px-2 py-0 text-primary text-xs"
                         onClick={() => {
+                          setEditingSubtasks(task.subtasks || []);
                           setIsAddingSubtask(true);
                         }}
                       >
@@ -567,7 +561,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                     </div>
                   </div>
                   <div data-interactive className="pl-7 space-y-2">
-                    {editingSubtasks.map(sub => (
+                    {(task.subtasks || []).map(sub => (
                       <div
                         key={sub.id}
                         className="flex items-center gap-2"
@@ -620,6 +614,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                           className="h-7 border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-sm bg-transparent"
                           onKeyDown={e => e.key === 'Enter' && addSubtask(e as any)}
                           autoFocus
+                          onBlur={() => setIsAddingSubtask(false)}
                         />
                         <Button
                           size="sm"
@@ -638,7 +633,9 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                     label="Start"
                     value={task.startTime || 'Not set'}
                     onClick={() => {
+                      setEditingStartTime(task.startTime || "");
                       setIsEditingStartTime(true);
+                      
                     }}
                     isEditing={isEditingStartTime}
                     InputComponent={
@@ -661,6 +658,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                       task.dueDate ? format(parseISO(task.dueDate), 'PPP') : 'Not set'
                     }
                     onClick={() => {
+                      setEditingDueDate(task.dueDate ? parseISO(task.dueDate) : undefined);
                       setIsEditingDueDate(true);
                     }}
                     isEditing={isEditingDueDate}
@@ -699,6 +697,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                     label="Duration"
                     value={task.duration ? `${task.duration} min` : 'Not set'}
                     onClick={() => {
+                      setEditingDuration(task.duration || 0);
                       setIsEditingDuration(true);
                     }}
                     isEditing={isEditingDuration}
