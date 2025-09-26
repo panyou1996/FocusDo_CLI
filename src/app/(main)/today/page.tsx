@@ -145,9 +145,26 @@ export default function TodayPage() {
 
     setTimeout(() => {
         try {
+            const originalTasks = tasks;
             const scheduledTasks = autoScheduleTasks(tasks);
             setTasks(scheduledTasks);
 
+            toast({
+                title: "Tasks Scheduled!",
+                description: (
+                    <div className="max-h-48 overflow-y-auto mt-2">
+                        <h3 className="font-bold text-sm mb-1">Before:</h3>
+                        <pre className="text-xs bg-muted p-2 rounded-md">
+                            <code>{JSON.stringify(originalTasks.filter(t => t.isMyDay && !t.isCompleted).map(t => ({ title: t.title, time: t.startTime})), null, 2)}</code>
+                        </pre>
+                        <h3 className="font-bold text-sm mt-2 mb-1">After:</h3>
+                        <pre className="text-xs bg-muted p-2 rounded-md">
+                            <code>{JSON.stringify(scheduledTasks.filter(t => t.isMyDay && !t.isCompleted).map(t => ({ title: t.title, time: t.startTime})), null, 2)}</code>
+                        </pre>
+                    </div>
+                ),
+                duration: 10000
+            });
         } catch (error) {
             console.error("Smart scheduling failed:", error);
             toast({
@@ -234,10 +251,6 @@ export default function TodayPage() {
             
             if (!task.isCompleted && task.isMyDay) {
                 let isExpired = false;
-                if (task.dueDate && isBefore(parseISO(task.dueDate), todayStart)) {
-                    isExpired = true;
-                }
-                
                 if (task.startTime) {
                      const [hours, minutes] = task.startTime.split(':').map(Number);
                      const taskTime = new Date(today);
@@ -358,7 +371,7 @@ export default function TodayPage() {
           </div>
         </div>
                 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
            <Button variant="ghost" size="icon" onClick={handleSmartSchedule} disabled={isScheduling || isUpdating}>
                 {isScheduling ? (
                     <Loader2 className="w-6 h-6 animate-spin text-primary" />
