@@ -11,6 +11,7 @@ type CardStyle = 'default' | 'flat' | 'bordered';
 
 interface AppContextType {
   tasks: Task[];
+  setTasks: (tasks: Task[]) => void;
   addTask: (task: Task) => void;
   updateTask: (taskId: string, updatedTask: Partial<Task>) => void;
   deleteTask: (taskId: string) => void;
@@ -108,6 +109,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   
   const appContextValue = React.useMemo(() => ({
     tasks,
+    setTasks: setTasks as (tasks: Task[]) => void, // Provide a way to set the whole array
     addTask,
     updateTask,
     deleteTask,
@@ -122,7 +124,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setUiSize,
     cardStyle,
     setCardStyle,
-  }), [tasks, addTask, updateTask, deleteTask, journalPosts, addJournalPost, deleteJournalPost, currentUser, setCurrentUser, lists, addList, uiSize, setUiSize, cardStyle, setCardStyle]);
+  }), [tasks, setTasks, addTask, updateTask, deleteTask, journalPosts, addJournalPost, deleteJournalPost, currentUser, setCurrentUser, lists, addList, uiSize, setUiSize, cardStyle, setCardStyle]);
 
 
   return (

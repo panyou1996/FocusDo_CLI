@@ -18,7 +18,7 @@ import Link from 'next/link';
 import Image from "next/image";
 import { isBefore, startOfToday, parseISO } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { autoScheduleTasks, defaultScheduleRules } from '@/lib/task-scheduler';
+import { autoScheduleTasks } from '@/lib/task-scheduler';
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -109,7 +109,7 @@ const EmptyState = () => (
 
 export default function TodayPage() {
   const [view, setView] = React.useState<"compact" | "detail">("compact");
-  const { tasks, updateTask, deleteTask, currentUser } = useAppContext();
+  const { tasks, setTasks, updateTask, deleteTask, currentUser } = useAppContext();
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ leftover: [], expired: [], upcoming: [], done: [] });
   const [isClient, setIsClient] = React.useState(false);
   const router = useRouter();
@@ -145,37 +145,8 @@ export default function TodayPage() {
 
     setTimeout(() => {
         try {
-            const myDayTasks = tasks.filter(t => t.isMyDay || (t.dueDate && isBefore(parseISO(t.dueDate), startOfToday())));
-            const scheduledTasks = autoScheduleTasks(myDayTasks, defaultScheduleRules);
-            
-            toast({
-                title: "Smart Schedule Debug",
-                description: (
-                    <div className="mt-2">
-                        <h3 className="font-bold text-sm">Tasks BEFORE Scheduling:</h3>
-                        <ScrollArea className="h-40 w-full bg-secondary rounded-md mt-1">
-                            <pre className="text-xs p-2">
-                                {JSON.stringify(myDayTasks, null, 2)}
-                            </pre>
-                        </ScrollArea>
-
-                        <h3 className="font-bold text-sm mt-4">Tasks AFTER Scheduling:</h3>
-                        <ScrollArea className="h-40 w-full bg-secondary rounded-md mt-1">
-                            <pre className="text-xs p-2">
-                                {JSON.stringify(scheduledTasks, null, 2)}
-                            </pre>
-                        </ScrollArea>
-                    </div>
-                ),
-                duration: 20000, // 20 seconds for debugging
-            });
-
-            scheduledTasks.forEach(newTask => {
-                const oldTask = tasks.find(t => t.id === newTask.id);
-                if (oldTask && oldTask.startTime !== newTask.startTime) {
-                    updateTask(newTask.id, { startTime: newTask.startTime });
-                }
-            });
+            const scheduledTasks = autoScheduleTasks(tasks);
+            setTasks(scheduledTasks);
 
         } catch (error) {
             console.error("Smart scheduling failed:", error);
@@ -426,5 +397,3 @@ export default function TodayPage() {
     </div>
   );
 }
-
-    
