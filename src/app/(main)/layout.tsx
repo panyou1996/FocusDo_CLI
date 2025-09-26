@@ -7,7 +7,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-      <div className="min-h-screen w-full max-w-[512px] mx-auto bg-background flex flex-col">
+      <div className="min-h-screen w-full max-w-[512px] mx-auto bg-background flex flex-col pt-[env(safe-area-inset-top)]">
         <main className="flex-grow pb-4">
           {children}
         </main>

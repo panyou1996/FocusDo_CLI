@@ -40,7 +40,7 @@ export function BottomNavBar() {
   };
 
   return (
-    <footer className="sticky bottom-0 h-[86px] bg-transparent z-40">
+    <footer className="sticky bottom-0 h-[calc(86px+env(safe-area-inset-bottom))] bg-transparent z-40">
       <div className="relative h-full w-full max-w-lg mx-auto">
         <AnimatePresence>
           {!isModalPage && (
@@ -49,7 +49,7 @@ export function BottomNavBar() {
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="absolute bottom-0 left-0 right-0 mx-4 mb-4 h-[70px] bg-card/60 backdrop-blur-xl rounded-[24px] shadow-lg"
+                className="absolute bottom-[env(safe-area-inset-bottom)] left-0 right-0 mx-4 mb-4 h-[70px] bg-card/60 backdrop-blur-xl rounded-[24px] shadow-lg"
               >
               <nav className="flex items-center justify-around h-full pt-1 pb-2 px-2">
                 {navItems.map((item, index) => {

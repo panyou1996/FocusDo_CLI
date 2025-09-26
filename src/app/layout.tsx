@@ -12,11 +12,18 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "TaskFlow",
   description: "Organize your life, unlock your flow.",
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'hsl(210 17% 98%)' },
+    { media: '(prefers-color-scheme: dark)', color: 'hsl(240 5% 16%)' },
+  ],
+  appleWebAppCapable: "yes",
+  appleWebAppStatusBarStyle: "default",
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  viewportFit: 'cover',
 };
 
 
