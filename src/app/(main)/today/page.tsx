@@ -20,6 +20,7 @@ import { isBefore, startOfToday, parseISO } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { autoScheduleTasks, defaultScheduleRules } from '@/lib/task-scheduler';
 import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 
 interface GroupedTasks {
@@ -142,25 +143,40 @@ export default function TodayPage() {
   const handleSmartSchedule = () => {
     setIsScheduling(true);
 
-    // Use a timeout to ensure the UI updates to show the loader before the heavy computation starts
     setTimeout(() => {
         try {
-            const myDayTasks = tasks.filter(t => t.isMyDay);
+            const myDayTasks = tasks.filter(t => t.isMyDay || (t.dueDate && isBefore(parseISO(t.dueDate), startOfToday())));
             const scheduledTasks = autoScheduleTasks(myDayTasks, defaultScheduleRules);
             
-            // Batch update tasks
+            toast({
+                title: "Smart Schedule Debug",
+                description: (
+                    <div className="mt-2">
+                        <h3 className="font-bold text-sm">Tasks BEFORE Scheduling:</h3>
+                        <ScrollArea className="h-40 w-full bg-secondary rounded-md mt-1">
+                            <pre className="text-xs p-2">
+                                {JSON.stringify(myDayTasks, null, 2)}
+                            </pre>
+                        </ScrollArea>
+
+                        <h3 className="font-bold text-sm mt-4">Tasks AFTER Scheduling:</h3>
+                        <ScrollArea className="h-40 w-full bg-secondary rounded-md mt-1">
+                            <pre className="text-xs p-2">
+                                {JSON.stringify(scheduledTasks, null, 2)}
+                            </pre>
+                        </ScrollArea>
+                    </div>
+                ),
+                duration: 20000, // 20 seconds for debugging
+            });
+
             scheduledTasks.forEach(newTask => {
                 const oldTask = tasks.find(t => t.id === newTask.id);
-                // Only update if there's a change
                 if (oldTask && oldTask.startTime !== newTask.startTime) {
                     updateTask(newTask.id, { startTime: newTask.startTime });
                 }
             });
 
-            toast({
-                title: "Tasks Scheduled!",
-                description: "Your day has been intelligently organized.",
-            });
         } catch (error) {
             console.error("Smart scheduling failed:", error);
             toast({
