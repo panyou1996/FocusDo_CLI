@@ -20,7 +20,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <Card className="w-full max-w-md custom-card rounded-lg">
+    <Card className="w-full max-w-md custom-card rounded-2xl">
       <CardHeader className="text-center">
         <div className="flex justify-center items-center mb-4">
           <Logo className="h-10 w-10" />
@@ -32,15 +32,15 @@ export default function RegisterPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="name@example.com" required className="h-auto p-3 rounded-md"/>
+            <Input id="email" type="email" placeholder="name@example.com" required className="h-auto p-3 rounded-2xl"/>
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required className="h-auto p-3 rounded-md"/>
+            <Input id="password" type="password" required className="h-auto p-3 rounded-2xl"/>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-md">Create Account</Button>
+          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card">Create Account</Button>
           <p className="text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link href="/login" className="font-medium text-primary hover:underline">

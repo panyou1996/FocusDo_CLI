@@ -150,7 +150,7 @@ export default function AddTaskPage() {
                             <Card className="rounded-2xl custom-card flex-shrink-0">
                                 <Input
                                     placeholder="What do you want to do?"
-                                    className="text-xl font-medium h-[50px] p-4"
+                                    className="text-xl font-medium h-[50px] p-4 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
                                 />
@@ -159,7 +159,7 @@ export default function AddTaskPage() {
                             <Card className="rounded-2xl custom-card flex flex-col">
                                 <Textarea
                                     placeholder="Add a description..."
-                                    className="text-base min-h-[120px] p-4 flex-grow"
+                                    className="text-base min-h-[120px] p-4 flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
@@ -228,7 +228,7 @@ export default function AddTaskPage() {
                                                         onChange={(e) => setEditingSubtaskText(e.target.value)}
                                                         onBlur={() => saveSubtaskEdit(sub.id)}
                                                         onKeyDown={(e) => handleSubtaskEditKeyDown(e, sub.id)}
-                                                        className="h-9 flex-grow"
+                                                        className="h-9 flex-grow bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0"
                                                         autoFocus
                                                     />
                                                 ) : (
@@ -247,7 +247,7 @@ export default function AddTaskPage() {
                                         ))}
                                         {isAddingSubtask && (
                                             <div className="flex gap-2">
-                                                <Input value={newSubtask} onChange={(e) => setNewSubtask(e.target.value)} placeholder="Add a subtask..." className="h-9" />
+                                                <Input value={newSubtask} onChange={(e) => setNewSubtask(e.target.value)} placeholder="Add a subtask..." className="h-9 bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0" />
                                                 <Button size="sm" onClick={addSubtask}>Add</Button>
                                             </div>
                                         )}
@@ -315,7 +315,7 @@ export default function AddTaskPage() {
                         </main>
 
                         <footer className="px-5 py-4 flex-shrink-0 border-t">
-                            <Button className="w-full h-[50px] text-lg font-bold rounded-md" onClick={handleSaveTask}>Save Task</Button>
+                            <Button className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card" onClick={handleSaveTask}>Save Task</Button>
                         </footer>
                     </motion.div>
                 )}

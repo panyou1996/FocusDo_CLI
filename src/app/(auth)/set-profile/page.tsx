@@ -108,7 +108,7 @@ export default function SetProfilePage() {
   };
 
   return (
-    <Card className="w-full max-w-md custom-card rounded-lg">
+    <Card className="w-full max-w-md custom-card rounded-2xl">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold">Set Up Your Profile</CardTitle>
         <CardDescription>Choose your name and avatar.</CardDescription>
@@ -137,7 +137,7 @@ export default function SetProfilePage() {
               type="text"
               placeholder="e.g., Jane Doe"
               required
-              className="h-auto p-3 rounded-md"
+              className="h-auto p-3 rounded-2xl"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -213,7 +213,7 @@ export default function SetProfilePage() {
                   />
                   <Button 
                       variant="outline" 
-                      className="w-full h-12" 
+                      className="w-full h-12 rounded-2xl" 
                       onClick={handleImageUploadClick}
                       disabled={isUploading}
                       type="button"
@@ -231,7 +231,7 @@ export default function SetProfilePage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4 mt-4">
-          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-md">
+          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card">
             Save and Continue
           </Button>
         </CardFooter>

@@ -193,7 +193,7 @@ export default function ProfilePage() {
                                                 type="text"
                                                 placeholder="e.g., Jane Doe"
                                                 required
-                                                className="h-auto p-3 rounded-md"
+                                                className="h-auto p-3 rounded-2xl"
                                                 value={name}
                                                 onChange={(e) => setName(e.target.value)}
                                             />
@@ -267,7 +267,7 @@ export default function ProfilePage() {
                                                     />
                                                     <Button 
                                                         variant="outline" 
-                                                        className="w-full h-12" 
+                                                        className="w-full h-12 rounded-2xl" 
                                                         onClick={handleImageUploadClick}
                                                         disabled={isUploading}
                                                         type="button"
@@ -289,7 +289,7 @@ export default function ProfilePage() {
                         </main>
                         
                         <footer className="px-5 py-4 flex-shrink-0 border-t">
-                            <Button className="w-full h-[50px] text-lg font-bold rounded-md" onClick={handleSaveChanges} disabled={!isClient}>
+                            <Button className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card" onClick={handleSaveChanges} disabled={!isClient}>
                                 Save Changes
                             </Button>
                         </footer>

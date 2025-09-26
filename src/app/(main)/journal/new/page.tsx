@@ -183,7 +183,7 @@ export default function JournalNewPage() {
                 <Card className="rounded-2xl custom-card p-1 flex-grow flex flex-col">
                   <Textarea 
                     placeholder="Start writing your story..."
-                    className="border-none text-[17px] min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow"
+                    className="border-none text-[17px] min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow bg-transparent"
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                   />
@@ -192,7 +192,7 @@ export default function JournalNewPage() {
               </main>
               
               <footer className="px-5 py-4 flex-shrink-0 border-t">
-                <Button className="w-full h-[50px] text-[17px] font-bold rounded-md" onClick={handleSave} disabled={isUploading}>Save Post</Button>
+                <Button className="w-full h-[50px] text-[17px] font-bold rounded-2xl custom-card" onClick={handleSave} disabled={isUploading}>Save Post</Button>
               </footer>
             </motion.div>
         )}
@@ -200,5 +200,3 @@ export default function JournalNewPage() {
     </div>
   );
 }
-
-    
