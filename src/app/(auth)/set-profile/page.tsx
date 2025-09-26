@@ -231,7 +231,7 @@ export default function SetProfilePage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4 mt-4">
-          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card">
+          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card button">
             Save and Continue
           </Button>
         </CardFooter>

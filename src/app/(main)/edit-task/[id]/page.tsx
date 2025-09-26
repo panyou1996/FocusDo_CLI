@@ -386,7 +386,7 @@ export default function EditTaskPage() {
                         </main>
 
                         <footer className="px-5 py-4 flex-shrink-0 border-t">
-                            <Button className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card" onClick={handleSaveTask}>Save Changes</Button>
+                            <Button className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card button" onClick={handleSaveTask}>Save Changes</Button>
                         </footer>
                     </motion.div>
                 )}

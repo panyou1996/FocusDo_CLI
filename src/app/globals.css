@@ -102,6 +102,15 @@
     backdrop-filter: blur(24px);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
+  
+  /* Fix for glass buttons */
+  .card-style-glass .custom-card.button {
+    color: hsl(var(--primary));
+  }
+  .dark .card-style-glass .custom-card.button {
+    color: hsl(var(--primary-foreground));
+  }
+
 
   /* Overrides for specific components in glass mode */
   .card-style-glass .input,

@@ -40,7 +40,7 @@ export default function RegisterPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card">Create Account</Button>
+          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card button">Create Account</Button>
           <p className="text-sm text-muted-foreground">
             Already have an account?{" "}
             <Link href="/login" className="font-medium text-primary hover:underline">

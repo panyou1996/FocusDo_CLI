@@ -161,7 +161,7 @@ export default function AddListPage() {
                         </main>
 
                         <footer className="px-5 py-4 flex-shrink-0 border-t">
-                            <Button className="w-full h-[50px] text-[17px] font-bold rounded-2xl custom-card" onClick={handleSaveList}>Save List</Button>
+                            <Button className="w-full h-[50px] text-[17px] font-bold rounded-2xl custom-card button" onClick={handleSaveList}>Save List</Button>
                         </footer>
                     </motion.div>
                 )}

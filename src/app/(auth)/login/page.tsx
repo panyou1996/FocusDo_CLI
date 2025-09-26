@@ -48,7 +48,7 @@ export default function LoginPage() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card">Log In</Button>
+          <Button type="submit" className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card button">Log In</Button>
           <p className="text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="font-medium text-primary hover:underline">

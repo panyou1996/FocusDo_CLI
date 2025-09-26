@@ -192,7 +192,7 @@ export default function JournalNewPage() {
               </main>
               
               <footer className="px-5 py-4 flex-shrink-0 border-t">
-                <Button className="w-full h-[50px] text-[17px] font-bold rounded-2xl custom-card" onClick={handleSave} disabled={isUploading}>Save Post</Button>
+                <Button className="w-full h-[50px] text-[17px] font-bold rounded-2xl custom-card button" onClick={handleSave} disabled={isUploading}>Save Post</Button>
               </footer>
             </motion.div>
         )}

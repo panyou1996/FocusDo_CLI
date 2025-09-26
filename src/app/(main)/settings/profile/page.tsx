@@ -289,7 +289,7 @@ export default function ProfilePage() {
                         </main>
                         
                         <footer className="px-5 py-4 flex-shrink-0 border-t">
-                            <Button className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card" onClick={handleSaveChanges} disabled={!isClient}>
+                            <Button className="w-full h-[50px] text-lg font-bold rounded-2xl custom-card button" onClick={handleSaveChanges} disabled={!isClient}>
                                 Save Changes
                             </Button>
                         </footer>
