@@ -22,7 +22,7 @@ import { autoScheduleTasks } from '@/lib/task-scheduler';
 import { useToast } from "@/hooks/use-toast";
 import { useThemeStore } from '@/store/useThemeStore';
 import { themes } from '@/lib/themes';
-import { generateAuroraStyle } from '@/lib/color-utils';
+import { generateAuroraStyle, generateExquisiteLinearGradient } from '@/lib/color-utils';
 
 interface GroupedTasks {
   leftover: Task[];
@@ -125,12 +125,14 @@ export default function TodayPage() {
 
   const { colorTheme, mode } = useThemeStore();
   const [dynamicStyle, setDynamicStyle] = React.useState({});
+  const [aiPlanStyle, setAiPlanStyle] = React.useState({});
 
   React.useEffect(() => {
     const theme = themes.find(t => t.name === colorTheme);
     if (theme) {
       const baseColor = mode === 'dark' ? theme.cssVars.dark.primary : theme.cssVars.light.primary;
       setDynamicStyle(generateAuroraStyle(baseColor));
+      setAiPlanStyle(generateExquisiteLinearGradient(baseColor));
     }
   }, [colorTheme, mode]);
 
@@ -369,17 +371,17 @@ export default function TodayPage() {
               whileTap={{ scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               className={cn(
-                "h-11 px-4 rounded-xl flex items-center justify-center gap-2 text-black custom-card cursor-pointer",
+                "h-11 px-4 rounded-xl flex items-center justify-center gap-2 custom-card cursor-pointer",
                 (isScheduling || isUpdating) && "pointer-events-none opacity-50"
               )}
-              style={dynamicStyle}
+              style={aiPlanStyle}
             >
               {isScheduling ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-5 h-5 animate-spin text-black" />
               ) : (
-                  <WandSparkles className="w-5 h-5" />
+                  <WandSparkles className="w-5 h-5 text-black" />
               )}
-              <span className="text-sm font-semibold">AI Plan</span>
+              <span className="text-sm font-semibold text-black">AI Plan</span>
             </motion.div>
         </div>
       </header>
@@ -397,11 +399,11 @@ export default function TodayPage() {
             whileTap={{ scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             className={cn(
-                "h-11 w-11 rounded-full flex-shrink-0 flex items-center justify-center text-primary-foreground custom-card", 
+                "h-11 w-11 rounded-full flex-shrink-0 flex items-center justify-center custom-card", 
                 (isScheduling || isUpdating) && "pointer-events-none opacity-50")}
              style={dynamicStyle}
           >
-            <Plus className="w-6 h-6" />
+            <Plus className="w-6 h-6 text-black" />
           </motion.div>
         </Link>
       </div>
@@ -410,9 +412,3 @@ export default function TodayPage() {
     </div>
   );
 }
-
-    
-
-    
-
-    

@@ -69,3 +69,43 @@ export function generateAuroraStyle(baseHsl: string): React.CSSProperties {
     boxShadow,
   };
 }
+
+/**
+ * Generates a complex, 8-color linear gradient for an exquisite look.
+ * @param baseHsl - The base color in HSL string format.
+ * @returns A style object with a complex linear-gradient backgroundImage.
+ */
+export function generateExquisiteLinearGradient(baseHsl: string): React.CSSProperties {
+  const { h, s, l } = parseHsl(baseHsl);
+
+  const colors: string[] = [];
+  const hueStep = 360 / 16; // Smaller step for more colors in a segment of the wheel
+
+  for (let i = 0; i < 8; i++) {
+    const currentHue = (h + i * hueStep) % 360;
+    // Vary saturation and lightness in a sine wave pattern for more organic feel
+    const s_variation = Math.sin(i * Math.PI / 7) * 10;
+    const l_variation = Math.cos(i * Math.PI / 7) * 5;
+    
+    const current_s = Math.max(0, Math.min(100, s + s_variation));
+    const current_l = Math.max(0, Math.min(100, l + l_variation));
+
+    const { r, g, b } = hslToRgb(currentHue, current_s, current_l);
+    // Add some alpha transparency, especially at the edges
+    const alpha = 0.75 + Math.sin(i * Math.PI / 7) * 0.25;
+    colors.push(`rgba(${r.toFixed(0)}, ${g.toFixed(0)}, ${b.toFixed(0)}, ${alpha.toFixed(2)})`);
+  }
+
+  const backgroundImage = `linear-gradient(to right, ${colors.join(', ')})`;
+
+  // Generate a softer, more spread-out glow
+  const { r, g, b } = hslToRgb(h, s, l);
+  const glowColor = `rgba(${r.toFixed(0)}, ${g.toFixed(0)}, ${b.toFixed(0)}, 0.3)`;
+  const boxShadow = `0px 4px 20px ${glowColor}`;
+
+
+  return {
+    backgroundImage,
+    boxShadow,
+  };
+}
