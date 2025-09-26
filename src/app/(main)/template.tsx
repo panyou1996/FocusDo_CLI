@@ -18,12 +18,14 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   const isModalPage = MODAL_PATHS.includes(pathname) || EDIT_TASK_REGEX.test(pathname);
 
+  // For modal pages that manage their own animation (like the slide-up overlays),
+  // we don't want the default template animation to conflict.
+  // By returning a simple div, we pass control to the page component itself.
   if (isModalPage) {
-    // For modal pages, we don't want the default template animation.
-    // The page itself will handle its entry/exit animation.
     return <div>{children}</div>;
   }
 
+  // For all other standard pages, apply the default fade-in-up animation.
   return (
     <motion.div
       initial={{ y: 16, opacity: 0 }}
