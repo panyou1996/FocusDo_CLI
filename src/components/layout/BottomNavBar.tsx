@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import * as React from 'react';
 import { useThemeStore } from '@/store/useThemeStore';
 import { themes } from '@/lib/themes';
-import { generateAuroraGradient, generateGlow } from '@/lib/color-utils';
+import { generateAuroraStyle } from '@/lib/color-utils';
 
 const navItems = [
   { href: "/today", icon: Home, label: "Today" },
@@ -32,10 +32,7 @@ export function BottomNavBar() {
     const theme = themes.find(t => t.name === colorTheme);
     if (theme) {
       const baseColor = mode === 'dark' ? theme.cssVars.dark.primary : theme.cssVars.light.primary;
-      setDynamicStyle({
-        background: generateAuroraGradient(baseColor),
-        boxShadow: generateGlow(baseColor),
-      });
+      setDynamicStyle(generateAuroraStyle(baseColor));
       setActiveItemStyle({
         color: `hsl(${baseColor})`,
       })
@@ -141,7 +138,7 @@ export function BottomNavBar() {
                         exit="hidden"
                         whileHover={{ scale: 1.1, rotate: 15 }}
                         whileTap={{ scale: 0.9 }}
-                        className="w-full h-full rounded-full flex items-center justify-center text-primary-foreground z-50 custom-card"
+                        className="w-full h-full rounded-full flex items-center justify-center text-primary-foreground z-50"
                         aria-label="Add Task"
                         style={dynamicStyle}
                     >

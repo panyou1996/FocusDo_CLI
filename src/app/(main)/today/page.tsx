@@ -22,7 +22,7 @@ import { autoScheduleTasks } from '@/lib/task-scheduler';
 import { useToast } from "@/hooks/use-toast";
 import { useThemeStore } from '@/store/useThemeStore';
 import { themes } from '@/lib/themes';
-import { generateAuroraGradient, generateGlow } from '@/lib/color-utils';
+import { generateAuroraStyle } from '@/lib/color-utils';
 
 interface GroupedTasks {
   leftover: Task[];
@@ -130,10 +130,7 @@ export default function TodayPage() {
     const theme = themes.find(t => t.name === colorTheme);
     if (theme) {
       const baseColor = mode === 'dark' ? theme.cssVars.dark.primary : theme.cssVars.light.primary;
-      setDynamicStyle({
-        background: generateAuroraGradient(baseColor),
-        boxShadow: generateGlow(baseColor),
-      });
+      setDynamicStyle(generateAuroraStyle(baseColor));
     }
   }, [colorTheme, mode]);
 
@@ -385,14 +382,13 @@ export default function TodayPage() {
         </Tabs>
         <Link href="/add-task" passHref>
           <motion.div
-            whileHover={{ scale: 1.1, rotate: 90 }}
+            whileHover={{ scale: 1.1, rotate: 15 }}
             whileTap={{ scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            className={cn((isScheduling || isUpdating) && "pointer-events-none opacity-50")}
+            className={cn("h-11 w-11 rounded-full flex-shrink-0 flex items-center justify-center text-primary-foreground", (isScheduling || isUpdating) && "pointer-events-none opacity-50")}
+             style={dynamicStyle}
           >
-            <Button asChild size="icon" className="h-11 w-11 rounded-full flex-shrink-0 custom-card text-primary-foreground" style={dynamicStyle}>
-                <div><Plus className="w-6 h-6" /></div>
-            </Button>
+            <Plus className="w-6 h-6" />
           </motion.div>
         </Link>
       </div>

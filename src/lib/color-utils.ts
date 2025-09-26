@@ -7,49 +7,65 @@
  * @returns An object like { h: 241, s: 62, l: 59 }
  */
 function parseHsl(hslString: string): { h: number, s: number, l: number } {
-  const [h, s, l] = hslString.match(/\d+/g)?.map(Number) || [0, 0, 0];
+  if (!hslString) return { h: 241, s: 62, l: 59 }; // Default blue
+  const match = hslString.match(/(\d+(\.\d+)?)/g);
+  if (!match || match.length < 3) return { h: 241, s: 62, l: 59 };
+  const [h, s, l] = match.map(Number);
   return { h, s, l };
 }
 
 /**
- * Generates a dynamic, multi-color aurora-like gradient based on a base HSL color.
- * @param baseHsl - The base color in HSL string format (e.g., "241 62% 59%").
- * @returns A CSS linear-gradient string.
+ * Converts HSL color values to an RGB color object.
  */
-export function generateAuroraGradient(baseHsl: string): string {
-  if (!baseHsl) {
-    return 'linear-gradient(135deg, #87CEFA 0%, #5D5FEF 50%, #FF758C 100%)';
-  }
-  const { h, s, l } = parseHsl(baseHsl);
-
-  // Define complementary colors by shifting the hue
-  const color1_h = (h + 30) % 360;
-  const color2_h = (h - 30 + 360) % 360;
-
-  // Adjust saturation and lightness for a softer, more pastel look
-  const grad_s = Math.max(50, s - 10);
-  const grad_l = Math.min(80, l + 15);
-
-  const color1 = `hsl(${color1_h}, ${grad_s}%, ${grad_l}%)`;
-  const color2 = `hsl(${h}, ${s}%, ${l}%)`; // Keep original as center
-  const color3 = `hsl(${color2_h}, ${grad_s}%, ${grad_l}%)`;
-
-  return `linear-gradient(135deg, ${color1} 0%, ${color2} 50%, ${color3} 100%)`;
+function hslToRgb(h: number, s: number, l: number): { r: number, g: number, b: number } {
+    s /= 100;
+    l /= 100;
+    const k = (n: number) => (n + h / 30) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const f = (n: number) =>
+        l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1));
+    return { r: 255 * f(0), g: 255 * f(8), b: 255 * f(4) };
 }
 
 
 /**
- * Generates a soft glow effect based on a base HSL color.
+ * Generates a dynamic, multi-layered aurora-like style object for FABs.
  * @param baseHsl - The base color in HSL string format (e.g., "241 62% 59%").
- * @returns A CSS box-shadow string.
+ * @returns A style object with backgroundImage and boxShadow.
  */
-export function generateGlow(baseHsl: string): string {
-  if (!baseHsl) {
-    return '0px 6px 24px rgba(93, 95, 239, 0.4)';
-  }
+export function generateAuroraStyle(baseHsl: string): React.CSSProperties {
   const { h, s, l } = parseHsl(baseHsl);
 
-  const glowColor = `hsla(${h}, ${s}%, ${l}%, 0.4)`;
+  // 1. Calculate color variations based on the base color
+  const { r, g, b } = hslToRgb(h, s, l);
+  const baseTransparent = `rgba(${r.toFixed(0)}, ${g.toFixed(0)}, ${b.toFixed(0)}, 0.8)`;
+
+  // Light Analogous (e.g., bright pink for violet)
+  const { r: r_la, g: g_la, b: b_la } = hslToRgb((h + 40) % 360, Math.min(100, s + 10), Math.min(100, l + 15));
+  const lightAnalogous = `rgba(${r_la.toFixed(0)}, ${g_la.toFixed(0)}, ${b_la.toFixed(0)}, 0.6)`;
+
+  // Dark Analogous (e.g., deep blue for violet)
+  const { r: r_da, g: g_da, b: b_da } = hslToRgb((h - 60 + 360) % 360, s, Math.max(0, l - 15));
+  const darkAnalogous = `rgba(${r_da.toFixed(0)}, ${g_da.toFixed(0)}, ${b_da.toFixed(0)}, 0.65)`;
+
+  // Complementary (e.g., teal/cyan for violet)
+  const { r: r_c, g: g_c, b: b_c } = hslToRgb((h + 160) % 360, Math.max(0, s - 20), l);
+  const complementary = `rgba(${r_c.toFixed(0)}, ${g_c.toFixed(0)}, ${b_c.toFixed(0)}, 0.7)`;
+
+  // 2. Construct the multi-layered background image
+  const backgroundImage = [
+    `radial-gradient(at 15% 15%, ${complementary} 0px, transparent 50%)`,
+    `radial-gradient(at 80% 25%, ${lightAnalogous} 0px, transparent 50%)`,
+    `radial-gradient(at 20% 85%, ${darkAnalogous} 0px, transparent 50%)`,
+    `radial-gradient(at 50% 50%, ${baseTransparent} 0px, transparent 100%)`
+  ].join(', ');
   
-  return `0px 6px 24px ${glowColor}`;
+  // 3. Construct the glow effect
+  const glowColor = `rgba(${r.toFixed(0)}, ${g.toFixed(0)}, ${b.toFixed(0)}, 0.4)`;
+  const boxShadow = `0px 6px 24px ${glowColor}`;
+
+  return {
+    backgroundImage,
+    boxShadow,
+  };
 }
