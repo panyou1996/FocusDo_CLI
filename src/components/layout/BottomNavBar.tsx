@@ -7,6 +7,9 @@ import { cn } from "@/lib/utils";
 import { Home, Inbox, BookText, Settings, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as React from 'react';
+import { useThemeStore } from '@/store/useThemeStore';
+import { themes } from '@/lib/themes';
+import { generateAuroraGradient, generateGlow } from '@/lib/color-utils';
 
 const navItems = [
   { href: "/today", icon: Home, label: "Today" },
@@ -21,6 +24,24 @@ const editTaskRegex = /^\/edit-task\/.+/;
 export function BottomNavBar() {
   const pathname = usePathname();
   const [isModalPage, setIsModalPage] = React.useState(false);
+  const { colorTheme, mode } = useThemeStore();
+  const [dynamicStyle, setDynamicStyle] = React.useState({});
+  const [activeItemStyle, setActiveItemStyle] = React.useState({});
+
+  React.useEffect(() => {
+    const theme = themes.find(t => t.name === colorTheme);
+    if (theme) {
+      const baseColor = mode === 'dark' ? theme.cssVars.dark.primary : theme.cssVars.light.primary;
+      setDynamicStyle({
+        background: generateAuroraGradient(baseColor),
+        boxShadow: generateGlow(baseColor),
+      });
+      setActiveItemStyle({
+        color: `hsl(${baseColor})`,
+      })
+    }
+  }, [colorTheme, mode]);
+
 
   React.useEffect(() => {
     const isCurrentlyModal = modalPaths.includes(pathname) || editTaskRegex.test(pathname);
@@ -63,8 +84,9 @@ export function BottomNavBar() {
                             <div
                               className={cn(
                                 "flex flex-col items-center justify-center gap-1 transition-colors",
-                                isActive ? "text-primary" : "text-muted-foreground"
+                                isActive ? "" : "text-muted-foreground"
                               )}
+                              style={isActive ? activeItemStyle : {}}
                             >
                               <item.icon strokeWidth={isActive ? 2 : 1.5} size={24} />
                               <span className="text-[10px] font-medium">{item.label}</span>
@@ -86,8 +108,9 @@ export function BottomNavBar() {
                       <div
                         className={cn(
                           "flex flex-col items-center justify-center gap-1 transition-colors z-10",
-                          isActive ? "text-primary" : "text-muted-foreground"
+                          isActive ? "" : "text-muted-foreground"
                         )}
+                        style={isActive ? activeItemStyle : {}}
                       >
                         <item.icon strokeWidth={isActive ? 2 : 1.5} size={24} />
                         <span className="text-[10px] font-medium">{item.label}</span>
@@ -110,20 +133,21 @@ export function BottomNavBar() {
         <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[60px] h-[60px]">
            <AnimatePresence>
               {!isModalPage && (
-                <motion.div
-                    variants={fabVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    whileHover={{ scale: 1.1, rotate: 15 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="w-full h-full bg-primary rounded-full flex items-center justify-center shadow-fab z-50"
-                    aria-label="Add Task"
-                >
-                    <Link href="/add-task">
-                        <Plus className="text-white" size={30} strokeWidth={2.5} />
-                    </Link>
-                </motion.div>
+                <Link href="/add-task" passHref>
+                    <motion.div
+                        variants={fabVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="hidden"
+                        whileHover={{ scale: 1.1, rotate: 15 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="w-full h-full rounded-full flex items-center justify-center text-primary-foreground z-50 custom-card"
+                        aria-label="Add Task"
+                        style={dynamicStyle}
+                    >
+                        <Plus size={30} strokeWidth={2.5} />
+                    </motion.div>
+                </Link>
               )}
            </AnimatePresence>
         </div>

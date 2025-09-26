@@ -20,6 +20,9 @@ import { isBefore, startOfToday, parseISO, differenceInDays } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { autoScheduleTasks } from '@/lib/task-scheduler';
 import { useToast } from "@/hooks/use-toast";
+import { useThemeStore } from '@/store/useThemeStore';
+import { themes } from '@/lib/themes';
+import { generateAuroraGradient, generateGlow } from '@/lib/color-utils';
 
 interface GroupedTasks {
   leftover: Task[];
@@ -119,6 +122,20 @@ export default function TodayPage() {
   const [isLeftoverVisible, setIsLeftoverVisible] = React.useState(true);
   const [isScheduling, setIsScheduling] = React.useState(false);
   const [isUpdating, setIsUpdating] = React.useState(false);
+
+  const { colorTheme, mode } = useThemeStore();
+  const [dynamicStyle, setDynamicStyle] = React.useState({});
+
+  React.useEffect(() => {
+    const theme = themes.find(t => t.name === colorTheme);
+    if (theme) {
+      const baseColor = mode === 'dark' ? theme.cssVars.dark.primary : theme.cssVars.light.primary;
+      setDynamicStyle({
+        background: generateAuroraGradient(baseColor),
+        boxShadow: generateGlow(baseColor),
+      });
+    }
+  }, [colorTheme, mode]);
 
 
   React.useEffect(() => {
@@ -373,8 +390,8 @@ export default function TodayPage() {
             transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             className={cn((isScheduling || isUpdating) && "pointer-events-none opacity-50")}
           >
-            <Button size="icon" className="h-11 w-11 rounded-full flex-shrink-0">
-              <Plus className="w-6 h-6" />
+            <Button asChild size="icon" className="h-11 w-11 rounded-full flex-shrink-0 custom-card text-primary-foreground" style={dynamicStyle}>
+                <div><Plus className="w-6 h-6" /></div>
             </Button>
           </motion.div>
         </Link>

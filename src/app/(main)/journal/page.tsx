@@ -16,6 +16,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { cn } from "@/lib/utils";
 import { getIcon } from "@/lib/icon-utils";
+import { useThemeStore } from '@/store/useThemeStore';
+import { themes } from '@/lib/themes';
+import { generateAuroraGradient, generateGlow } from '@/lib/color-utils';
 
 type SortByType = 'newest' | 'oldest' | 'readingTime';
 
@@ -61,6 +64,20 @@ export default function JournalPage() {
 
   const [selectedList, setSelectedList] = useLocalStorage('journal-selected-list', 'all');
   const [sortBy, setSortBy] = useLocalStorage<SortByType>('journal-sort-by', 'newest');
+
+  const { colorTheme, mode } = useThemeStore();
+  const [dynamicStyle, setDynamicStyle] = React.useState({});
+
+  React.useEffect(() => {
+    const theme = themes.find(t => t.name === colorTheme);
+    if (theme) {
+      const baseColor = mode === 'dark' ? theme.cssVars.dark.primary : theme.cssVars.light.primary;
+      setDynamicStyle({
+        background: generateAuroraGradient(baseColor),
+        boxShadow: generateGlow(baseColor),
+      });
+    }
+  }, [colorTheme, mode]);
 
   React.useEffect(() => {
     setIsClient(true);
@@ -139,8 +156,8 @@ export default function JournalPage() {
             whileTap={{ scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 400, damping: 17 }}
           >
-            <Button size="icon" className="h-11 w-11 rounded-full">
-              <Plus className="w-6 h-6" />
+            <Button asChild size="icon" className="h-11 w-11 rounded-full custom-card text-primary-foreground" style={dynamicStyle}>
+              <div><Plus className="w-6 h-6" /></div>
             </Button>
           </motion.div>
         </Link>
