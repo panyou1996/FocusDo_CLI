@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { SlidersHorizontal, Plus, MoreHorizontal, Check, MoveRight, Trash, WandSparkles, Loader2 } from "lucide-react";
+import { Plus, MoreHorizontal, Check, MoveRight, Trash, WandSparkles, Loader2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { cn } from "@/lib/utils";
@@ -16,12 +16,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getIcon } from "@/lib/icon-utils";
 import Link from 'next/link';
 import Image from "next/image";
-import { isBefore, startOfToday, parseISO } from 'date-fns';
+import { isBefore, startOfToday, parseISO, differenceInDays } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { autoScheduleTasks } from '@/lib/task-scheduler';
 import { useToast } from "@/hooks/use-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
 
 interface GroupedTasks {
   leftover: Task[];
@@ -110,7 +108,6 @@ const EmptyState = () => (
 export default function TodayPage() {
   const [view, setView] = React.useState<"compact" | "detail">("compact");
   const { tasks, setTasks, updateTask, deleteTask, currentUser } = useAppContext();
-  const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ leftover: [], expired: [], upcoming: [], done: [] });
   const [isClient, setIsClient] = React.useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -151,7 +148,7 @@ export default function TodayPage() {
             toast({
                 title: "Tasks Scheduled!",
                 description: "Your daily tasks have been automatically arranged.",
-                duration: 5000
+                duration: 3000,
             });
         } catch (error) {
             console.error("Smart scheduling failed:", error);
@@ -211,71 +208,63 @@ export default function TodayPage() {
     }
   };
 
+  const groupedTasks = React.useMemo(() => {
+    if (!isClient) return { leftover: [], expired: [], upcoming: [], done: [] };
 
-  React.useEffect(() => {
-    if (!isClient) return;
+    const now = new Date();
+    const todayStart = startOfToday();
+    const leftover: Task[] = [];
+    const done: Task[] = [];
+    const expired: Task[] = [];
+    const upcoming: Task[] = [];
 
-    const groupAndSortTasks = (tasksToSort: Task[]) => {
-        const now = new Date();
-        const todayStart = startOfToday();
-        const leftover: Task[] = [];
-        const done: Task[] = [];
-        const expired: Task[] = [];
-        const upcoming: Task[] = [];
+    tasks.forEach(task => {
+        if (!task.isMyDay) return;
 
-        tasksToSort.forEach(task => {
-            if (task.isMyDay && task.isCompleted) {
-                done.push(task);
-                return;
-            }
+        if (task.isCompleted) {
+            done.push(task);
+            return;
+        }
 
-            if (!task.isCompleted && task.isMyDay) {
-                const myDayDate = task.myDaySetDate ? parseISO(task.myDaySetDate) : parseISO(task.createdAt);
-                if (isBefore(myDayDate, todayStart)) {
-                    leftover.push(task);
-                    return; 
-                }
-            }
-            
-            if (!task.isCompleted && task.isMyDay) {
-                let isExpired = false;
-                if (task.startTime) {
-                     const [hours, minutes] = task.startTime.split(':').map(Number);
-                     const taskTime = new Date(today);
-                     taskTime.setHours(hours, minutes, 0, 0);
-                     if (taskTime < now) {
-                         isExpired = true;
-                     }
-                }
-                
-                if (isExpired) {
-                    expired.push(task);
-                } else {
-                    upcoming.push(task);
-                }
-            }
-        });
-      
-        const sortFn = (a: Task, b: Task) => {
-          if (!a.startTime) return 1;
-          if (!b.startTime) return -1;
-          return a.startTime.localeCompare(b.startTime);
-        };
+        const myDayDate = task.myDaySetDate ? parseISO(task.myDaySetDate) : parseISO(task.createdAt);
+        if (isBefore(myDayDate, todayStart)) {
+            leftover.push(task);
+            return;
+        }
 
-        return {
-            leftover: leftover.sort(sortFn),
-            expired: expired.sort(sortFn),
-            upcoming: upcoming.sort(sortFn),
-            done: done.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        };
+        let isExpired = false;
+        if (task.startTime) {
+             const [hours, minutes] = task.startTime.split(':').map(Number);
+             const taskTime = new Date(today);
+             taskTime.setHours(hours, minutes, 0, 0);
+             if (taskTime < now) {
+                 isExpired = true;
+             }
+        }
+        
+        if (isExpired) {
+            expired.push(task);
+        } else {
+            upcoming.push(task);
+        }
+    });
+
+    const sortFn = (a: Task, b: Task) => {
+      if (!a.startTime) return 1;
+      if (!b.startTime) return -1;
+      return a.startTime.localeCompare(b.startTime);
     };
-    
-    setGroupedTasks(groupAndSortTasks(tasks));
+
+    return {
+        leftover: leftover.sort(sortFn),
+        expired: expired.sort(sortFn),
+        upcoming: upcoming.sort(sortFn),
+        done: done.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    };
   }, [tasks, isClient, today]);
   
   const { leftover, expired, upcoming, done } = groupedTasks;
 
-  // Reset visibility if `leftover` tasks reappear
   React.useEffect(() => {
     if (leftover.length > 0 && !isLeftoverVisible) {
         setIsLeftoverVisible(true);
