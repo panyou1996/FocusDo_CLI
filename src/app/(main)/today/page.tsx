@@ -359,16 +359,13 @@ export default function TodayPage() {
         </div>
                 
         <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={handleSmartSchedule} disabled={isScheduling || isUpdating}>
+           <Button variant="ghost" size="icon" onClick={handleSmartSchedule} disabled={isScheduling || isUpdating}>
                 {isScheduling ? (
                     <Loader2 className="w-6 h-6 animate-spin text-primary" />
                 ) : (
                     <WandSparkles className="w-6 h-6 text-primary" />
                 )}
             </Button>
-           <Button variant="ghost" size="icon" disabled={isScheduling || isUpdating}>
-            <SlidersHorizontal className="w-6 h-6" strokeWidth={1.5} />
-          </Button>
         </div>
       </header>
 
