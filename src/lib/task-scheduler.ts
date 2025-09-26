@@ -186,9 +186,8 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
 
     allTasks.forEach(task => {
         if (task.isCompleted) return;
-        
         const isSetForTodayOrFuture = task.isMyDay && (!task.myDaySetDate || !isBefore(parseISO(task.myDaySetDate), todayStart));
-
+        
         if (task.isFixed && task.startTime && isSetForTodayOrFuture) {
             fixedTasks.push(task);
         } else if (task.isMyDay) {
@@ -224,13 +223,6 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
 
     const initialBlockedSlots = sortAndMergeSlots(baseBlockedSlots);
 
-    // --- HYBRID STRATEGY ---
-    if (tasksToSchedule.length > 8) {
-        const scheduledFromHeuristic = runHeuristicSchedule(tasksToSchedule, initialBlockedSlots, rules);
-        return allTasks.map(task => scheduledFromHeuristic.find(st => st.id === task.id) || task);
-    }
-    
-    // --- FULL PERMUTATION FOR SMALLER SETS ---
     const areTasksEqual = (a: Task, b: Task): boolean => {
         const isDueTodayA = a.dueDate ? format(parseISO(a.dueDate), 'yyyy-MM-dd') === format(todayStart, 'yyyy-MM-dd') : false;
         const isDueTodayB = b.dueDate ? format(parseISO(b.dueDate), 'yyyy-MM-dd') === format(todayStart, 'yyyy-MM-dd') : false;
@@ -239,7 +231,25 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
                a.isImportant === b.isImportant &&
                (a.duration || rules.defaultDuration) === (b.duration || rules.defaultDuration);
     };
-
+    
+    // --- HYBRID STRATEGY ---
+    const uniqueTaskGroups: Task[] = [];
+    const taskCounts = new Map<Task, number>();
+    tasksToSchedule.forEach(task => {
+        const existingGroup = uniqueTaskGroups.find(group => areTasksEqual(group, task));
+        if (existingGroup) {
+            taskCounts.set(existingGroup, (taskCounts.get(existingGroup) || 1) + 1);
+        } else {
+            uniqueTaskGroups.push(task);
+            taskCounts.set(task, 1);
+        }
+    });
+    
+    if (uniqueTaskGroups.length > 8) {
+        const scheduledFromHeuristic = runHeuristicSchedule(tasksToSchedule, initialBlockedSlots, rules);
+        return allTasks.map(task => scheduledFromHeuristic.find(st => st.id === task.id) || task);
+    }
+    
     const taskPermutations = getUniquePermutations(tasksToSchedule, areTasksEqual);
     
     let bestSchedule: Task[] | null = null;
@@ -262,7 +272,6 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
             scheduledPermutation.push(scheduledTask);
 
             currentBlockedSlots.push({ start: startTime, end: addMinutes(endTime, rules.taskInterval) });
-            // No need to sort inside the loop, can be optimized, but safer for now.
             currentBlockedSlots = sortAndMergeSlots(currentBlockedSlots); 
             
             lastEndTime = endTime;
