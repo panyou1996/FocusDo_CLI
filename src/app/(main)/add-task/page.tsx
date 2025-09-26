@@ -260,7 +260,7 @@ export default function AddTaskPage() {
                                             type="number" 
                                             value={duration}
                                             onChange={(e) => setDuration(Number(e.target.value))}
-                                            className="w-20 text-right h-8 text-base"
+                                            className="w-20 text-right h-8 text-base bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0"
                                             min="0"
                                             step="5"
                                         />
@@ -274,7 +274,7 @@ export default function AddTaskPage() {
                                             type="time"
                                             value={startTime}
                                             onChange={(e) => setStartTime(e.target.value)}
-                                            className="w-full h-8 text-base"
+                                            className="w-full h-8 text-base bg-transparent border-none focus-visible:ring-0 focus-visible:ring-offset-0"
                                             pattern="[0-9]{2}:[0-9]{2}"
                                         />
                                 </div>
