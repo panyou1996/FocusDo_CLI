@@ -195,16 +195,19 @@ export default function TodayPage() {
                 return;
             }
 
-            // Leftover logic: In My Day, not completed, and set date is before today
             if (task.isMyDay) {
                 const myDayDate = task.myDaySetDate ? parseISO(task.myDaySetDate) : parseISO(task.createdAt);
                 if (isBefore(myDayDate, todayStart)) {
                     leftover.push(task);
-                    return; // Task is handled, continue to next
+                    return; 
                 }
             }
+            
+            if (task.dueDate && isBefore(parseISO(task.dueDate), todayStart)) {
+                expired.push(task);
+                return;
+            }
 
-            // Expired logic for My Day tasks
             if (task.isMyDay && task.startTime) {
                  const [hours, minutes] = task.startTime.split(':').map(Number);
                  const taskEndTime = new Date(now);
@@ -214,14 +217,7 @@ export default function TodayPage() {
                      return;
                  }
             }
-
-            // Expired logic for non-My Day tasks with a past due date
-            if (!task.isMyDay && task.dueDate && isBefore(parseISO(task.dueDate), todayStart)) {
-                expired.push(task);
-                return;
-            }
             
-            // If it's a My Day task and not leftover or expired, it's upcoming
             if (task.isMyDay) {
                 upcoming.push(task);
             }
@@ -275,7 +271,7 @@ export default function TodayPage() {
       );
     }
 
-    if (leftover.length === 0 && expired.length === 0 && upcoming.length === 0) {
+    if (leftover.length === 0 && expired.length === 0 && upcoming.length === 0 && done.length === 0) {
         return <EmptyState />;
     }
 
@@ -360,3 +356,4 @@ export default function TodayPage() {
     </div>
   );
 }
+
