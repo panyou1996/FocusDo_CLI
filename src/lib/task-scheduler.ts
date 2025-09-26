@@ -54,6 +54,7 @@ function roundToNext5Minutes(date: Date): Date {
     return newDate;
 }
 
+
 /**
  * Parses a "HH:mm" string into a Date object for today.
  */
@@ -76,7 +77,7 @@ function sortAndMergeSlots(slots: BlockedSlot[]): BlockedSlot[] {
     for (let i = 1; i < slots.length; i++) {
         const last = merged[merged.length - 1];
         const current = slots[i];
-        if (current.start < last.end) { // Use < to merge adjacent blocks correctly
+        if (current.start < last.end) {
             last.end = max([last.end, current.end]);
         } else {
             merged.push(current);
@@ -103,7 +104,7 @@ function findNextAvailableSlot(
         );
 
         if (overlappingBlock) {
-            currentTime = new Date(overlappingBlock.end.getTime());
+            currentTime = roundToNext5Minutes(new Date(overlappingBlock.end.getTime()));
             continue; // Restart the loop with the new, later time
         }
 
@@ -114,14 +115,12 @@ function findNextAvailableSlot(
 
         // 3. Calculate the available continuous time until the next block (or until work ends).
         const endOfAvailableSlot = nextBlock ? nextBlock.start : workEnd;
-        const availableDuration = (endOfAvailableSlot.getTime() - currentTime.getTime()) / (1000 * 60);
-
-        // 4. If there's enough time in this slot, we found our start time!
+        
         const potentialEndTime = addMinutes(currentTime, duration);
         if (potentialEndTime > endOfAvailableSlot) {
             // Not enough space in this continuous block
              if (nextBlock) {
-                currentTime = new Date(nextBlock.end.getTime());
+                currentTime = roundToNext5Minutes(new Date(nextBlock.end.getTime()));
                 continue;
             } else {
                 return null; // No more blocks and remaining time is not enough
@@ -145,18 +144,16 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
 
     mutableTasks.forEach(task => {
         if (task.isCompleted) return;
-        
-        const myDayDate = task.myDaySetDate ? parseISO(task.myDaySetDate) : parseISO(task.createdAt);
-        const isLeftover = isBefore(myDayDate, todayStart);
-        const isDueDatePassed = task.dueDate && isBefore(parseISO(task.dueDate), todayStart);
 
-        if (isLeftover || isDueDatePassed) {
+        const myDaySetDate = task.myDaySetDate ? parseISO(task.myDaySetDate) : parseISO(task.createdAt);
+        const isLeftover = isBefore(myDaySetDate, todayStart);
+        
+        if (isLeftover) {
             task.isFixed = false;
             task.startTime = undefined;
         }
     });
     
-    // Use rounded time for scheduling start
     const schedulingStartTime = roundToNext5Minutes(now);
 
     let blockedSlots: BlockedSlot[] = [];
@@ -172,7 +169,7 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
     mutableTasks.forEach(task => {
         if (task.isFixed && task.startTime && !task.isCompleted) {
             const fixedStart = parse(task.startTime, 'HH:mm', todayStart);
-            if (fixedStart >= now) { // Only consider fixed tasks in the future
+            if (fixedStart >= now) {
                 const fixedEnd = addMinutes(fixedStart, task.duration || rules.defaultDuration);
                 blockedSlots.push({ start: fixedStart, end: fixedEnd });
             }
@@ -182,7 +179,7 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
     blockedSlots = sortAndMergeSlots(blockedSlots);
 
     const tasksToSchedule = mutableTasks.filter(
-        task => task.isMyDay && !task.isCompleted && !task.isFixed && !task.startTime
+        task => task.isMyDay && !task.isCompleted && !task.isFixed
     );
 
     tasksToSchedule.forEach(task => {
@@ -217,7 +214,7 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
                 blockedSlots.push({ start: slotStart, end: slotEnd });
                 blockedSlots = sortAndMergeSlots(blockedSlots); 
                 
-                nextSearchTime = addMinutes(slotEnd, rules.taskInterval);
+                nextSearchTime = roundToNext5Minutes(addMinutes(slotEnd, rules.taskInterval));
             }
         }
     }
