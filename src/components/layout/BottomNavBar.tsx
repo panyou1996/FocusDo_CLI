@@ -67,10 +67,6 @@ export function BottomNavBar() {
       <footer className="sticky bottom-0 h-[calc(86px+env(safe-area-inset-bottom))] bg-transparent z-40">
         <div className="relative h-full w-full max-w-lg mx-auto">
             <motion.div
-              variants={fabContainerVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
               className="custom-card absolute bottom-[env(safe-area-inset-bottom)] left-0 right-0 mx-4 mb-4 h-[70px] rounded-[20px] shadow-glass"
             >
             <nav className="flex items-center justify-around h-full pt-1 pb-2 px-2">
@@ -100,7 +96,7 @@ export function BottomNavBar() {
               })}
             </nav>
           </motion.div>
-          <div className="absolute bottom-[calc(32px+env(safe-area-inset-bottom))] right-5 z-50">
+          <div className="absolute bottom-[calc(90px+env(safe-area-inset-bottom))] right-5 z-50">
             <motion.div 
                 className="flex flex-col items-end gap-3"
                 variants={subMenuContainerVariants}
