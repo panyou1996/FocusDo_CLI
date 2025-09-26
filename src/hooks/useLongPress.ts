@@ -1,7 +1,8 @@
 
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 interface LongPressOptions {
@@ -11,39 +12,53 @@ interface LongPressOptions {
 }
 
 export function useLongPress({ onLongPress, onClick, ms = 300 }: LongPressOptions) {
-  const [isLongPressing, setIsLongPressing] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPress = useRef(false);
+  const isPointerDown = useRef(false);
 
-  const start = (e: React.PointerEvent) => {
+  const start = useCallback((e: React.PointerEvent) => {
+    isPointerDown.current = true;
     isLongPress.current = false;
-    timerRef.current = setTimeout(() => {
-      setIsLongPressing(true);
-      Haptics.impact({ style: ImpactStyle.Medium });
-      onLongPress(e);
-      isLongPress.current = true;
-    }, ms);
-  };
+    
+    // Check if the event target is interactive
+    if ((e.target as HTMLElement).closest('[data-interactive]')) {
+      return;
+    }
 
-  const end = (e: React.PointerEvent) => {
+    e.persist(); // Persist the event to use it in the timeout
+
+    timerRef.current = setTimeout(() => {
+      if (isPointerDown.current) { // Ensure pointer is still down
+        isLongPress.current = true;
+        if (Capacitor.isPluginAvailable('Haptics')) {
+          Haptics.impact({ style: ImpactStyle.Medium });
+        }
+        onLongPress(e);
+      }
+    }, ms);
+  }, [ms, onLongPress]);
+
+  const end = useCallback((e: React.PointerEvent) => {
+    isPointerDown.current = false;
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
     if (onClick && !isLongPress.current) {
-      onClick(e);
+        // Only fire click if it wasn't a long press
+        onClick(e);
     }
-    setIsLongPressing(false);
-  };
+    // Reset long press flag after a short delay to prevent race conditions with click
+    setTimeout(() => { isLongPress.current = false; }, 50);
+  }, [onClick]);
   
-  const cancel = () => {
+  const cancel = useCallback(() => {
+    isPointerDown.current = false;
     if (timerRef.current) {
-        clearTimeout(timerRef.current);
+      clearTimeout(timerRef.current);
     }
-    setIsLongPressing(false);
-  }
+  }, []);
 
   return {
-    isPressing: isLongPressing, // Keep exporting isPressing for compatibility
     handlers: {
       onPointerDown: start,
       onPointerUp: end,

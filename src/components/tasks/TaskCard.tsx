@@ -110,9 +110,11 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
     }
   };
   
-  const { isPressing, handlers } = useLongPress({
+  const { handlers } = useLongPress({
     onLongPress: (e) => {
-        if (navigator.vibrate) navigator.vibrate(50);
+        if (Capacitor.isPluginAvailable('Haptics')) {
+            Haptics.impact({ style: ImpactStyle.Medium });
+        }
         onToggleFixed(task.id);
     },
     onClick: handleToggleExpand,
@@ -349,7 +351,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
       initial="hidden"
       animate="show"
       exit="exit"
-      transition={{ layout: { duration: 0.3, ease: "easeInOut" } }}
+      transition={{ layout: { duration: 0.3, type: "spring", stiffness: 380, damping: 30 } }}
       className="relative"
     >
         <motion.div
@@ -367,8 +369,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         
         <motion.div
             {...handlers}
-            animate={{ scale: isPressing ? 0.98 : 1 }}
-            transition={{ type: "spring", duration: 0.2 }}
+            whileTap={{ scale: 0.98, transition: { type: "spring", duration: 0.2 } }}
             className={'w-full rounded-2xl custom-card cursor-pointer relative overflow-hidden'}
         >
         <motion.div 
@@ -377,7 +378,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             transition={{ type: 'tween', ease: 'easeInOut', duration: 0.3 }}
         />
         <div className="flex items-center py-3 px-4">
-          <div data-interactive>
+          <div data-interactive onClick={(e) => e.stopPropagation()}>
             <Checkbox
               id={`task-${task.id}`}
               checked={task.isCompleted}
