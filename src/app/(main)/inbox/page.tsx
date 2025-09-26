@@ -548,7 +548,7 @@ export default function InboxPage() {
           </Link>
         </div>
       
-        <div className="relative overflow-hidden min-h-[400px]">
+        <div className="relative overflow-hidden">
             <AnimatePresence initial={false} custom={direction} mode="wait">
                 <motion.div
                     key={activeTab}
@@ -572,5 +572,3 @@ export default function InboxPage() {
     </div>
   );
 }
-
-    
