@@ -365,20 +365,21 @@ export default function TodayPage() {
         <div className="flex items-center">
            <motion.div
               onClick={handleSmartSchedule}
-              whileHover={{ scale: 1.1, rotate: -15 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               className={cn(
-                "h-11 w-11 rounded-full flex items-center justify-center text-primary-foreground custom-card cursor-pointer",
+                "h-11 px-4 rounded-xl flex items-center justify-center gap-2 text-primary-foreground custom-card cursor-pointer",
                 (isScheduling || isUpdating) && "pointer-events-none opacity-50"
               )}
               style={dynamicStyle}
             >
               {isScheduling ? (
-                  <Loader2 className="w-6 h-6 animate-spin text-primary-foreground" />
+                  <Loader2 className="w-5 h-5 animate-spin text-primary-foreground" />
               ) : (
-                  <WandSparkles className="w-6 h-6" />
+                  <WandSparkles className="w-5 h-5" />
               )}
+              <span className="text-sm font-semibold">AI Plan</span>
             </motion.div>
         </div>
       </header>
@@ -409,5 +410,7 @@ export default function TodayPage() {
     </div>
   );
 }
+
+    
 
     
