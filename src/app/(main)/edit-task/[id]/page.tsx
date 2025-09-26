@@ -99,7 +99,7 @@ export default function EditTaskPage() {
             return;
         }
         
-        const updatedTask: Partial<Omit<Task, 'createdAt'>> = { // `createdAt` should not be updated
+        const updatedTask: Partial<Task> = {
             title,
             description,
             isImportant,
@@ -111,6 +111,13 @@ export default function EditTaskPage() {
             duration: duration,
             subtasks: subtasks,
         };
+
+        if (isMyDay && (!taskToEdit || !taskToEdit.isMyDay)) {
+            updatedTask.myDaySetDate = new Date().toISOString();
+        } else if (!isMyDay && taskToEdit && taskToEdit.isMyDay) {
+            updatedTask.isMyDay = false; // explicitly set
+        }
+
 
         updateTask(taskId, updatedTask);
         handleClose();

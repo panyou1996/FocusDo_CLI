@@ -57,14 +57,29 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   const addTask = React.useCallback((task: Task) => {
-    setTasks(prevTasks => [task, ...prevTasks]);
+    const newTask = {
+        ...task,
+        myDaySetDate: task.isMyDay ? new Date().toISOString() : undefined,
+    };
+    setTasks(prevTasks => [newTask, ...prevTasks]);
   }, [setTasks]);
 
   const updateTask = React.useCallback((taskId: string, updatedTask: Partial<Task>) => {
     setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === taskId ? { ...task, ...updatedTask } : task
-      )
+      prevTasks.map(task => {
+        if (task.id === taskId) {
+          const wasMyDay = task.isMyDay;
+          const isMyDay = updatedTask.isMyDay;
+          const finalTask = { ...task, ...updatedTask };
+
+          // If isMyDay is being set to true from false or undefined
+          if (isMyDay && !wasMyDay) {
+            finalTask.myDaySetDate = new Date().toISOString();
+          }
+          return finalTask;
+        }
+        return task;
+      })
     );
   }, [setTasks]);
 

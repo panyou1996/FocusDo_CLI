@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { SlidersHorizontal, Plus } from "lucide-react";
+import { SlidersHorizontal, Plus, MoreHorizontal } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { cn } from "@/lib/utils";
@@ -16,15 +16,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getIcon } from "@/lib/icon-utils";
 import Link from 'next/link';
 import Image from "next/image";
+import { isBefore, startOfToday } from 'date-fns';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 
 interface GroupedTasks {
+  leftover: Task[];
   expired: Task[];
   upcoming: Task[];
   done: Task[];
 }
 
-const TaskGroup = ({ title, tasks, status, ...props }: { title: string; tasks: Task[]; status: 'expired' | 'upcoming' | 'done', [key: string]: any }) => {
+const TaskGroup = ({ title, tasks, status, children, ...props }: { title: string; tasks: Task[]; status: 'expired' | 'upcoming' | 'done' | 'leftover', children?: React.ReactNode, [key: string]: any }) => {
   const { lists } = useAppContext();
   if (tasks.length === 0) return null;
   
@@ -40,7 +48,10 @@ const TaskGroup = ({ title, tasks, status, ...props }: { title: string; tasks: T
 
   return (
     <div>
-      <h2 className="text-base font-semibold text-muted-foreground mb-2 px-1">{title}</h2>
+      <div className="flex justify-between items-center mb-2 px-1">
+        <h2 className="text-base font-semibold text-muted-foreground">{title}</h2>
+        {children}
+      </div>
       <motion.div 
         className="space-y-3"
         variants={containerVariants}
@@ -93,7 +104,7 @@ const EmptyState = () => (
 export default function TodayPage() {
   const [view, setView] = React.useState<"compact" | "detail">("compact");
   const { tasks, updateTask, deleteTask, currentUser } = useAppContext();
-  const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ expired: [], upcoming: [], done: [] });
+  const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ leftover: [], expired: [], upcoming: [], done: [] });
   const [isClient, setIsClient] = React.useState(false);
   const router = useRouter();
   
@@ -104,6 +115,12 @@ export default function TodayPage() {
   React.useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const handleUpdateMultipleTasks = (tasksToUpdate: Task[], updates: Partial<Task>) => {
+    tasksToUpdate.forEach(task => {
+        updateTask(task.id, updates);
+    });
+  };
 
   const handleDeleteTask = (taskId: string) => {
     deleteTask(taskId);
@@ -123,7 +140,7 @@ export default function TodayPage() {
   const handleToggleMyDay = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
-      updateTask(taskId, { isMyDay: !task.isMyDay });
+      updateTask(taskId, { isMyDay: !task.isMyDay, myDaySetDate: new Date().toISOString() });
     }
   };
 
@@ -149,52 +166,62 @@ export default function TodayPage() {
   React.useEffect(() => {
     if (!isClient) return;
 
-    const myDayTasks = tasks.filter(task => task.isMyDay);
-    
     const groupAndSortTasks = (tasksToSort: Task[]) => {
-      const now = new Date();
-      const done: Task[] = [];
-      const expired: Task[] = [];
-      const upcoming: Task[] = [];
+        const now = new Date();
+        const todayStart = startOfToday();
+        const leftover: Task[] = [];
+        const done: Task[] = [];
+        const expired: Task[] = [];
+        const upcoming: Task[] = [];
 
-      tasksToSort.forEach(task => {
-        if (task.isCompleted) {
-          done.push(task);
-          return;
-        }
-        
-        if (task.startTime) {
-          const [hours, minutes] = task.startTime.split(':').map(Number);
-          const taskEndTime = new Date(now);
-          taskEndTime.setHours(hours, minutes + (task.duration || 0), 0, 0);
+        tasksToSort.forEach(task => {
+            if (task.isMyDay) {
+                if (task.isCompleted) {
+                    done.push(task);
+                    return;
+                }
+                
+                // Check if the task was for a day before today
+                const myDayDate = task.myDaySetDate ? new Date(task.myDaySetDate) : new Date(task.createdAt);
+                if (isBefore(myDayDate, todayStart)) {
+                    leftover.push(task);
+                    return;
+                }
 
-          if (taskEndTime < now) {
-            expired.push(task);
-          } else {
-            upcoming.push(task);
-          }
-        } else {
-          upcoming.push(task);
-        }
-      });
+                if (task.startTime) {
+                    const [hours, minutes] = task.startTime.split(':').map(Number);
+                    const taskEndTime = new Date(now);
+                    taskEndTime.setHours(hours, minutes + (task.duration || 0), 0, 0);
 
-      const sortFn = (a: Task, b: Task) => {
-        if (!a.startTime) return 1;
-        if (!b.startTime) return -1;
-        return a.startTime.localeCompare(b.startTime);
-      };
+                    if (taskEndTime < now) {
+                        expired.push(task);
+                    } else {
+                        upcoming.push(task);
+                    }
+                } else {
+                    upcoming.push(task);
+                }
+            }
+        });
+      
+        const sortFn = (a: Task, b: Task) => {
+          if (!a.startTime) return 1;
+          if (!b.startTime) return -1;
+          return a.startTime.localeCompare(b.startTime);
+        };
 
-      return {
-        expired: expired.sort(sortFn),
-        upcoming: upcoming.sort(sortFn),
-        done: done.sort(sortFn)
-      };
+        return {
+            leftover: leftover.sort(sortFn),
+            expired: expired.sort(sortFn),
+            upcoming: upcoming.sort(sortFn),
+            done: done.sort(sortFn)
+        };
     };
     
-    setGroupedTasks(groupAndSortTasks(myDayTasks));
+    setGroupedTasks(groupAndSortTasks(tasks));
   }, [tasks, isClient]);
   
-  const { expired, upcoming, done } = groupedTasks;
+  const { leftover, expired, upcoming, done } = groupedTasks;
 
   const cardProps = {
     view,
@@ -218,15 +245,35 @@ export default function TodayPage() {
       );
     }
 
-    if (tasks.filter(t => t.isMyDay).length === 0) {
+    if (leftover.length === 0 && expired.length === 0 && upcoming.length === 0) {
         return <EmptyState />;
     }
 
     return (
       <div className="space-y-4">
-         <TaskGroup title="Expired" tasks={expired} status="expired" {...cardProps} />
-         <TaskGroup title="Upcoming" tasks={upcoming} status="upcoming" {...cardProps} />
-         <TaskGroup title="Done" tasks={done} status="done" {...cardProps} />
+        <TaskGroup title="Leftover" tasks={leftover} status="leftover" {...cardProps}>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreHorizontal className="h-4 w-4"/>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => handleUpdateMultipleTasks(leftover, { isMyDay: true, myDaySetDate: new Date().toISOString() })}>
+                        Move all to Today
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleUpdateMultipleTasks(leftover, { isCompleted: true })}>
+                        Complete all
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="text-destructive" onClick={() => handleUpdateMultipleTasks(leftover, { isMyDay: false })}>
+                        Remove all from My Day
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </TaskGroup>
+        <TaskGroup title="Expired" tasks={expired} status="expired" {...cardProps} />
+        <TaskGroup title="Upcoming" tasks={upcoming} status="upcoming" {...cardProps} />
+        <TaskGroup title="Done" tasks={done} status="done" {...cardProps} />
       </div>
     );
   };
@@ -277,5 +324,3 @@ export default function TodayPage() {
     </div>
   );
 }
-
-    

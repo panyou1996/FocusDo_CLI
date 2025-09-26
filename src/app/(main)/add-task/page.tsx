@@ -77,6 +77,7 @@ export default function AddTaskPage() {
             subtasks: subtasks,
             isCompleted: false,
             isMyDay: isMyDay,
+            myDaySetDate: isMyDay ? new Date().toISOString() : undefined,
             listId: selectedListId,
             createdAt: new Date().toISOString(),
         };

@@ -11,6 +11,7 @@ export type Task = {
   duration?: number; // in minutes
   isImportant: boolean;
   isMyDay?: boolean;
+  myDaySetDate?: string; // ISO date string when the task was added to My Day
   isFixed?: boolean;
   subtasks?: Subtask[];
   description?: string;
