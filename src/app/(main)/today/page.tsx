@@ -22,7 +22,7 @@ import { autoScheduleTasks } from '@/lib/task-scheduler';
 import { useToast } from "@/hooks/use-toast";
 import { useThemeStore } from '@/store/useThemeStore';
 import { themes } from '@/lib/themes';
-import { generateAuroraStyle, generateExquisiteLinearGradient } from '@/lib/color-utils';
+import { generateExquisiteLinearGradient } from '@/lib/color-utils';
 
 interface GroupedTasks {
   leftover: Task[];
@@ -98,12 +98,6 @@ const EmptyState = () => (
         </motion.div>
         <h3 className="text-lg font-semibold">All Done for Today!</h3>
         <p className="text-muted-foreground mt-1">You&apos;ve completed all your tasks. Enjoy your day!</p>
-        <Link href="/add-task" className='mt-4 inline-block'>
-            <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Add New Task
-            </Button>
-        </Link>
     </motion.div>
 );
 
@@ -124,14 +118,12 @@ export default function TodayPage() {
   const [isUpdating, setIsUpdating] = React.useState(false);
 
   const { colorTheme, mode } = useThemeStore();
-  const [dynamicStyle, setDynamicStyle] = React.useState({});
   const [aiPlanStyle, setAiPlanStyle] = React.useState({});
 
   React.useEffect(() => {
     const theme = themes.find(t => t.name === colorTheme);
     if (theme) {
       const baseColor = mode === 'dark' ? theme.cssVars.dark.primary : theme.cssVars.light.primary;
-      setDynamicStyle(generateAuroraStyle(baseColor));
       setAiPlanStyle(generateExquisiteLinearGradient(baseColor));
     }
   }, [colorTheme, mode]);
@@ -371,7 +363,7 @@ export default function TodayPage() {
               whileTap={{ scale: 0.95 }}
               animate={{ scale: [1, 1.03, 1] }}
               transition={{
-                duration: 2.5,
+                duration: 2,
                 repeat: Infinity,
                 repeatType: 'reverse',
                 ease: "easeInOut",
@@ -392,29 +384,18 @@ export default function TodayPage() {
         </div>
       </header>
 
-      <div className="flex gap-2 mb-4">
-        <Tabs value={view} onValueChange={(value) => setView(value as "compact" | "detail")} className="flex-grow">
+      <div className="flex justify-end gap-2 mb-4">
+        <Tabs value={view} onValueChange={(value) => setView(value as "compact" | "detail")} className="">
           <TabsList className="grid w-full grid-cols-2 h-11 rounded-[var(--radius)]">
             <TabsTrigger value="compact" disabled={isScheduling || isUpdating}>Compact</TabsTrigger>
             <TabsTrigger value="detail" disabled={isScheduling || isUpdating}>Detail</TabsTrigger>
           </TabsList>
         </Tabs>
-        <Link href="/add-task" passHref>
-          <motion.div
-            whileHover={{ scale: 1.1, rotate: 15 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            className={cn(
-                "h-11 w-11 rounded-full flex-shrink-0 flex items-center justify-center custom-card", 
-                (isScheduling || isUpdating) && "pointer-events-none opacity-50")}
-             style={dynamicStyle}
-          >
-            <Plus className="w-6 h-6 text-black" />
-          </motion.div>
-        </Link>
       </div>
       
       {renderContent()}
     </div>
   );
 }
+
+    

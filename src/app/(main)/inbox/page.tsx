@@ -29,9 +29,6 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { getIcon } from '@/lib/icon-utils';
 import Image from 'next/image';
-import { useThemeStore } from '@/store/useThemeStore';
-import { themes } from '@/lib/themes';
-import { generateAuroraStyle } from '@/lib/color-utils';
 
 interface GroupedTasks {
   expired: Task[];
@@ -172,12 +169,6 @@ const EmptyState = () => (
         </motion.div>
         <h3 className="text-lg font-semibold">Inbox is Clear</h3>
         <p className="text-muted-foreground mt-1">No tasks match your current filters.</p>
-        <Link href="/add-task" className='mt-4 inline-block'>
-            <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Add New Task
-            </Button>
-        </Link>
     </motion.div>
 );
 
@@ -212,17 +203,6 @@ export default function InboxPage() {
   const [sortBy, setSortBy] = usePersistentState<SortByType>('inbox-sort-by', 'default');
   const [activeTab, setActiveTab] = usePersistentState("inbox-active-tab", "lists");
   const [direction, setDirection] = React.useState(0);
-
-  const { colorTheme, mode } = useThemeStore();
-  const [dynamicStyle, setDynamicStyle] = React.useState({});
-
-  React.useEffect(() => {
-    const theme = themes.find(t => t.name === colorTheme);
-    if (theme) {
-      const baseColor = mode === 'dark' ? theme.cssVars.dark.primary : theme.cssVars.light.primary;
-      setDynamicStyle(generateAuroraStyle(baseColor));
-    }
-  }, [colorTheme, mode]);
 
 
   const handleTabChange = (newTab: string) => {
@@ -545,22 +525,11 @@ export default function InboxPage() {
       </header>
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full flex-grow flex flex-col">
-        <div className="flex gap-2 mb-4">
-          <TabsList className="grid w-full grid-cols-2 h-11 rounded-[var(--radius)] flex-grow">
+        <div className="flex justify-end gap-2 mb-4">
+          <TabsList className="grid w-full grid-cols-2 h-11 rounded-[var(--radius)]">
               <TabsTrigger value="lists">Lists</TabsTrigger>
               <TabsTrigger value="calendar">Calendar</TabsTrigger>
           </TabsList>
-          <Link href="/add-task" passHref>
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 15 }}
-              whileTap={{ scale: 0.9 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-              className="h-11 w-11 rounded-full flex-shrink-0 flex items-center justify-center text-primary-foreground custom-card"
-              style={dynamicStyle}
-            >
-              <Plus className="w-6 h-6" />
-            </motion.div>
-          </Link>
         </div>
       
         <div className="relative overflow-hidden flex-grow">
@@ -587,3 +556,5 @@ export default function InboxPage() {
     </div>
   );
 }
+
+    

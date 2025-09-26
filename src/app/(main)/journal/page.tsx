@@ -16,9 +16,6 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { cn } from "@/lib/utils";
 import { getIcon } from "@/lib/icon-utils";
-import { useThemeStore } from '@/store/useThemeStore';
-import { themes } from '@/lib/themes';
-import { generateAuroraStyle } from '@/lib/color-utils';
 
 type SortByType = 'newest' | 'oldest' | 'readingTime';
 
@@ -64,17 +61,6 @@ export default function JournalPage() {
 
   const [selectedList, setSelectedList] = useLocalStorage('journal-selected-list', 'all');
   const [sortBy, setSortBy] = useLocalStorage<SortByType>('journal-sort-by', 'newest');
-
-  const { colorTheme, mode } = useThemeStore();
-  const [dynamicStyle, setDynamicStyle] = React.useState({});
-
-  React.useEffect(() => {
-    const theme = themes.find(t => t.name === colorTheme);
-    if (theme) {
-      const baseColor = mode === 'dark' ? theme.cssVars.dark.primary : theme.cssVars.light.primary;
-      setDynamicStyle(generateAuroraStyle(baseColor));
-    }
-  }, [colorTheme, mode]);
 
   React.useEffect(() => {
     setIsClient(true);
@@ -138,26 +124,15 @@ export default function JournalPage() {
       </header>
       
       <div className="flex gap-2 mb-4">
-        <div className="relative flex-grow">
+        <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
           <Input 
             placeholder="Search for a topic..." 
-            className="h-11 rounded-[var(--radius)] pl-10 bg-secondary border-none text-base" 
+            className="h-11 rounded-[var(--radius)] pl-10 bg-secondary border-none text-base w-full" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Link href="/journal/new" passHref>
-          <motion.div
-            whileHover={{ scale: 1.1, rotate: 15 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            className="h-11 w-11 rounded-full flex items-center justify-center text-primary-foreground custom-card"
-            style={dynamicStyle}
-          >
-            <Plus className="w-6 h-6" />
-          </motion.div>
-        </Link>
       </div>
 
       <div className="-mx-5">
