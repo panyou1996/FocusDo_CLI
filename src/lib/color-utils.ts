@@ -36,21 +36,21 @@ function hslToRgb(h: number, s: number, l: number): { r: number, g: number, b: n
 export function generateAuroraStyle(baseHsl: string): React.CSSProperties {
   const { h, s, l } = parseHsl(baseHsl);
 
-  // 1. Calculate color variations based on the base color
+  // 1. Calculate more subtle color variations based on the base color
   const { r, g, b } = hslToRgb(h, s, l);
   const baseTransparent = `rgba(${r.toFixed(0)}, ${g.toFixed(0)}, ${b.toFixed(0)}, 0.8)`;
 
-  // Light Analogous (e.g., bright pink for violet)
-  const { r: r_la, g: g_la, b: b_la } = hslToRgb((h + 40) % 360, Math.min(100, s + 10), Math.min(100, l + 15));
+  // Light Analogous (less shift, e.g., from +40 to +25)
+  const { r: r_la, g: g_la, b: b_la } = hslToRgb((h + 25) % 360, Math.min(100, s + 5), Math.min(100, l + 10));
   const lightAnalogous = `rgba(${r_la.toFixed(0)}, ${g_la.toFixed(0)}, ${b_la.toFixed(0)}, 0.6)`;
 
-  // Dark Analogous (e.g., deep blue for violet)
-  const { r: r_da, g: g_da, b: b_da } = hslToRgb((h - 60 + 360) % 360, s, Math.max(0, l - 15));
+  // Dark Analogous (less shift, e.g., from -60 to -25)
+  const { r: r_da, g: g_da, b: b_da } = hslToRgb((h - 25 + 360) % 360, s, Math.max(0, l - 10));
   const darkAnalogous = `rgba(${r_da.toFixed(0)}, ${g_da.toFixed(0)}, ${b_da.toFixed(0)}, 0.65)`;
 
-  // Complementary (e.g., teal/cyan for violet)
-  const { r: r_c, g: g_c, b: b_c } = hslToRgb((h + 160) % 360, Math.max(0, s - 20), l);
-  const complementary = `rgba(${r_c.toFixed(0)}, ${g_c.toFixed(0)}, ${b_c.toFixed(0)}, 0.7)`;
+  // Softer "Complementary" (using a triadic-like but closer hue, e.g., +90 instead of +160)
+  const { r: r_c, g: g_c, b: b_c } = hslToRgb((h + 90) % 360, Math.max(0, s - 15), l);
+  const complementary = `rgba(${r_c.toFixed(0)}, ${g_c.toFixed(0)}, ${b_c.toFixed(0)}, 0.5)`;
 
   // 2. Construct the multi-layered background image
   const backgroundImage = [
