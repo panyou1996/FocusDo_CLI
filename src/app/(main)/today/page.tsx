@@ -369,9 +369,15 @@ export default function TodayPage() {
               onClick={handleSmartSchedule}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              animate={{ scale: [1, 1.03, 1] }}
+              transition={{
+                duration: 2.5,
+                repeat: Infinity,
+                repeatType: 'reverse',
+                ease: "easeInOut",
+              }}
               className={cn(
-                "h-11 px-4 rounded-xl flex items-center justify-center gap-2 custom-card cursor-pointer",
+                "h-11 px-4 rounded-xl flex items-center justify-center gap-2 custom-card cursor-pointer shimmer-effect",
                 (isScheduling || isUpdating) && "pointer-events-none opacity-50"
               )}
               style={aiPlanStyle}
