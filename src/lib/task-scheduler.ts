@@ -40,8 +40,9 @@ interface BlockedSlot {
 // Helper function to generate all permutations of an array
 function getPermutations<T>(array: T[]): T[][] {
     if (array.length === 0) return [[]];
-    if (array.length > 8) { // Performance guard
-        console.warn(`Permutation attempt on ${array.length} items. This is too slow. Returning a single array.`);
+    // Performance guard to prevent browser from freezing.
+    if (array.length > 8) { 
+        console.warn(`Permutation attempt on ${array.length} items is too slow. Returning a single array.`);
         return [array];
     }
     const firstEl = array[0];
@@ -59,7 +60,6 @@ function getPermutations<T>(array: T[]): T[][] {
 
     return allPermutations;
 }
-
 
 function roundToNext5Minutes(date: Date): Date {
     const minutes = date.getMinutes();
@@ -100,7 +100,6 @@ function sortAndMergeSlots(slots: BlockedSlot[]): BlockedSlot[] {
     return merged;
 }
 
-
 function findNextAvailableTime(searchStart: Date, blockedSlots: BlockedSlot[]): Date {
     let currentTime = roundToNext5Minutes(searchStart);
 
@@ -120,14 +119,17 @@ function getEffectiveEndTime(startTime: Date, duration: number, blockedSlots: Bl
     let currentTime = new Date(startTime);
 
     while (remainingDuration > 0) {
+        // Find the next block that starts *after* the current time
         const nextBlock = blockedSlots.find(slot => slot.start > currentTime);
         
         const timeUntilNextBlock = nextBlock ? (nextBlock.start.getTime() - currentTime.getTime()) / (1000 * 60) : Infinity;
 
         if (timeUntilNextBlock >= remainingDuration) {
+            // Enough space in this segment
             currentTime = addMinutes(currentTime, remainingDuration);
             remainingDuration = 0;
         } else {
+            // Not enough space, jump over the block
             remainingDuration -= timeUntilNextBlock;
             currentTime = roundToNext5Minutes(nextBlock!.end);
         }
@@ -142,11 +144,17 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
     
     let mutableTasks: Task[] = JSON.parse(JSON.stringify(allTasks));
 
+    // Step 1: Pre-process tasks. Reset any task that is overdue.
     mutableTasks.forEach(task => {
-        const myDaySetDate = task.myDaySetDate ? parseISO(task.myDaySetDate) : parseISO(task.createdAt);
-        if (!task.isCompleted && (isBefore(myDaySetDate, todayStart) || (task.dueDate && isBefore(parseISO(task.dueDate), todayStart)) )) {
-            task.isFixed = false;
-            task.startTime = undefined;
+        if (!task.isCompleted) {
+            const myDaySetDate = task.myDaySetDate ? parseISO(task.myDaySetDate) : parseISO(task.createdAt);
+            const isLeftover = isBefore(myDaySetDate, todayStart);
+            const isDueDatePassed = task.dueDate && isBefore(parseISO(task.dueDate), todayStart);
+
+            if (isLeftover || isDueDatePassed) {
+                task.isFixed = false;
+                task.startTime = undefined;
+            }
         }
     });
     
@@ -154,25 +162,28 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
     const workEnd = parseTimeString(rules.workEnd, todayStart);
     const schedulingStartTime = roundToNext5Minutes(max([now, workStart]));
 
-    let baseBlockedSlots = sortAndMergeSlots([
-        { start: startOfToday(), end: schedulingStartTime },
-        { start: workEnd, end: endOfDay(todayStart) },
+    // Step 2: Build initial blocked slots
+    let baseBlockedSlots: BlockedSlot[] = [
+        { start: startOfToday(), end: schedulingStartTime }, // Block time from start of day until now
+        { start: workEnd, end: endOfDay(todayStart) }, // Block time after work
         { start: parseTimeString(rules.lunchBreak.start, todayStart), end: parseTimeString(rules.lunchBreak.end, todayStart) },
         { start: parseTimeString(rules.dinnerBreak.start, todayStart), end: parseTimeString(rules.dinnerBreak.end, todayStart) }
-    ]);
+    ];
     
-    const fixedTasks = mutableTasks.filter(t => t.isFixed && t.isMyDay && !t.isCompleted && t.startTime);
+    // **KEY FIX**: Correctly add all fixed tasks to the blocked slots.
+    const fixedTasks = mutableTasks.filter(t => t.isFixed && !t.isCompleted && t.startTime);
     fixedTasks.forEach(task => {
         try {
+            // Parse the time relative to today
             const fixedStart = parse(task.startTime!, 'HH:mm', todayStart);
-            if (fixedStart >= now) {
-                const fixedEnd = addMinutes(fixedStart, task.duration || rules.defaultDuration);
-                baseBlockedSlots.push({ start: fixedStart, end: fixedEnd });
-            }
+            const duration = task.duration || rules.defaultDuration;
+            const fixedEnd = addMinutes(fixedStart, duration);
+            baseBlockedSlots.push({ start: fixedStart, end: fixedEnd });
         } catch (e) {
             console.error(`Error parsing fixed task time: ${task.startTime}`, e);
         }
     });
+
     const initialBlockedSlots = sortAndMergeSlots(baseBlockedSlots);
 
     const tasksToSchedule = mutableTasks.filter(
@@ -183,13 +194,14 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
         return mutableTasks;
     }
 
+    // Step 3: Permutation and Cost Calculation
     const taskPermutations = getPermutations(tasksToSchedule);
     
     let bestSchedule: Task[] | null = null;
     let minCost = Infinity;
 
     for (const permutation of taskPermutations) {
-        let currentBlockedSlots = [...initialBlockedSlots];
+        let currentBlockedSlots = [...initialBlockedSlots]; // Use a copy for each permutation
         let scheduledPermutation: Task[] = [];
         let cost = 0;
         let delayedItems = 0;
@@ -208,10 +220,11 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
             };
             scheduledPermutation.push(scheduledTask);
 
-            // CRITICAL FIX: Update blocked slots for the *next* task in this permutation
+            // **KEY FIX**: Add the current task's time to the blocked slots for this permutation
             currentBlockedSlots.push({ start: startTime, end: addMinutes(endTime, rules.taskInterval) });
             currentBlockedSlots = sortAndMergeSlots(currentBlockedSlots);
 
+            // --- Calculate Cost ---
             if (task.dueDate && isBefore(parseISO(task.dueDate), endTime)) {
                 delayedItems++;
             }
@@ -234,7 +247,8 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
         
         const lastTask = scheduledPermutation.length > 0 ? scheduledPermutation[scheduledPermutation.length - 1] : null;
         if (lastTask) {
-            const lastEndTime = getEffectiveEndTime(parse(lastTask.startTime!, 'HH:mm', todayStart), lastTask.duration || rules.defaultDuration, initialBlockedSlots);
+            const lastTaskStartTime = parse(lastTask.startTime!, 'HH:mm', todayStart);
+            const lastEndTime = getEffectiveEndTime(lastTaskStartTime, lastTask.duration || rules.defaultDuration, initialBlockedSlots);
             const EOD_Time = parseTimeString('17:30', todayStart);
             if (isBefore(EOD_Time, lastEndTime)) {
                 cost += differenceInHours(lastEndTime, EOD_Time) * 2;
@@ -250,7 +264,8 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
     if (!bestSchedule) {
         return mutableTasks;
     }
-
+    
+    // Step 4: Apply the best schedule
     const finalTasks = mutableTasks.map(task => {
         const scheduledVersion = bestSchedule!.find(st => st.id === task.id);
         return scheduledVersion || task;
