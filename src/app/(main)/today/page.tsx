@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getIcon } from "@/lib/icon-utils";
 import Link from 'next/link';
 import Image from "next/image";
-import { isBefore, startOfToday } from 'date-fns';
+import { isBefore, startOfToday, parseISO } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 
@@ -128,10 +128,8 @@ export default function TodayPage() {
         tasksToUpdate.forEach(task => {
             updateTask(task.id, updates);
         });
-        // We might not need to set it back to true immediately, 
-        // as the group will disappear if the `leftover` array becomes empty on next render.
-        // But if we want it to reappear for a new set of leftover tasks, this is needed.
-        // setIsLeftoverVisible(true);
+        // This state might not need to be reset to true immediately,
+        // as the group will naturally disappear if the `leftover` array becomes empty.
     }, 300); // Corresponds to exit animation duration
   };
 
@@ -153,7 +151,11 @@ export default function TodayPage() {
   const handleToggleMyDay = (taskId: string) => {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
-      updateTask(taskId, { isMyDay: !task.isMyDay, myDaySetDate: new Date().toISOString() });
+      const isBecomingMyDay = !task.isMyDay;
+      updateTask(taskId, { 
+        isMyDay: isBecomingMyDay, 
+        myDaySetDate: isBecomingMyDay ? new Date().toISOString() : task.myDaySetDate 
+      });
     }
   };
 
@@ -188,32 +190,40 @@ export default function TodayPage() {
         const upcoming: Task[] = [];
 
         tasksToSort.forEach(task => {
+            if (task.isCompleted) {
+                if (task.isMyDay) done.push(task); // Only show completed My Day tasks
+                return;
+            }
+
+            // Leftover logic: In My Day, not completed, and set date is before today
             if (task.isMyDay) {
-                if (task.isCompleted) {
-                    done.push(task);
-                    return;
-                }
-                
-                // Check if the task was for a day before today
-                const myDayDate = task.myDaySetDate ? new Date(task.myDaySetDate) : new Date(task.createdAt);
+                const myDayDate = task.myDaySetDate ? parseISO(task.myDaySetDate) : parseISO(task.createdAt);
                 if (isBefore(myDayDate, todayStart)) {
                     leftover.push(task);
-                    return;
+                    return; // Task is handled, continue to next
                 }
+            }
 
-                if (task.startTime) {
-                    const [hours, minutes] = task.startTime.split(':').map(Number);
-                    const taskEndTime = new Date(now);
-                    taskEndTime.setHours(hours, minutes + (task.duration || 0), 0, 0);
+            // Expired logic for My Day tasks
+            if (task.isMyDay && task.startTime) {
+                 const [hours, minutes] = task.startTime.split(':').map(Number);
+                 const taskEndTime = new Date(now);
+                 taskEndTime.setHours(hours, minutes + (task.duration || 0), 0, 0);
+                 if (taskEndTime < now) {
+                     expired.push(task);
+                     return;
+                 }
+            }
 
-                    if (taskEndTime < now) {
-                        expired.push(task);
-                    } else {
-                        upcoming.push(task);
-                    }
-                } else {
-                    upcoming.push(task);
-                }
+            // Expired logic for non-My Day tasks with a past due date
+            if (!task.isMyDay && task.dueDate && isBefore(parseISO(task.dueDate), todayStart)) {
+                expired.push(task);
+                return;
+            }
+            
+            // If it's a My Day task and not leftover or expired, it's upcoming
+            if (task.isMyDay) {
+                upcoming.push(task);
             }
         });
       

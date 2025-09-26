@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { format, parseISO, addMinutes, parse } from 'date-fns';
+import { format, parseISO, addMinutes, parse, startOfToday, isBefore } from 'date-fns';
 import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
 import { getIcon } from "@/lib/icon-utils";
@@ -50,7 +50,7 @@ interface TaskCardProps {
   task: Task;
   list: TaskList;
   view: "compact" | "detail";
-  status: 'expired' | 'upcoming' | 'done';
+  status: 'expired' | 'upcoming' | 'done' | 'leftover';
   onEdit: (taskId: string) => void;
   onUpdate: (taskId: string, updatedTask: Partial<Task>) => void;
   onToggleImportant: (taskId: string) => void;
@@ -277,6 +277,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   const ListIcon = list.icon as React.ElementType;
   const cardIsExpanded = isExpanded || view === 'detail';
   const endTime = task.startTime && task.duration ? getEndTime(task.startTime, task.duration) : null;
+  const isExpiredNonMyDay = status === 'expired' && !task.isMyDay && task.dueDate;
 
 
   const renderListIcon = () => {
@@ -431,7 +432,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             )}
 
             {!isEditingTitle &&
-              (task.startTime ? (
+              (task.startTime || isExpiredNonMyDay ? (
                 <p
                   className={cn(
                     'text-sm h-[18px]',
@@ -440,7 +441,11 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                     task.isCompleted && 'text-muted-foreground'
                   )}
                 >
-                  {endTime ? `${task.startTime} - ${endTime}` : task.startTime}
+                  {isExpiredNonMyDay
+                    ? `Expired on ${format(parseISO(task.dueDate as string), 'M/d')}`
+                    : endTime
+                    ? `${task.startTime} - ${endTime}`
+                    : task.startTime}
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground h-[18px]">--:--</p>
