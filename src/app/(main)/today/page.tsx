@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { SlidersHorizontal, Plus, MoreHorizontal } from "lucide-react";
+import { SlidersHorizontal, Plus, MoreHorizontal, Check, MoveRight, Trash } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { cn } from "@/lib/utils";
@@ -17,12 +17,7 @@ import { getIcon } from "@/lib/icon-utils";
 import Link from 'next/link';
 import Image from "next/image";
 import { isBefore, startOfToday } from 'date-fns';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 
 interface GroupedTasks {
@@ -43,11 +38,21 @@ const TaskGroup = ({ title, tasks, status, children, ...props }: { title: string
       transition: {
         staggerChildren: 0.07
       }
+    },
+    exit: { 
+        opacity: 0,
+        height: 0,
+        transition: { duration: 0.3, ease: 'easeOut' }
     }
   };
 
   return (
-    <div>
+    <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        exit="exit"
+    >
       <div className="flex justify-between items-center mb-2 px-1">
         <h2 className="text-base font-semibold text-muted-foreground">{title}</h2>
         {children}
@@ -55,8 +60,6 @@ const TaskGroup = ({ title, tasks, status, children, ...props }: { title: string
       <motion.div 
         className="space-y-3"
         variants={containerVariants}
-        initial="hidden"
-        animate="show"
       >
         <AnimatePresence>
           {tasks.map((task) => {
@@ -67,7 +70,7 @@ const TaskGroup = ({ title, tasks, status, children, ...props }: { title: string
           })}
         </AnimatePresence>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -112,14 +115,24 @@ export default function TodayPage() {
   const dateString = today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
   const dayString = today.toLocaleDateString('en-US', { weekday: 'short' }).replace('.', '');
 
+  const [isLeftoverVisible, setIsLeftoverVisible] = React.useState(true);
+
   React.useEffect(() => {
     setIsClient(true);
   }, []);
 
   const handleUpdateMultipleTasks = (tasksToUpdate: Task[], updates: Partial<Task>) => {
-    tasksToUpdate.forEach(task => {
-        updateTask(task.id, updates);
-    });
+    setIsLeftoverVisible(false);
+    
+    setTimeout(() => {
+        tasksToUpdate.forEach(task => {
+            updateTask(task.id, updates);
+        });
+        // We might not need to set it back to true immediately, 
+        // as the group will disappear if the `leftover` array becomes empty on next render.
+        // But if we want it to reappear for a new set of leftover tasks, this is needed.
+        // setIsLeftoverVisible(true);
+    }, 300); // Corresponds to exit animation duration
   };
 
   const handleDeleteTask = (taskId: string) => {
@@ -223,6 +236,13 @@ export default function TodayPage() {
   
   const { leftover, expired, upcoming, done } = groupedTasks;
 
+  // Reset visibility if `leftover` tasks reappear
+  React.useEffect(() => {
+    if (leftover.length > 0 && !isLeftoverVisible) {
+        setIsLeftoverVisible(true);
+    }
+  }, [leftover, isLeftoverVisible]);
+
   const cardProps = {
     view,
     onDelete: handleDeleteTask,
@@ -251,26 +271,32 @@ export default function TodayPage() {
 
     return (
       <div className="space-y-4">
-        <TaskGroup title="Leftover" tasks={leftover} status="leftover" {...cardProps}>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4"/>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => handleUpdateMultipleTasks(leftover, { isMyDay: true, myDaySetDate: new Date().toISOString() })}>
-                        Move all to Today
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleUpdateMultipleTasks(leftover, { isCompleted: true })}>
-                        Complete all
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="text-destructive" onClick={() => handleUpdateMultipleTasks(leftover, { isMyDay: false })}>
-                        Remove all from My Day
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </TaskGroup>
+        <AnimatePresence>
+            {isLeftoverVisible && leftover.length > 0 && (
+                <TaskGroup title="Leftover" tasks={leftover} status="leftover" {...cardProps}>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreHorizontal className="h-4 w-4"/>
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="end" className="w-auto p-1">
+                            <div className="flex flex-col gap-1">
+                                <Button variant="ghost" className="w-full justify-start gap-2" onClick={() => handleUpdateMultipleTasks(leftover, { isMyDay: true, myDaySetDate: new Date().toISOString() })}>
+                                    <MoveRight className="w-4 h-4" /> Move all to Today
+                                </Button>
+                                <Button variant="ghost" className="w-full justify-start gap-2" onClick={() => handleUpdateMultipleTasks(leftover, { isCompleted: true })}>
+                                    <Check className="w-4 h-4" /> Complete all
+                                </Button>
+                                <Button variant="ghost" className="w-full justify-start gap-2 text-destructive hover:text-destructive" onClick={() => handleUpdateMultipleTasks(leftover, { isMyDay: false })}>
+                                    <Trash className="w-4 h-4" /> Remove all from My Day
+                                </Button>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                </TaskGroup>
+            )}
+        </AnimatePresence>
         <TaskGroup title="Expired" tasks={expired} status="expired" {...cardProps} />
         <TaskGroup title="Upcoming" tasks={upcoming} status="upcoming" {...cardProps} />
         <TaskGroup title="Done" tasks={done} status="done" {...cardProps} />
