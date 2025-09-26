@@ -504,7 +504,7 @@ export default function InboxPage() {
   );
 
   return (
-    <div className='px-5'>
+    <div className='px-5 flex flex-col min-h-[calc(100vh-166px)]'>
       <header className="pt-10 pb-4 h-[80px] flex justify-between items-center">
           <div className="flex items-center gap-2">
             <InboxIcon className="w-7 h-7" strokeWidth={2} />
@@ -529,7 +529,7 @@ export default function InboxPage() {
           </Popover>
       </header>
       
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full flex-grow flex flex-col">
         <div className="flex gap-2 mb-4">
           <TabsList className="grid w-full grid-cols-2 h-11 rounded-[var(--radius)] flex-grow">
               <TabsTrigger value="lists">Lists</TabsTrigger>
@@ -548,7 +548,7 @@ export default function InboxPage() {
           </Link>
         </div>
       
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden flex-grow">
             <AnimatePresence initial={false} custom={direction} mode="wait">
                 <motion.div
                     key={activeTab}
