@@ -38,6 +38,23 @@ interface BlockedSlot {
 }
 
 /**
+ * Rounds a Date object's minutes up to the nearest 5-minute interval.
+ */
+function roundToNext5Minutes(date: Date): Date {
+    const minutes = date.getMinutes();
+    const remainder = minutes % 5;
+    
+    if (remainder === 0 && date.getSeconds() === 0 && date.getMilliseconds() === 0) {
+      return date; // Already a clean multiple of 5
+    }
+    
+    const roundedMinutes = (Math.floor(minutes / 5) + 1) * 5;
+    const newDate = new Date(date.getTime());
+    newDate.setMinutes(roundedMinutes, 0, 0); // Set minutes and reset seconds/ms
+    return newDate;
+}
+
+/**
  * Parses a "HH:mm" string into a Date object for today.
  */
 function parseTimeString(timeStr: string, today: Date): Date {
@@ -59,7 +76,7 @@ function sortAndMergeSlots(slots: BlockedSlot[]): BlockedSlot[] {
     for (let i = 1; i < slots.length; i++) {
         const last = merged[merged.length - 1];
         const current = slots[i];
-        if (current.start <= last.end) {
+        if (current.start < last.end) { // Use < to merge adjacent blocks correctly
             last.end = max([last.end, current.end]);
         } else {
             merged.push(current);
@@ -70,7 +87,6 @@ function sortAndMergeSlots(slots: BlockedSlot[]): BlockedSlot[] {
 
 /**
  * Finds the next available continuous time slot for a given duration.
- * This is a robust implementation that correctly handles various blocked intervals.
  */
 function findNextAvailableSlot(
     searchStart: Date,
@@ -101,17 +117,18 @@ function findNextAvailableSlot(
         const availableDuration = (endOfAvailableSlot.getTime() - currentTime.getTime()) / (1000 * 60);
 
         // 4. If there's enough time in this slot, we found our start time!
-        if (availableDuration >= duration) {
-            return currentTime;
+        const potentialEndTime = addMinutes(currentTime, duration);
+        if (potentialEndTime > endOfAvailableSlot) {
+            // Not enough space in this continuous block
+             if (nextBlock) {
+                currentTime = new Date(nextBlock.end.getTime());
+                continue;
+            } else {
+                return null; // No more blocks and remaining time is not enough
+            }
         }
 
-        // 5. If not, this slot is too small. Jump to the end of the next block and continue searching.
-        if (nextBlock) {
-            currentTime = new Date(nextBlock.end.getTime());
-        } else {
-            // No more blocks, and the remaining time is insufficient.
-            return null;
-        }
+        return currentTime;
     }
 
     return null; // Reached the end of the workday without finding a slot.
@@ -124,69 +141,65 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
     const todayStart = startOfToday();
     const now = new Date();
     
-    // Create a deep copy to avoid modifying the original state directly
     const mutableTasks: Task[] = JSON.parse(JSON.stringify(allTasks));
 
-    // --- Step 1: Pre-process and Reset "Leftover" Tasks ---
     mutableTasks.forEach(task => {
         if (task.isCompleted) return;
         
         const myDayDate = task.myDaySetDate ? parseISO(task.myDaySetDate) : parseISO(task.createdAt);
         const isLeftover = isBefore(myDayDate, todayStart);
+        const isDueDatePassed = task.dueDate && isBefore(parseISO(task.dueDate), todayStart);
 
-        if (isLeftover) {
+        if (isLeftover || isDueDatePassed) {
             task.isFixed = false;
             task.startTime = undefined;
         }
     });
+    
+    // Use rounded time for scheduling start
+    const schedulingStartTime = roundToNext5Minutes(now);
 
-    // --- Step 2: Build the list of Blocked Time Slots ---
     let blockedSlots: BlockedSlot[] = [];
-    const workStart = max([now, parseTimeString(rules.workStart, todayStart)]);
+    const workStart = max([schedulingStartTime, parseTimeString(rules.workStart, todayStart)]);
     const workEnd = parseTimeString(rules.workEnd, todayStart);
     
-    // Add non-work hours
     blockedSlots.push({ start: startOfToday(), end: workStart });
     blockedSlots.push({ start: workEnd, end: endOfDay(todayStart) });
 
-    // Add breaks
     blockedSlots.push({ start: parseTimeString(rules.lunchBreak.start, todayStart), end: parseTimeString(rules.lunchBreak.end, todayStart) });
     blockedSlots.push({ start: parseTimeString(rules.dinnerBreak.start, todayStart), end: parseTimeString(rules.dinnerBreak.end, todayStart) });
 
-    // Add already fixed tasks
     mutableTasks.forEach(task => {
         if (task.isFixed && task.startTime && !task.isCompleted) {
             const fixedStart = parse(task.startTime, 'HH:mm', todayStart);
-            const fixedEnd = addMinutes(fixedStart, task.duration || rules.defaultDuration);
-            blockedSlots.push({ start: fixedStart, end: fixedEnd });
+            if (fixedStart >= now) { // Only consider fixed tasks in the future
+                const fixedEnd = addMinutes(fixedStart, task.duration || rules.defaultDuration);
+                blockedSlots.push({ start: fixedStart, end: fixedEnd });
+            }
         }
     });
     
     blockedSlots = sortAndMergeSlots(blockedSlots);
 
-    // --- Step 3: Calculate Priority and Schedule ---
     const tasksToSchedule = mutableTasks.filter(
-        task => task.isMyDay && !task.isCompleted && !task.isFixed
+        task => task.isMyDay && !task.isCompleted && !task.isFixed && !task.startTime
     );
 
-    // Calculate priority score for each task
     tasksToSchedule.forEach(task => {
         let score = 0;
+        if (task.isImportant) {
+            score += 1000;
+        }
         if (task.dueDate) {
             const daysRemaining = differenceInDays(parseISO(task.dueDate), todayStart);
-            score += 1000 / (daysRemaining + 1); // Higher score for closer due dates
-        }
-        if (task.isImportant) {
-            score += 500;
+            score += 500 / (daysRemaining + 1);
         }
         const daysSinceCreation = differenceInDays(todayStart, parseISO(task.createdAt));
-        score += 10 / (daysSinceCreation + 1); // Slight boost for older tasks
+        score += 10 / (daysSinceCreation + 1);
         
-        // Attach score to task object for sorting
         (task as any).priorityScore = score;
     });
 
-    // Sort by the calculated priority score, descending
     tasksToSchedule.sort((a, b) => ((b as any).priorityScore) - ((a as any).priorityScore));
 
     let nextSearchTime = workStart;
@@ -196,17 +209,14 @@ export function autoScheduleTasks(allTasks: Task[], rules: ScheduleRule = defaul
         const slotStart = findNextAvailableSlot(nextSearchTime, taskDuration, blockedSlots, workEnd);
 
         if (slotStart) {
-            // Find the original task in the mutable array and update it
             const originalTask = mutableTasks.find(t => t.id === task.id);
             if (originalTask) {
                 originalTask.startTime = format(slotStart, 'HH:mm');
 
-                // Add this newly scheduled task to the blocked slots
                 const slotEnd = addMinutes(slotStart, taskDuration);
                 blockedSlots.push({ start: slotStart, end: slotEnd });
-                blockedSlots = sortAndMergeSlots(blockedSlots); // Re-sort and merge
+                blockedSlots = sortAndMergeSlots(blockedSlots); 
                 
-                // Set the next search time
                 nextSearchTime = addMinutes(slotEnd, rules.taskInterval);
             }
         }
