@@ -369,13 +369,13 @@ export default function TodayPage() {
               whileTap={{ scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               className={cn(
-                "h-11 px-4 rounded-xl flex items-center justify-center gap-2 text-primary-foreground custom-card cursor-pointer",
+                "h-11 px-4 rounded-xl flex items-center justify-center gap-2 text-black custom-card cursor-pointer",
                 (isScheduling || isUpdating) && "pointer-events-none opacity-50"
               )}
               style={dynamicStyle}
             >
               {isScheduling ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-primary-foreground" />
+                  <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                   <WandSparkles className="w-5 h-5" />
               )}
@@ -410,6 +410,8 @@ export default function TodayPage() {
     </div>
   );
 }
+
+    
 
     
 
