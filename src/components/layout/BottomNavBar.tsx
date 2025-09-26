@@ -98,7 +98,7 @@ export function BottomNavBar() {
           </motion.div>
           <div className="absolute bottom-[calc(90px+env(safe-area-inset-bottom))] right-5 z-50">
             <motion.div 
-                className="flex flex-col items-end gap-3"
+                className="flex flex-col items-center gap-3"
                 variants={subMenuContainerVariants}
                 initial="closed"
                 animate={isFabOpen ? "open" : "closed"}
@@ -106,7 +106,7 @@ export function BottomNavBar() {
                 <AnimatePresence>
                 {isFabOpen && subMenuItems.map((item) => (
                     <motion.div key={item.href} variants={subMenuVariants}>
-                        <Link href={item.href} className="flex items-center gap-3">
+                        <Link href={item.href} className="flex items-center justify-center gap-3">
                             <div className="bg-card text-card-foreground custom-card rounded-md shadow-md px-3 py-2 text-sm font-medium">
                                 {item.label}
                             </div>
