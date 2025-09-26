@@ -7,6 +7,7 @@ import { Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAppContext } from '@/context/AppContext';
+import { useThemeStore } from '@/store/useThemeStore';
 import { cn } from '@/lib/utils';
 import { themes } from '@/lib/themes';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -22,13 +23,12 @@ const sizeSteps = ['XS', 'S', 'M', 'L', 'XL'];
 export default function AppearancePage() {
   const router = useRouter();
   const { 
-    theme: currentTheme, 
-    setTheme, 
     uiSize, 
     setUiSize,
     cardStyle,
     setCardStyle,
   } = useAppContext();
+  const { colorTheme, setColorTheme, mode, setMode } = useThemeStore();
   const [isClient, setIsClient] = React.useState(false);
   const [isVisible, setIsVisible] = React.useState(true);
 
@@ -37,7 +37,7 @@ export default function AppearancePage() {
   }, []);
 
   const handleThemeChange = (themeName: string) => {
-    setTheme(themeName);
+    setColorTheme(themeName);
   };
   
   const handleSizeChange = (index: number) => {
@@ -90,6 +90,17 @@ export default function AppearancePage() {
 
             <main className="flex-grow px-5 py-4 flex flex-col gap-2 overflow-y-auto">
               
+              <SettingsGroupLabel>Mode</SettingsGroupLabel>
+              <Card className="rounded-xl custom-card">
+                <Tabs value={mode} onValueChange={(value) => setMode(value as any)} className="p-2">
+                    <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="light">Light</TabsTrigger>
+                        <TabsTrigger value="dark">Dark</TabsTrigger>
+                        <TabsTrigger value="system">System</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+              </Card>
+
               <SettingsGroupLabel>UI Size</SettingsGroupLabel>
               <Card className="rounded-xl custom-card">
                 <Tabs value={String(uiSize)} onValueChange={(value) => handleSizeChange(Number(value))} className="p-2">
@@ -121,9 +132,9 @@ export default function AppearancePage() {
                         className="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
                         style={{ backgroundColor: `hsl(${theme.cssVars.light.primary})` }}
                       >
-                        {currentTheme === theme.name && <Check className="w-5 h-5 text-primary-foreground" />}
+                        {colorTheme === theme.name && <Check className="w-5 h-5 text-primary-foreground" />}
                       </div>
-                      <p className={cn("text-xs", currentTheme === theme.name ? "text-primary font-semibold" : "text-muted-foreground")}>{theme.name}</p>
+                      <p className={cn("text-xs", colorTheme === theme.name ? "text-primary font-semibold" : "text-muted-foreground")}>{theme.name}</p>
                     </div>
                   ))}
                 </div>

@@ -3,6 +3,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { BookText, Plus, Search, Filter, List } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -127,54 +128,46 @@ export default function JournalPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
           <Input 
             placeholder="Search for a topic..." 
-            className="h-11 rounded-md pl-10 bg-secondary border-none text-base" 
+            className="h-11 rounded-[var(--radius)] pl-10 bg-secondary border-none text-base" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Link href="/journal/new">
-          <Button size="icon" className="h-11 w-11 rounded-md">
-            <Plus className="w-6 h-6" />
-          </Button>
+        <Link href="/journal/new" passHref>
+          <motion.div
+            whileHover={{ scale: 1.1, rotate: 90 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+          >
+            <Button size="icon" className="h-11 w-11 rounded-full">
+              <Plus className="w-6 h-6" />
+            </Button>
+          </motion.div>
         </Link>
       </div>
 
       <div className="-mx-5">
         <ScrollArea className="w-full whitespace-nowrap">
-          <div className="flex gap-2 py-2 px-5">
-            <button
-              onClick={() => setSelectedList('all')}
-              className={cn(
-                'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                selectedList === 'all'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-foreground bg-secondary'
-              )}
-            >
-              <List className="w-4 h-4" />
-              <span>All</span>
-            </button>
-            {lists.map(list => {
-              const ListIcon = getIcon(list.icon as string);
-              const isSelected = selectedList === list.id;
-              return (
-                <button
-                  key={list.id}
-                  onClick={() => setSelectedList(list.id)}
-                  className={cn(
-                    'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                    isSelected ? 'text-white' : 'text-foreground bg-secondary'
-                  )}
-                  style={{
+          <Tabs value={selectedList} onValueChange={setSelectedList} className="w-full">
+            <TabsList className="h-auto bg-transparent p-0 px-5">
+              <TabsTrigger value="all" className="rounded-full h-9 px-4">
+                <List className="w-4 h-4 mr-2" />
+                All
+              </TabsTrigger>
+              {lists.map(list => {
+                const ListIcon = getIcon(list.icon as string);
+                const isSelected = selectedList === list.id;
+                return (
+                  <TabsTrigger key={list.id} value={list.id} className="rounded-full h-9 px-4 data-[state=active]:text-white" style={{
                     backgroundColor: isSelected ? list.color : undefined,
-                  }}
-                >
-                  <ListIcon className="w-4 h-4" />
-                  <span>{list.name}</span>
-                </button>
-              );
-            })}
-          </div>
+                  }}>
+                    <ListIcon className="w-4 h-4 mr-2" />
+                    {list.name}
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </Tabs>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
       </div>

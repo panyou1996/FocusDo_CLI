@@ -4,9 +4,7 @@
 import * as React from 'react';
 import type { Task, JournalPost, Author, TaskList } from '@/lib/types';
 import { tasks as initialTasks, journalPosts as initialJournalPosts, lists as initialLists } from '@/lib/data';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { useTheme } from 'next-themes';
-import { themes } from '@/lib/themes';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 const UI_SIZES = [10, 12, 14, 16, 18]; // Corresponds to XS, S, M, L, XL
 type CardStyle = 'default' | 'flat' | 'bordered';
@@ -21,10 +19,6 @@ interface AppContextType {
   deleteJournalPost: (postId: string) => void;
   currentUser: Author;
   setCurrentUser: (user: Author) => void;
-  theme: string;
-  setTheme: (theme: string) => void;
-  mode: string | undefined;
-  setMode: (mode: 'light' | 'dark') => void;
   lists: TaskList[];
   addList: (list: TaskList) => void;
   uiSize: number;
@@ -42,28 +36,12 @@ const defaultUser: Author = {
 
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const [tasks, setTasks] = useLocalStorage<Task[]>('tasks', initialTasks);
-  const [journalPosts, setJournalPosts] = useLocalStorage<JournalPost[]>('journalPosts', initialJournalPosts);
-  const [lists, setLists] = useLocalStorage<TaskList[]>('lists', initialLists);
-  const [currentUser, setCurrentUser] = useLocalStorage<Author>('currentUser', defaultUser);
-  const { theme: mode, setTheme: setMode } = useTheme();
-  const [colorTheme, setColorTheme] = useLocalStorage<string>('color-theme', 'Default');
-  const [uiSize, setUiSize] = useLocalStorage<number>('ui-size', 2); // Default to M (14px in new scale)
-  const [cardStyle, setCardStyle] = useLocalStorage<CardStyle>('card-style', 'default');
-
-  React.useEffect(() => {
-    const root = window.document.documentElement;
-    const selectedTheme = themes.find(t => t.name === colorTheme) || themes[0];
-    
-    root.classList.remove(...themes.map(t => `theme-${t.name.toLowerCase()}`));
-    root.classList.add(`theme-${selectedTheme.name.toLowerCase()}`);
-
-    const cssVars = mode === 'dark' ? selectedTheme.cssVars.dark : selectedTheme.cssVars.light;
-    Object.entries(cssVars).forEach(([key, value]) => {
-      root.style.setProperty(`--${key}`, value);
-    });
-
-  }, [colorTheme, mode]);
+  const [tasks, setTasks] = usePersistentState<Task[]>('tasks', initialTasks);
+  const [journalPosts, setJournalPosts] = usePersistentState<JournalPost[]>('journalPosts', initialJournalPosts);
+  const [lists, setLists] = usePersistentState<TaskList[]>('lists', initialLists);
+  const [currentUser, setCurrentUser] = usePersistentState<Author>('currentUser', defaultUser);
+  const [uiSize, setUiSize] = usePersistentState<number>('ui-size', 2); // Default to M (14px in new scale)
+  const [cardStyle, setCardStyle] = usePersistentState<CardStyle>('card-style', 'default');
 
   React.useEffect(() => {
     const root = window.document.documentElement;
@@ -78,33 +56,33 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   }, [cardStyle]);
 
 
-  const addTask = (task: Task) => {
+  const addTask = React.useCallback((task: Task) => {
     setTasks(prevTasks => [task, ...prevTasks]);
-  };
+  }, [setTasks]);
 
-  const updateTask = (taskId: string, updatedTask: Partial<Task>) => {
+  const updateTask = React.useCallback((taskId: string, updatedTask: Partial<Task>) => {
     setTasks(prevTasks =>
       prevTasks.map(task =>
         task.id === taskId ? { ...task, ...updatedTask } : task
       )
     );
-  };
+  }, [setTasks]);
 
-  const deleteTask = (taskId: string) => {
+  const deleteTask = React.useCallback((taskId: string) => {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
-  };
+  }, [setTasks]);
 
-  const addJournalPost = (post: JournalPost) => {
+  const addJournalPost = React.useCallback((post: JournalPost) => {
     setJournalPosts(prevPosts => [post, ...prevPosts]);
-  };
+  }, [setJournalPosts]);
 
-  const deleteJournalPost = (postId: string) => {
+  const deleteJournalPost = React.useCallback((postId: string) => {
     setJournalPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
-  };
+  }, [setJournalPosts]);
   
-  const addList = (list: TaskList) => {
+  const addList = React.useCallback((list: TaskList) => {
     setLists(prevLists => [...prevLists, list]);
-  };
+  }, [setLists]);
 
   // Ensure that if localStorage had a "null" value, it gets updated to the default user.
   React.useEffect(() => {
@@ -123,17 +101,13 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     deleteJournalPost,
     currentUser: currentUser || defaultUser, // Always provide a valid user object
     setCurrentUser,
-    theme: colorTheme,
-    setTheme: setColorTheme,
-    mode,
-    setMode: setMode as (mode: 'light' | 'dark') => void,
     lists,
     addList,
     uiSize,
     setUiSize,
     cardStyle,
     setCardStyle,
-  }), [tasks, journalPosts, currentUser, colorTheme, mode, setMode, lists, uiSize, cardStyle, setCurrentUser, setColorTheme, setUiSize, setCardStyle]);
+  }), [tasks, addTask, updateTask, deleteTask, journalPosts, addJournalPost, deleteJournalPost, currentUser, setCurrentUser, lists, addList, uiSize, setUiSize, cardStyle, setCardStyle]);
 
 
   return (

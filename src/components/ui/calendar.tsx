@@ -11,7 +11,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { ScrollArea } from "./scroll-area"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
-  tasksPerDay?: { [key: string]: number };
+  tasksPerDay?: { [key: string]: { total: number; important: number } };
 };
 
 
@@ -20,8 +20,61 @@ function Calendar({
   classNames,
   showOutsideDays = true,
   tasksPerDay = {},
+  components,
   ...props
 }: CalendarProps) {
+  const defaultComponents = {
+    IconLeft: ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => (
+      <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
+    ),
+    IconRight: ({ className, ...props }: React.HTMLAttributes<HTMLElement>) => (
+      <ChevronRight className={cn("h-4 w-4", className)} {...props} />
+    ),
+    DayContent: (dayProps: any) => {
+      const date = dayProps.date;
+      const formattedDate = format(date, 'yyyy-MM-dd');
+      const taskInfo = tasksPerDay[formattedDate];
+      const isSelected = cn(props.selected).includes(cn(date));
+      const isToday = format(new Date(), 'yyyy-MM-dd') === formattedDate;
+
+      const renderDots = () => {
+        if (!taskInfo || taskInfo.total === 0) return null;
+
+        const importantCount = taskInfo.important || 0;
+        const normalCount = taskInfo.total - importantCount;
+
+        const dots = [];
+        for (let i = 0; i < Math.min(importantCount, 3); i++) {
+          dots.push(
+            <div key={`dot-imp-${i}`} className="h-1 w-1 rounded-full bg-yellow-500" />
+          );
+        }
+        const remainingSpace = 3 - dots.length;
+        for (let i = 0; i < Math.min(normalCount, remainingSpace); i++) {
+          dots.push(
+            <div
+              key={`dot-norm-${i}`}
+              className={cn(
+                "h-1 w-1 rounded-full",
+                (isSelected || isToday) ? "bg-primary-foreground" : "bg-primary"
+              )}
+            />
+          );
+        }
+        return dots;
+      };
+
+      return (
+        <div className="relative h-full w-full flex items-center justify-center">
+          <span>{dayProps.date.getDate()}</span>
+          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex space-x-0.5">
+            {renderDots()}
+          </div>
+        </div>
+      );
+    },
+  };
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -60,40 +113,7 @@ function Calendar({
         day_hidden: "invisible",
         ...classNames,
       }}
-      components={{
-        IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn("h-4 w-4", className)} {...props} />
-        ),
-        IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn("h-4 w-4", className)} {...props} />
-        ),
-        DayContent: (dayProps) => {
-          const date = dayProps.date;
-          const formattedDate = format(date, 'yyyy-MM-dd');
-          const taskCount = tasksPerDay[formattedDate];
-          const isSelected = cn(props.selected).includes(cn(date));
-          const isToday = format(new Date(), 'yyyy-MM-dd') === formattedDate;
-
-          return (
-            <div className="relative h-full w-full flex items-center justify-center">
-              <span>{dayProps.date.getDate()}</span>
-              {taskCount > 0 && (
-                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex space-x-0.5">
-                  {Array.from({ length: Math.min(taskCount, 3) }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={cn(
-                        "h-1 w-1 rounded-full",
-                        (isSelected || isToday) ? "bg-primary-foreground" : "bg-primary"
-                      )}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        },
-      }}
+      components={{ ...defaultComponents, ...components }}
       {...props}
     />
   )

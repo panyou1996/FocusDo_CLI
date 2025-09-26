@@ -15,19 +15,19 @@ const navItems = [
   { href: "/settings", icon: Settings, label: "Setting" },
 ];
 
+const modalPaths = ['/add-task', '/journal/new', '/add-list', '/settings/appearance', '/settings/profile'];
+const editTaskRegex = /^\/edit-task\/.+/;
+
 export function BottomNavBar() {
   const pathname = usePathname();
   const [isModalPage, setIsModalPage] = React.useState(false);
-
-  const modalPaths = ['/add-task', '/journal/new', '/add-list', '/settings/appearance', '/settings/profile'];
-  const editTaskRegex = /^\/edit-task\/.+/;
 
   React.useEffect(() => {
     const isCurrentlyModal = modalPaths.includes(pathname) || editTaskRegex.test(pathname);
     if (isCurrentlyModal !== isModalPage) {
       setIsModalPage(isCurrentlyModal);
     }
-  }, [pathname, isModalPage, editTaskRegex]);
+  }, [pathname, isModalPage]);
 
   const navBarVariants = {
     visible: { y: 0, transition: { type: 'spring', stiffness: 500, damping: 30 } },

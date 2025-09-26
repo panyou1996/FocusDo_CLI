@@ -79,7 +79,7 @@ const EmptyState = () => (
             />
         </motion.div>
         <h3 className="text-lg font-semibold">All Done for Today!</h3>
-        <p className="text-muted-foreground mt-1">You've completed all your tasks. Enjoy your day!</p>
+        <p className="text-muted-foreground mt-1">You&apos;ve completed all your tasks. Enjoy your day!</p>
         <Link href="/add-task" className='mt-4 inline-block'>
             <Button>
                 <Plus className="w-4 h-4 mr-2" />
@@ -255,15 +255,21 @@ export default function TodayPage() {
 
       <div className="flex gap-2 mb-4">
         <Tabs value={view} onValueChange={(value) => setView(value as "compact" | "detail")} className="flex-grow">
-          <TabsList className="grid w-full grid-cols-2 h-11">
+          <TabsList className="grid w-full grid-cols-2 h-11 rounded-[var(--radius)]">
             <TabsTrigger value="compact">Compact</TabsTrigger>
             <TabsTrigger value="detail">Detail</TabsTrigger>
           </TabsList>
         </Tabs>
-        <Link href="/add-task">
-          <Button size="icon" className="h-11 w-11 rounded-md flex-shrink-0">
-            <Plus className="w-6 h-6" />
-          </Button>
+        <Link href="/add-task" passHref>
+          <motion.div
+            whileHover={{ scale: 1.1, rotate: 90 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+          >
+            <Button size="icon" className="h-11 w-11 rounded-full flex-shrink-0">
+              <Plus className="w-6 h-6" />
+            </Button>
+          </motion.div>
         </Link>
       </div>
       

@@ -15,6 +15,7 @@ import { generateAvatar } from '@/ai/flows/generate-avatar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { defaultAvatarGroup } from '@/lib/default-avatars';
 import { ParticleLoader } from '@/components/common/ParticleLoader';
+import Image from 'next/image';
 
 const avatarStyles = [
   'adventurer', 'big-ears', 'bottts', 'miniavs', 'open-peeps', 'pixel-art'
@@ -159,7 +160,7 @@ export default function SetProfilePage() {
                           className="relative cursor-pointer"
                           onClick={() => setSelectedAvatarUrl(avatarUrl)}
                         >
-                          <img
+                          <Image
                             src={avatarUrl}
                             alt="Selectable Avatar"
                             width={56}

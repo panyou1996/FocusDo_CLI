@@ -2,6 +2,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 interface LongPressOptions {
   onLongPress: (e: React.PointerEvent) => void;
@@ -10,14 +11,15 @@ interface LongPressOptions {
 }
 
 export function useLongPress({ onLongPress, onClick, ms = 300 }: LongPressOptions) {
-  const [isPressing, setIsPressing] = useState(false);
+  const [isLongPressing, setIsLongPressing] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPress = useRef(false);
 
   const start = (e: React.PointerEvent) => {
     isLongPress.current = false;
-    setIsPressing(true);
     timerRef.current = setTimeout(() => {
+      setIsLongPressing(true);
+      Haptics.impact({ style: ImpactStyle.Medium });
       onLongPress(e);
       isLongPress.current = true;
     }, ms);
@@ -30,18 +32,18 @@ export function useLongPress({ onLongPress, onClick, ms = 300 }: LongPressOption
     if (onClick && !isLongPress.current) {
       onClick(e);
     }
-    setIsPressing(false);
+    setIsLongPressing(false);
   };
   
   const cancel = () => {
     if (timerRef.current) {
         clearTimeout(timerRef.current);
     }
-    setIsPressing(false);
+    setIsLongPressing(false);
   }
 
   return {
-    isPressing,
+    isPressing: isLongPressing, // Keep exporting isPressing for compatibility
     handlers: {
       onPointerDown: start,
       onPointerUp: end,

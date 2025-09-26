@@ -1,15 +1,9 @@
 
-'use client';
-
 import Link from 'next/link';
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { ChevronRight, Bell, User, Palette, Lock, Settings as SettingsIcon, Moon } from "lucide-react";
+import { ChevronRight, Bell, User, Palette, Lock, Settings as SettingsIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Button } from '@/components/ui/button';
-import { useAppContext } from '@/context/AppContext';
 
 const SettingsGroupLabel = ({ children }: { children: React.ReactNode }) => (
   <p className="px-5 text-sm font-regular text-muted-foreground uppercase mt-6 mb-2">{children}</p>
@@ -31,12 +25,6 @@ const SettingsItem = ({ icon: Icon, label, color, href }: { icon: React.ElementT
 
 
 export default function SettingsPage() {
-  const { mode, setMode } = useAppContext();
-  
-  const handleModeChange = (isDark: boolean) => {
-    setMode(isDark ? 'dark' : 'light');
-  };
-
   return (
     <div className='px-5'>
       <header className="pt-10 pb-4 h-[80px] flex justify-between items-center">
@@ -50,17 +38,6 @@ export default function SettingsPage() {
       <div>
         <SettingsGroupLabel>Preferences</SettingsGroupLabel>
         <Card className="rounded-xl overflow-hidden custom-card">
-           <div className="flex items-center h-[50px] px-4">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: "#8b5cf6" }}>
-                <Moon className="w-5 h-5 text-white" />
-              </div>
-              <p className="text-base flex-grow">Dark Mode</p>
-              <Switch 
-                checked={mode === 'dark'}
-                onCheckedChange={handleModeChange}
-              />
-            </div>
-          <Separator />
           <SettingsItem icon={Palette} label="Appearance" color="#3b82f6" href="/settings/appearance" />
         </Card>
 

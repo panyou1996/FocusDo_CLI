@@ -28,7 +28,22 @@ import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
 import { getIcon } from "@/lib/icon-utils";
 import { useLongPress } from "@/hooks/useLongPress";
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0 },
+};
 
 interface TaskCardProps {
   task: Task;
@@ -85,7 +100,11 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   const isInitialMount = React.useRef(true);
 
 
-  const handleToggleExpand = () => {
+  const handleToggleExpand = (e: React.PointerEvent) => {
+    // If the clicked element or its parent has a 'data-interactive' attribute, do nothing.
+    if ((e.target as HTMLElement).closest('[data-interactive]')) {
+      return;
+    }
     if (view === "compact") {
       setIsExpanded(!isExpanded);
     }
@@ -209,9 +228,9 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
       <Icon className="w-4 h-4 mr-2 flex-shrink-0" strokeWidth={1.5} />
       <span className="font-medium w-20 flex-shrink-0">{label}:</span>
       {isEditing ? (
-         InputComponent
+         <div data-interactive className="flex-grow">{InputComponent}</div>
       ) : (
-        <span onClick={onClick} className={cn("flex-grow", onClick && "cursor-text")}>{value}</span>
+        <span data-interactive onClick={onClick} className={cn("flex-grow", onClick && "cursor-text")}>{value}</span>
       )}
     </div>
   );
@@ -270,11 +289,11 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
       return (
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="w-8 h-8" onClick={(e) => e.stopPropagation()}>
+            <Button data-interactive variant="ghost" size="icon" className="w-8 h-8">
               {iconElement}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-1" align="start" onClick={(e) => e.stopPropagation()}>
+          <PopoverContent data-interactive className="w-auto p-1" align="start">
             <div className="flex flex-col gap-1">
               {lists.map(listOption => {
                   const ListOptionIcon = getIcon(listOption.icon as string);
@@ -330,7 +349,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
       initial="hidden"
       animate="show"
       exit="exit"
-      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+      transition={{ layout: { duration: 0.3, ease: "easeInOut" } }}
       className="relative"
     >
         <motion.div
@@ -358,28 +377,27 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             transition={{ type: 'tween', ease: 'easeInOut', duration: 0.3 }}
         />
         <div className="flex items-center py-3 px-4">
-          <Checkbox
-            id={`task-${task.id}`}
-            checked={task.isCompleted}
-            onCheckedChange={() => onToggleCompleted(task.id)}
-            onClick={(e) => e.stopPropagation()}
-            className="w-5 h-5 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
-          />
+          <div data-interactive>
+            <Checkbox
+              id={`task-${task.id}`}
+              checked={task.isCompleted}
+              onCheckedChange={() => onToggleCompleted(task.id)}
+              className="w-5 h-5 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
+            />
+          </div>
 
           {ListIcon && renderListIcon()}
 
           <div className="flex-grow ml-1 min-w-0">
             {isEditingTitle ? (
               <Input
+                data-interactive
                 value={editingTitle}
                 onChange={handleTitleChange}
                 onBlur={handleTitleBlur}
                 onKeyDown={handleTitleKeyDown}
                 className="h-7 p-0 text-base font-medium border-none focus-visible:ring-0 bg-transparent"
                 autoFocus
-                onClick={e => {
-                  e.stopPropagation();
-                }}
               />
             ) : (
               <div className="relative">
@@ -390,11 +408,11 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                     )}
                 >
                     <span
+                    data-interactive={cardIsExpanded}
                     className={cn(cardIsExpanded && 'cursor-text')}
-                    onClick={e => {
+                    onClick={() => {
                         if (cardIsExpanded) {
-                        e.stopPropagation();
-                        setIsEditingTitle(true);
+                          setIsEditingTitle(true);
                         }
                     }}
                     >
@@ -427,12 +445,9 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
               ))}
           </div>
 
-          <div className="flex items-center gap-2 ml-2">
+          <div data-interactive className="flex items-center gap-2 ml-2">
             <button
-              onClick={e => {
-                e.stopPropagation();
-                onEdit(task.id);
-              }}
+              onClick={() => onEdit(task.id)}
             >
               <Pencil
                 className={
@@ -448,15 +463,16 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
         {cardIsExpanded && (
           <motion.div 
             key="content"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            exit={{ opacity: 0 }}
             className="px-4 pb-3 pl-12 overflow-hidden"
           >
-            <div
+            <motion.div
+              data-interactive
+              variants={itemVariants}
               className="flex items-center gap-2 -ml-2 mb-2"
-              onClick={e => e.stopPropagation()}
             >
               <Button
                 variant="ghost"
@@ -484,30 +500,30 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
               >
                 <Sun className="w-5 h-5" />
               </Button>
-            </div>
+            </motion.div>
 
             <div className="space-y-2">
-                <DetailRow
-                  icon={FileText}
-                  label="Description"
-                  value={task.description || 'Add a description...'}
-                  onClick={e => {
-                    e.stopPropagation();
-                    setIsEditingDesc(true);
-                  }}
-                  isEditing={isEditingDesc}
-                  InputComponent={
-                    <Textarea
-                      value={editingDesc}
-                      onChange={handleDescChange}
-                      onBlur={handleDescBlur}
-                      className="h-auto flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm bg-transparent"
-                      autoFocus
-                      onClick={e => e.stopPropagation()}
-                    />
-                  }
-                />
-                <div className="space-y-2">
+                <motion.div variants={itemVariants}>
+                  <DetailRow
+                    icon={FileText}
+                    label="Description"
+                    value={task.description || 'Add a description...'}
+                    onClick={() => {
+                      setIsEditingDesc(true);
+                    }}
+                    isEditing={isEditingDesc}
+                    InputComponent={
+                      <Textarea
+                        value={editingDesc}
+                        onChange={handleDescChange}
+                        onBlur={handleDescBlur}
+                        className="h-auto flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm bg-transparent"
+                        autoFocus
+                      />
+                    }
+                  />
+                </motion.div>
+                <motion.div variants={itemVariants} className="space-y-2">
                   <div className="flex items-center text-sm text-muted-foreground">
                     <ListTree
                       className="w-4 h-4 mr-2 self-center"
@@ -516,13 +532,12 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                     <span className="font-medium w-20 flex-shrink-0">
                       Subtasks:
                     </span>
-                    <div className="flex-grow flex justify-end">
+                    <div data-interactive className="flex-grow flex justify-end">
                       <Button
                         variant="ghost"
                         size="sm"
                         className="h-auto px-2 py-0 text-primary text-xs"
-                        onClick={e => {
-                          e.stopPropagation();
+                        onClick={() => {
                           setIsAddingSubtask(true);
                         }}
                       >
@@ -530,12 +545,11 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                       </Button>
                     </div>
                   </div>
-                  <div className="pl-7 space-y-2">
+                  <div data-interactive className="pl-7 space-y-2">
                     {editingSubtasks.map(sub => (
                       <div
                         key={sub.id}
                         className="flex items-center gap-2"
-                        onClick={e => e.stopPropagation()}
                       >
                         <Checkbox
                           id={`subtask-${task.id}-${sub.id}`}
@@ -557,8 +571,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                             htmlFor={`subtask-${task.id}-${sub.id}`}
                             className="flex-grow text-sm cursor-text data-[completed=true]:line-through data-[completed=true]:text-muted-foreground"
                             data-completed={sub.isCompleted}
-                            onClick={e => {
-                              e.stopPropagation();
+                            onClick={() => {
                               startEditingSubtask(sub);
                             }}
                           >
@@ -578,7 +591,6 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                     {isAddingSubtask && (
                       <div
                         className="flex gap-2"
-                        onClick={e => e.stopPropagation()}
                       >
                         <Input
                           value={newSubtask}
@@ -598,98 +610,94 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
                       </div>
                     )}
                   </div>
-                </div>
-                <DetailRow
-                  icon={Clock}
-                  label="Start"
-                  value={task.startTime || 'Not set'}
-                  onClick={e => {
-                    e.stopPropagation();
-                    setIsEditingStartTime(true);
-                  }}
-                  isEditing={isEditingStartTime}
-                  InputComponent={
-                    <Input
-                      type="time"
-                      value={editingStartTime}
-                      onChange={handleStartTimeChange}
-                      onBlur={handleStartTimeBlur}
-                      className="h-7 p-0 text-sm border-none focus-visible:ring-0 bg-transparent"
-                      autoFocus
-                      onClick={e => e.stopPropagation()}
-                    />
-                  }
-                />
-                <DetailRow
-                  icon={Calendar}
-                  label="Due"
-                  value={
-                    task.dueDate ? format(parseISO(task.dueDate), 'PPP') : 'Not set'
-                  }
-                  onClick={e => {
-                    e.stopPropagation();
-                    setIsEditingDueDate(true);
-                  }}
-                  isEditing={isEditingDueDate}
-                  InputComponent={
-                    <Popover
-                      open={isEditingDueDate}
-                      onOpenChange={setIsEditingDueDate}
-                    >
-                      <PopoverTrigger asChild>
-                        <button
-                          className="text-sm text-primary"
-                          onClick={e => {
-                            e.stopPropagation();
-                            setIsEditingDueDate(true);
-                          }}
-                        >
-                          {editingDueDate
-                            ? format(editingDueDate, 'PPP')
-                            : 'Set Date'}
-                        </button>
-                      </PopoverTrigger>
-                      <PopoverContent
-                        className="w-auto p-0"
-                        align="end"
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <CalendarComponent
-                          mode="single"
-                          selected={editingDueDate}
-                          onSelect={handleDueDateChange}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  }
-                />
-                <DetailRow
-                  icon={Hourglass}
-                  label="Duration"
-                  value={task.duration ? `${task.duration} min` : 'Not set'}
-                  onClick={e => {
-                    e.stopPropagation();
-                    setIsEditingDuration(true);
-                  }}
-                  isEditing={isEditingDuration}
-                  InputComponent={
-                    <div className="flex items-center gap-1">
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                  <DetailRow
+                    icon={Clock}
+                    label="Start"
+                    value={task.startTime || 'Not set'}
+                    onClick={() => {
+                      setIsEditingStartTime(true);
+                    }}
+                    isEditing={isEditingStartTime}
+                    InputComponent={
                       <Input
-                        type="number"
-                        value={editingDuration}
-                        onChange={handleDurationChange}
-                        onBlur={handleDurationBlur}
-                        className="w-20 h-7 p-0 text-sm text-right border-none focus-visible:ring-0 bg-transparent"
-                        min="0"
-                        step="5"
+                        type="time"
+                        value={editingStartTime}
+                        onChange={handleStartTimeChange}
+                        onBlur={handleStartTimeBlur}
+                        className="h-7 p-0 text-sm border-none focus-visible:ring-0 bg-transparent"
                         autoFocus
-                        onClick={e => e.stopPropagation()}
                       />
-                      <span className="text-sm">min</span>
-                    </div>
-                  }
-                />
+                    }
+                  />
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                  <DetailRow
+                    icon={Calendar}
+                    label="Due"
+                    value={
+                      task.dueDate ? format(parseISO(task.dueDate), 'PPP') : 'Not set'
+                    }
+                    onClick={() => {
+                      setIsEditingDueDate(true);
+                    }}
+                    isEditing={isEditingDueDate}
+                    InputComponent={
+                      <Popover
+                        open={isEditingDueDate}
+                        onOpenChange={setIsEditingDueDate}
+                      >
+                        <PopoverTrigger asChild>
+                          <button
+                            className="text-sm text-primary"
+                          >
+                            {editingDueDate
+                              ? format(editingDueDate, 'PPP')
+                              : 'Set Date'}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto p-0"
+                          align="end"
+                        >
+                          <CalendarComponent
+                            mode="single"
+                            selected={editingDueDate}
+                            onSelect={handleDueDateChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    }
+                  />
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                  <DetailRow
+                    icon={Hourglass}
+                    label="Duration"
+                    value={task.duration ? `${task.duration} min` : 'Not set'}
+                    onClick={() => {
+                      setIsEditingDuration(true);
+                    }}
+                    isEditing={isEditingDuration}
+                    InputComponent={
+                      <div className="flex items-center gap-1">
+                        <Input
+                          type="number"
+                          value={editingDuration}
+                          onChange={handleDurationChange}
+                          onBlur={handleDurationBlur}
+                          className="w-20 h-7 p-0 text-sm text-right border-none focus-visible:ring-0 bg-transparent"
+                          min="0"
+                          step="5"
+                          autoFocus
+                        />
+                        <span className="text-sm">min</span>
+                      </div>
+                    }
+                  />
+                </motion.div>
             </div>
           </motion.div>
         )}

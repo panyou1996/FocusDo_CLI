@@ -23,7 +23,7 @@ import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { usePersistentState } from '@/hooks/usePersistentState';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -193,7 +193,7 @@ const TaskCardSkeleton = () => (
 
 export default function InboxPage() {
   const { tasks, updateTask, deleteTask, lists } = useAppContext();
-  const [selectedList, setSelectedList] = useLocalStorage('inbox-selected-list', 'all');
+  const [selectedList, setSelectedList] = usePersistentState('inbox-selected-list', 'all');
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({
     expired: [],
@@ -204,10 +204,10 @@ export default function InboxPage() {
   const router = useRouter();
 
   // Filter and Sort States from localStorage
-  const [filterStatus, setFilterStatus] = useLocalStorage<FilterStatus>('inbox-filter-status', 'all');
-  const [filterImportance, setFilterImportance] = useLocalStorage<FilterImportance>('inbox-filter-importance', 'all');
-  const [sortBy, setSortBy] = useLocalStorage<SortByType>('inbox-sort-by', 'default');
-  const [activeTab, setActiveTab] = useLocalStorage("inbox-active-tab", "lists");
+  const [filterStatus, setFilterStatus] = usePersistentState<FilterStatus>('inbox-filter-status', 'all');
+  const [filterImportance, setFilterImportance] = usePersistentState<FilterImportance>('inbox-filter-importance', 'all');
+  const [sortBy, setSortBy] = usePersistentState<SortByType>('inbox-sort-by', 'default');
+  const [activeTab, setActiveTab] = usePersistentState("inbox-active-tab", "lists");
   const [direction, setDirection] = React.useState(0);
 
   const handleTabChange = (newTab: string) => {
@@ -282,11 +282,17 @@ export default function InboxPage() {
 
   const tasksPerDay = React.useMemo(() => {
     if (!isClient) return {};
-    const counts: { [key: string]: number } = {};
-    
+    const counts: { [key: string]: { total: number; important: number } } = {};
+
     processedTasks.forEach(task => {
       if (task.dueDate) {
-        counts[task.dueDate] = (counts[task.dueDate] || 0) + 1;
+        if (!counts[task.dueDate]) {
+          counts[task.dueDate] = { total: 0, important: 0 };
+        }
+        counts[task.dueDate].total++;
+        if (task.isImportant) {
+          counts[task.dueDate].important++;
+        }
       }
     });
     return counts;
@@ -525,14 +531,20 @@ export default function InboxPage() {
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <div className="flex gap-2 mb-4">
-          <TabsList className="grid w-full grid-cols-2 h-11 flex-grow">
+          <TabsList className="grid w-full grid-cols-2 h-11 rounded-[var(--radius)] flex-grow">
               <TabsTrigger value="lists">Lists</TabsTrigger>
               <TabsTrigger value="calendar">Calendar</TabsTrigger>
           </TabsList>
-          <Link href="/add-task">
-              <Button size="icon" className="h-11 w-11 rounded-md flex-shrink-0">
+          <Link href="/add-task" passHref>
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+            >
+              <Button size="icon" className="h-11 w-11 rounded-full flex-shrink-0">
                   <Plus className="w-6 h-6" />
               </Button>
+            </motion.div>
           </Link>
         </div>
       

@@ -17,6 +17,7 @@ import { defaultAvatarGroup } from '@/lib/default-avatars';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ParticleLoader } from '@/components/common/ParticleLoader';
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 
 
 const avatarStyles = [
@@ -215,7 +216,7 @@ export default function ProfilePage() {
                                                                 className="relative cursor-pointer"
                                                                 onClick={() => setSelectedAvatarUrl(avatarUrl)}
                                                                 >
-                                                                <img
+                                                                <Image
                                                                     src={avatarUrl}
                                                                     alt="Selectable Avatar"
                                                                     width={48}
