@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { SlidersHorizontal, Plus, MoreHorizontal, Check, MoveRight, Trash } from "lucide-react";
+import { SlidersHorizontal, Plus, MoreHorizontal, Check, MoveRight, Trash, WandSparkles, Loader2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TaskCard } from "@/components/tasks/TaskCard";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,8 @@ import Link from 'next/link';
 import Image from "next/image";
 import { isBefore, startOfToday, parseISO } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { autoScheduleTasks, defaultScheduleRules } from '@/lib/task-scheduler';
+import { useToast } from "@/hooks/use-toast";
 
 
 interface GroupedTasks {
@@ -110,28 +112,68 @@ export default function TodayPage() {
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({ leftover: [], expired: [], upcoming: [], done: [] });
   const [isClient, setIsClient] = React.useState(false);
   const router = useRouter();
+  const { toast } = useToast();
   
   const today = new Date();
   const dateString = today.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' });
   const dayString = today.toLocaleDateString('en-US', { weekday: 'short' }).replace('.', '');
 
   const [isLeftoverVisible, setIsLeftoverVisible] = React.useState(true);
+  const [isScheduling, setIsScheduling] = React.useState(false);
+  const [isUpdating, setIsUpdating] = React.useState(false);
+
 
   React.useEffect(() => {
     setIsClient(true);
   }, []);
 
   const handleUpdateMultipleTasks = (tasksToUpdate: Task[], updates: Partial<Task>) => {
+    setIsUpdating(true);
     setIsLeftoverVisible(false);
     
     setTimeout(() => {
         tasksToUpdate.forEach(task => {
             updateTask(task.id, updates);
         });
-        // This state might not need to be reset to true immediately,
-        // as the group will naturally disappear if the `leftover` array becomes empty.
+        setIsUpdating(false);
     }, 300); // Corresponds to exit animation duration
   };
+
+  const handleSmartSchedule = () => {
+    setIsScheduling(true);
+
+    // Use a timeout to ensure the UI updates to show the loader before the heavy computation starts
+    setTimeout(() => {
+        try {
+            const myDayTasks = tasks.filter(t => t.isMyDay);
+            const scheduledTasks = autoScheduleTasks(myDayTasks, defaultScheduleRules);
+            
+            // Batch update tasks
+            scheduledTasks.forEach(newTask => {
+                const oldTask = tasks.find(t => t.id === newTask.id);
+                // Only update if there's a change
+                if (oldTask && oldTask.startTime !== newTask.startTime) {
+                    updateTask(newTask.id, { startTime: newTask.startTime });
+                }
+            });
+
+            toast({
+                title: "Tasks Scheduled!",
+                description: "Your day has been intelligently organized.",
+            });
+        } catch (error) {
+            console.error("Smart scheduling failed:", error);
+            toast({
+                variant: "destructive",
+                title: "Scheduling Failed",
+                description: "An unexpected error occurred during scheduling.",
+            });
+        } finally {
+            setIsScheduling(false);
+        }
+    }, 100);
+  };
+
 
   const handleDeleteTask = (taskId: string) => {
     deleteTask(taskId);
@@ -190,12 +232,12 @@ export default function TodayPage() {
         const upcoming: Task[] = [];
 
         tasksToSort.forEach(task => {
-            if (task.isCompleted) {
-                if (task.isMyDay) done.push(task); // Only show completed My Day tasks
+            if (task.isMyDay && task.isCompleted) {
+                done.push(task);
                 return;
             }
 
-            if (task.isMyDay) {
+            if (!task.isCompleted && task.isMyDay) {
                 const myDayDate = task.myDaySetDate ? parseISO(task.myDaySetDate) : parseISO(task.createdAt);
                 if (isBefore(myDayDate, todayStart)) {
                     leftover.push(task);
@@ -203,23 +245,26 @@ export default function TodayPage() {
                 }
             }
             
-            if (task.dueDate && isBefore(parseISO(task.dueDate), todayStart)) {
-                expired.push(task);
-                return;
-            }
-
-            if (task.isMyDay && task.startTime) {
-                 const [hours, minutes] = task.startTime.split(':').map(Number);
-                 const taskEndTime = new Date(now);
-                 taskEndTime.setHours(hours, minutes + (task.duration || 0), 0, 0);
-                 if (taskEndTime < now) {
-                     expired.push(task);
-                     return;
-                 }
-            }
-            
-            if (task.isMyDay) {
-                upcoming.push(task);
+            if (!task.isCompleted && task.isMyDay) {
+                let isExpired = false;
+                if (task.dueDate && isBefore(parseISO(task.dueDate), todayStart)) {
+                    isExpired = true;
+                }
+                
+                if (task.startTime) {
+                     const [hours, minutes] = task.startTime.split(':').map(Number);
+                     const taskTime = new Date(today);
+                     taskTime.setHours(hours, minutes, 0, 0);
+                     if (taskTime < now) {
+                         isExpired = true;
+                     }
+                }
+                
+                if (isExpired) {
+                    expired.push(task);
+                } else {
+                    upcoming.push(task);
+                }
             }
         });
       
@@ -233,7 +278,7 @@ export default function TodayPage() {
             leftover: leftover.sort(sortFn),
             expired: expired.sort(sortFn),
             upcoming: upcoming.sort(sortFn),
-            done: done.sort(sortFn)
+            done: done.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         };
     };
     
@@ -271,7 +316,8 @@ export default function TodayPage() {
       );
     }
 
-    if (leftover.length === 0 && expired.length === 0 && upcoming.length === 0 && done.length === 0) {
+    const allTasks = [...leftover, ...expired, ...upcoming, ...done];
+    if (allTasks.length === 0) {
         return <EmptyState />;
     }
 
@@ -282,7 +328,7 @@ export default function TodayPage() {
                 <TaskGroup title="Leftover" tasks={leftover} status="leftover" {...cardProps}>
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" disabled={isUpdating}>
                                 <MoreHorizontal className="h-4 w-4"/>
                             </Button>
                         </PopoverTrigger>
@@ -326,7 +372,14 @@ export default function TodayPage() {
         </div>
                 
         <div className="flex items-center gap-2">
-           <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={handleSmartSchedule} disabled={isScheduling || isUpdating}>
+                {isScheduling ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                ) : (
+                    <WandSparkles className="w-6 h-6 text-primary" />
+                )}
+            </Button>
+           <Button variant="ghost" size="icon" disabled={isScheduling || isUpdating}>
             <SlidersHorizontal className="w-6 h-6" strokeWidth={1.5} />
           </Button>
         </div>
@@ -335,8 +388,8 @@ export default function TodayPage() {
       <div className="flex gap-2 mb-4">
         <Tabs value={view} onValueChange={(value) => setView(value as "compact" | "detail")} className="flex-grow">
           <TabsList className="grid w-full grid-cols-2 h-11 rounded-[var(--radius)]">
-            <TabsTrigger value="compact">Compact</TabsTrigger>
-            <TabsTrigger value="detail">Detail</TabsTrigger>
+            <TabsTrigger value="compact" disabled={isScheduling || isUpdating}>Compact</TabsTrigger>
+            <TabsTrigger value="detail" disabled={isScheduling || isUpdating}>Detail</TabsTrigger>
           </TabsList>
         </Tabs>
         <Link href="/add-task" passHref>
@@ -344,6 +397,7 @@ export default function TodayPage() {
             whileHover={{ scale: 1.1, rotate: 90 }}
             whileTap={{ scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+            className={cn((isScheduling || isUpdating) && "pointer-events-none opacity-50")}
           >
             <Button size="icon" className="h-11 w-11 rounded-full flex-shrink-0">
               <Plus className="w-6 h-6" />
@@ -357,3 +411,4 @@ export default function TodayPage() {
   );
 }
 
+    
