@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { format, parseISO, addMinutes, parse, startOfToday, isBefore } from 'date-fns';
+import { format, parseISO, addMinutes, parse, startOfToday, isBefore, differenceInDays } from 'date-fns';
 import { Button } from "../ui/button";
 import { useAppContext } from "@/context/AppContext";
 import { getIcon } from "@/lib/icon-utils";
@@ -277,7 +277,20 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   const ListIcon = list.icon as React.ElementType;
   const cardIsExpanded = isExpanded || view === 'detail';
   const endTime = task.startTime && task.duration ? getEndTime(task.startTime, task.duration) : null;
-  const isExpiredNonMyDay = status === 'expired' && !task.isMyDay && task.dueDate;
+  const isOverdue = task.dueDate && isBefore(parseISO(task.dueDate), startOfToday()) && !task.isCompleted;
+  
+  let timeDisplay = endTime ? `${task.startTime} - ${endTime}` : task.startTime;
+  let delayMessage = '';
+
+  if (isOverdue) {
+    const daysDelayed = differenceInDays(startOfToday(), parseISO(task.dueDate as string));
+    if (daysDelayed > 0) {
+      delayMessage = ` (delayed ${daysDelayed} day${daysDelayed > 1 ? 's' : ''})`;
+    }
+    if (!timeDisplay) {
+      timeDisplay = `Expired on ${format(parseISO(task.dueDate as string), 'M/d')}`;
+    }
+  }
 
 
   const renderListIcon = () => {
@@ -431,25 +444,25 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
               </div>
             )}
 
-            {!isEditingTitle &&
-              (task.startTime || isExpiredNonMyDay ? (
+            {!isEditingTitle && (
                 <p
                   className={cn(
                     'text-sm h-[18px]',
-                    status === 'expired' && !task.isCompleted && 'font-bold text-destructive',
+                    (status === 'expired' || isOverdue) && !task.isCompleted && 'font-bold text-destructive',
                     status === 'upcoming' && !task.isCompleted && 'font-bold text-primary',
                     task.isCompleted && 'text-muted-foreground'
                   )}
                 >
-                  {isExpiredNonMyDay
-                    ? `Expired on ${format(parseISO(task.dueDate as string), 'M/d')}`
-                    : endTime
-                    ? `${task.startTime} - ${endTime}`
-                    : task.startTime}
+                  {timeDisplay ? (
+                    <>
+                      {timeDisplay}
+                      {delayMessage && <span className="font-normal">{delayMessage}</span>}
+                    </>
+                  ) : (
+                    <span className="text-sm text-muted-foreground h-[18px]">--:--</span>
+                  )}
                 </p>
-              ) : (
-                <p className="text-sm text-muted-foreground h-[18px]">--:--</p>
-              ))}
+              )}
           </div>
 
           <div data-interactive className="flex items-center gap-2 ml-2">
