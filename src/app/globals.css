@@ -84,9 +84,7 @@
   .card-style-glass .card,
   .card-style-glass .custom-card,
   .card-style-glass .popover,
-  .card-style-glass .tabs-list,
-  .card-style-glass .input,
-  .card-style-glass .textarea {
+  .card-style-glass .tabs-list {
     background: rgba(255, 255, 255, 0.45);
     -webkit-backdrop-filter: blur(24px);
     backdrop-filter: blur(24px);
@@ -97,9 +95,7 @@
   .dark .card-style-glass .card,
   .dark .card-style-glass .custom-card,
   .dark .card-style-glass .popover,
-  .dark .card-style-glass .tabs-list,
-  .dark .card-style-glass .input,
-  .dark .card-style-glass .textarea {
+  .dark .card-style-glass .tabs-list {
     background: rgba(40, 40, 55, 0.35);
     -webkit-backdrop-filter: blur(24px);
     backdrop-filter: blur(24px);
@@ -107,6 +103,24 @@
   }
 
   /* Overrides for specific components in glass mode */
+  .card-style-glass .input,
+  .card-style-glass .textarea {
+    background: rgba(255, 255, 255, 0.45) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    backdrop-filter: blur(24px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.1) !important;
+    @apply rounded-2xl;
+  }
+
+  .dark .card-style-glass .input,
+  .dark .card-style-glass .textarea {
+    background: rgba(40, 40, 55, 0.35) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    backdrop-filter: blur(24px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+  
   .card-style-glass .popover,
   .card-style-glass .tabs-list {
     @apply bg-popover text-popover-foreground;

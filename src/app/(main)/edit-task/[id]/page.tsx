@@ -218,19 +218,19 @@ export default function EditTaskPage() {
                         </header>
 
                         <main className="flex-grow px-5 py-4 flex flex-col gap-4 overflow-y-auto">
-                            <Card className="rounded-2xl custom-card p-1 flex-shrink-0">
+                            <Card className="rounded-2xl custom-card flex-shrink-0">
                                 <Input
                                     placeholder="What do you want to do?"
-                                    className="border-none text-xl font-medium h-[50px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
+                                    className="text-xl font-medium h-[50px] p-4"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
                                 />
                             </Card>
                             
-                            <Card className="rounded-2xl custom-card p-1 flex flex-col flex-shrink-0">
+                            <Card className="rounded-2xl custom-card flex flex-col flex-shrink-0">
                                 <Textarea
                                     placeholder="Add a description..."
-                                    className="border-none text-base min-h-[120px] p-4 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow bg-transparent"
+                                    className="text-base min-h-[120px] p-4 flex-grow"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
@@ -299,7 +299,7 @@ export default function EditTaskPage() {
                                                         onChange={(e) => setEditingSubtaskText(e.target.value)}
                                                         onBlur={() => saveSubtaskEdit(sub.id)}
                                                         onKeyDown={(e) => handleSubtaskEditKeyDown(e, sub.id)}
-                                                        className="h-9 flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
+                                                        className="h-9 flex-grow"
                                                         autoFocus
                                                     />
                                                 ) : (
@@ -318,7 +318,7 @@ export default function EditTaskPage() {
                                         ))}
                                         {isAddingSubtask && (
                                             <div className="flex gap-2">
-                                                <Input value={newSubtask} onChange={(e) => setNewSubtask(e.target.value)} placeholder="Add a subtask..." className="h-9 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent" />
+                                                <Input value={newSubtask} onChange={(e) => setNewSubtask(e.target.value)} placeholder="Add a subtask..." className="h-9" />
                                                 <Button size="sm" onClick={addSubtask}>Add</Button>
                                             </div>
                                         )}
@@ -331,7 +331,7 @@ export default function EditTaskPage() {
                                             type="number" 
                                             value={duration}
                                             onChange={(e) => setDuration(Number(e.target.value))}
-                                            className="w-20 text-right h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-base"
+                                            className="w-20 text-right h-8 text-base"
                                             min="0"
                                             step="5"
                                         />
@@ -345,7 +345,7 @@ export default function EditTaskPage() {
                                             type="time"
                                             value={startTime}
                                             onChange={(e) => setStartTime(e.target.value)}
-                                            className="w-full h-8 border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent text-base"
+                                            className="w-full h-8 text-base"
                                             pattern="[0-9]{2}:[0-9]{2}"
                                         />
                                 </div>
@@ -394,5 +394,3 @@ export default function EditTaskPage() {
         </div>
     );
 }
-
-    
