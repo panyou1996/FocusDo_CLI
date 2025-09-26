@@ -100,46 +100,44 @@ export function BottomNavBar() {
               })}
             </nav>
           </motion.div>
-        </div>
-      </footer>
-      <div className="fixed bottom-[calc(32px+env(safe-area-inset-bottom))] right-5 z-50">
-        <motion.div 
-            className="flex flex-col items-end gap-3"
-            variants={subMenuContainerVariants}
-            initial="closed"
-            animate={isFabOpen ? "open" : "closed"}
-        >
-            <AnimatePresence>
-            {isFabOpen && subMenuItems.map((item) => (
-                <motion.div key={item.href} variants={subMenuVariants}>
-                    <Link href={item.href} className="flex items-center gap-3">
-                        <div className="bg-card text-card-foreground custom-card rounded-md shadow-md px-3 py-2 text-sm font-medium">
-                            {item.label}
-                        </div>
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center custom-card shadow-lg" style={dynamicStyle}>
-                           <item.icon className="w-6 h-6 text-black" />
-                        </div>
-                    </Link>
-                </motion.div>
-            ))}
-            </AnimatePresence>
-            <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                className="w-16 h-16 rounded-full flex items-center justify-center text-primary-foreground custom-card shadow-lg"
-                aria-label="Add"
-                style={dynamicStyle}
-                onClick={() => setIsFabOpen(!isFabOpen)}
+          <div className="absolute bottom-[calc(32px+env(safe-area-inset-bottom))] right-5 z-50">
+            <motion.div 
+                className="flex flex-col items-end gap-3"
+                variants={subMenuContainerVariants}
+                initial="closed"
+                animate={isFabOpen ? "open" : "closed"}
             >
-                <motion.div variants={fabVariants}>
-                    <Plus size={30} strokeWidth={2.5} />
+                <AnimatePresence>
+                {isFabOpen && subMenuItems.map((item) => (
+                    <motion.div key={item.href} variants={subMenuVariants}>
+                        <Link href={item.href} className="flex items-center gap-3">
+                            <div className="bg-card text-card-foreground custom-card rounded-md shadow-md px-3 py-2 text-sm font-medium">
+                                {item.label}
+                            </div>
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center custom-card shadow-lg" style={dynamicStyle}>
+                            <item.icon className="w-6 h-6 text-black" />
+                            </div>
+                        </Link>
+                    </motion.div>
+                ))}
+                </AnimatePresence>
+                <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-primary-foreground custom-card shadow-lg"
+                    aria-label="Add"
+                    style={dynamicStyle}
+                    onClick={() => setIsFabOpen(!isFabOpen)}
+                >
+                    <motion.div variants={fabVariants}>
+                        <Plus size={30} strokeWidth={2.5} />
+                    </motion.div>
                 </motion.div>
             </motion.div>
-        </motion.div>
-      </div>
+          </div>
+        </div>
+      </footer>
     </>
   );
 }
-
-    
