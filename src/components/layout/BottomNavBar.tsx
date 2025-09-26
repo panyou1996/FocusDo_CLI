@@ -111,7 +111,7 @@ export function BottomNavBar() {
                                 {item.label}
                             </div>
                             <div className="w-12 h-12 rounded-full flex items-center justify-center custom-card shadow-lg" style={dynamicStyle}>
-                            <item.icon className="w-6 h-6 text-black" />
+                            <item.icon className="w-6 h-6 text-primary-foreground" />
                             </div>
                         </Link>
                     </motion.div>
