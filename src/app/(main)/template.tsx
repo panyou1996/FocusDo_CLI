@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 
@@ -13,26 +13,53 @@ const MODAL_PATHS = [
 ];
 const EDIT_TASK_REGEX = /^\/edit-task\/.+/;
 
+const pageVariants = {
+  initial: {
+    opacity: 0,
+    scale: 0.9,
+    y: 16
+  },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      type: 'tween',
+      ease: 'easeOut',
+      duration: 0.35
+    }
+  },
+  exit: {
+    opacity: 0,
+    scale: 1.1,
+    transition: {
+      type: 'tween',
+      ease: 'easeIn',
+      duration: 0.25
+    }
+  }
+};
+
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const isModalPage = MODAL_PATHS.includes(pathname) || EDIT_TASK_REGEX.test(pathname);
 
-  // For modal pages that manage their own animation (like the slide-up overlays),
-  // we don't want the default template animation to conflict.
-  // By returning a simple div, we pass control to the page component itself.
   if (isModalPage) {
     return <div>{children}</div>;
   }
 
-  // For all other standard pages, apply the default fade-in-up animation.
   return (
-    <motion.div
-      initial={{ y: 16, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: 'tween', ease: 'easeOut', duration: 0.35 }}
-    >
-      {children}
-    </motion.div>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={pathname}
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
   );
 }
