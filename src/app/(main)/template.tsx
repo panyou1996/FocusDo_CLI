@@ -20,13 +20,13 @@ const pageVariants = {
     scale: 1.1,
   },
   animate: {
-    opacity: 1,
+    opacity: 0, // DEBUG: Keep new page invisible
     scale: 1,
     transition: {
       type: 'tween',
       ease: 'easeOut',
-      duration: 5
-    }
+      duration: 5,
+    },
   },
   exit: {
     opacity: 0,
@@ -34,9 +34,9 @@ const pageVariants = {
     transition: {
       type: 'tween',
       ease: 'easeIn',
-      duration: 5
-    }
-  }
+      duration: 5, // Ensure exit animation also lasts 5 seconds
+    },
+  },
 };
 
 export default function Template({ children }: { children: React.ReactNode }) {
@@ -44,6 +44,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   const isModalPage = MODAL_PATHS.includes(pathname) || EDIT_TASK_REGEX.test(pathname);
 
+  // Do not apply transition animations to modal-like pages
   if (isModalPage) {
     return <div>{children}</div>;
   }
