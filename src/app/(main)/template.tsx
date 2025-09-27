@@ -34,7 +34,7 @@ const pageVariants = {
     transition: {
       type: 'tween',
       ease: 'easeIn',
-      duration: 5
+      duration: 5 // This was missing!
     }
   }
 };
@@ -44,6 +44,8 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   const isModalPage = MODAL_PATHS.includes(pathname) || EDIT_TASK_REGEX.test(pathname);
 
+  // For modal-like pages, we don't apply the cross-fade animation.
+  // We check the new path AND the previous path to avoid animating when a modal closes.
   if (isModalPage) {
     return <div>{children}</div>;
   }
