@@ -22,6 +22,8 @@ export const TimelineTaskCard: React.FC<TimelineTaskCardProps> = ({ task, isOver
     );
     updateTask(task.id, { subtasks: newSubtasks });
   };
+
+  const timeDisplay = task.dueDate ? format(parseISO(task.dueDate), 'HH:mm') : '--:--';
   let delayMessage = '';
 
   if (isOverdue) {
