@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+
 import { BrainCircuit } from 'lucide-react';
 import { useTaskStore } from '@/store/useTaskStore';
 import { AddTaskSheet } from '@/components/tasks/AddTaskSheet';
@@ -64,21 +64,10 @@ const buildTimelineItems = (tasks: Task[]) => {
 const TodayPage: React.FC = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const { tasks, setTasks, fetchTasks } = useTaskStore();
+  const { tasks, isLoading } = useTaskStore();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isSmartSheetOpen, setIsSmartSheetOpen] = useState(false);
   
-  const { data: fetchedTasks, isLoading } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: fetchTasks,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  useEffect(() => {
-    if (fetchedTasks) {
-      setTasks(fetchedTasks);
-    }
-  }, [fetchedTasks, setTasks]);
 
   const todayTasks = useMemo(() => tasks.filter(task => {
     if (!task.dueDate) return false;
