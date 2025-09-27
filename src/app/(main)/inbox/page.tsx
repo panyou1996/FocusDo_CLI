@@ -523,6 +523,32 @@ export default function InboxPage() {
               </PopoverContent>
           </Popover>
       </header>
+
+      <div className="mb-4 -mx-5">
+        <ScrollArea className="w-full whitespace-nowrap">
+          <Tabs value={selectedList} onValueChange={setSelectedList} className="w-full">
+            <TabsList className="h-auto bg-transparent p-0 px-5">
+              <TabsTrigger value="all" className="rounded-full h-9 px-4">
+                <List className="w-4 h-4 mr-2" />
+                All
+              </TabsTrigger>
+              {lists.map(list => {
+                const ListIcon = getIcon(list.icon as string);
+                const isSelected = selectedList === list.id;
+                return (
+                  <TabsTrigger key={list.id} value={list.id} className="rounded-full h-9 px-4 data-[state=active]:text-white" style={{
+                    backgroundColor: isSelected ? list.color : undefined,
+                  }}>
+                    <ListIcon className="w-4 h-4 mr-2" />
+                    {list.name}
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </Tabs>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </div>
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full flex-grow flex flex-col">
         <div className="flex justify-end gap-2 mb-4">
