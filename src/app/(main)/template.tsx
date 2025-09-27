@@ -16,13 +16,11 @@ const EDIT_TASK_REGEX = /^\/edit-task\/.+/;
 const pageVariants = {
   initial: {
     opacity: 0,
-    scale: 0.9,
-    y: 16
+    scale: 1.1,
   },
   animate: {
     opacity: 1,
     scale: 1,
-    y: 0,
     transition: {
       type: 'tween',
       ease: 'easeOut',
