@@ -70,12 +70,7 @@ const TodayPage: React.FC = () => {
   
   
 
-  const todayTasks = useMemo(() => tasks.filter(task => {
-    if (!task.dueDate) return false;
-    const today = new Date();
-    const dueDate = new Date(task.dueDate);
-    return today.toDateString() === dueDate.toDateString();
-  }), [tasks]);
+  const todayTasks = useMemo(() => tasks.filter(task => task.isMyDay), [tasks]);
 
   const timelineItems = useMemo(() => buildTimelineItems(todayTasks), [todayTasks]);
 
