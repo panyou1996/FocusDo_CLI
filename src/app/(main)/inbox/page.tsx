@@ -1,33 +1,25 @@
 
-
 'use client';
 
 import * as React from 'react';
 import {
-  Inbox as InboxIcon,
+  List as ListIcon,
   Filter,
   Plus,
-  ChevronLeft,
-  ChevronRight,
-  List,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TaskCard } from '@/components/tasks/TaskCard';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import type { Task } from '@/lib/types';
 import { useAppContext } from '@/context/AppContext';
-import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { usePersistentState } from '@/hooks/usePersistentState';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getIcon } from '@/lib/icon-utils';
 import Image from 'next/image';
 
@@ -191,7 +183,6 @@ const TaskCardSkeleton = () => (
 export default function InboxPage() {
   const { tasks, updateTask, deleteTask, lists } = useAppContext();
   const [selectedList, setSelectedList] = usePersistentState('inbox-selected-list', 'all');
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [groupedTasks, setGroupedTasks] = React.useState<GroupedTasks>({
     expired: [],
     upcoming: [],
@@ -204,15 +195,7 @@ export default function InboxPage() {
   const [filterStatus, setFilterStatus] = usePersistentState<FilterStatus>('inbox-filter-status', 'all');
   const [filterImportance, setFilterImportance] = usePersistentState<FilterImportance>('inbox-filter-importance', 'all');
   const [sortBy, setSortBy] = usePersistentState<SortByType>('inbox-sort-by', 'default');
-  const [activeTab, setActiveTab] = usePersistentState("inbox-active-tab", "lists");
-  const [direction, setDirection] = React.useState(0);
-
-
-  const handleTabChange = (newTab: string) => {
-    setDirection(newTab === 'calendar' ? 1 : -1);
-    setActiveTab(newTab);
-  }
-
+  
   React.useEffect(() => {
     setIsClient(true);
   }, []);
@@ -271,30 +254,6 @@ export default function InboxPage() {
 
     return sorted;
   }, [tasks, selectedList, filterStatus, filterImportance, sortBy, isClient]);
-
-  const tasksForSelectedDate = React.useMemo(() => {
-    if (!date || !isClient) return [];
-    const formattedDate = format(date, 'yyyy-MM-dd');
-    return processedTasks.filter(task => task.dueDate === formattedDate);
-  }, [date, processedTasks, isClient]);
-
-  const tasksPerDay = React.useMemo(() => {
-    if (!isClient) return {};
-    const counts: { [key: string]: { total: number; important: number } } = {};
-
-    processedTasks.forEach(task => {
-      if (task.dueDate) {
-        if (!counts[task.dueDate]) {
-          counts[task.dueDate] = { total: 0, important: 0 };
-        }
-        counts[task.dueDate].total++;
-        if (task.isImportant) {
-          counts[task.dueDate].important++;
-        }
-      }
-    });
-    return counts;
-  }, [processedTasks, isClient]);
 
 
   const handleDeleteTask = (taskId: string) => {
@@ -382,22 +341,7 @@ export default function InboxPage() {
     onToggleFixed: handleToggleFixed,
     onToggleCompleted: handleToggleCompleted,
   };
-
-  const contentVariants = {
-    hidden: (direction: number) => ({
-      x: direction > 0 ? '100%' : '-100%',
-      opacity: 0,
-    }),
-    visible: {
-      x: '0%',
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction < 0 ? '100%' : '-100%',
-      opacity: 0,
-    }),
-  };
-
+  
   const renderListContent = () => {
     if (!isClient) {
       return (
@@ -450,62 +394,12 @@ export default function InboxPage() {
       </div>
     );
   };
-
-  const renderCalendarContent = () => (
-    <div className="mt-4">
-      <div className="">
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={setDate}
-          className="rounded-md custom-card w-full"
-          tasksPerDay={isClient ? tasksPerDay : {}}
-          components={{
-            IconLeft: () => <ChevronLeft className="h-4 w-4" />,
-            IconRight: () => <ChevronRight className="h-4 w-4" />,
-          }}
-          disabled={!isClient}
-        />
-      </div>
-      <div className="space-y-3 mt-4">
-        {!isClient ? (
-          <div className="space-y-3">
-            <TaskCardSkeleton />
-          </div>
-        ) : tasksForSelectedDate.length > 0 ? (
-          <AnimatePresence>
-            {tasksForSelectedDate.map(task => {
-              const list = lists.find(l => l.id === task.listId);
-              if (!list) return null;
-              const ListIcon = getIcon(list.icon as string);
-
-              const status = task.isCompleted ? 'done' : 'upcoming';
-
-              return (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  list={{ ...list, icon: ListIcon }}
-                  {...cardProps}
-                  status={status}
-                />
-              );
-            })}
-          </AnimatePresence>
-        ) : (
-          <p className="text-muted-foreground text-center py-4">
-            No tasks for this day.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-
+  
   return (
     <div className='px-5 flex flex-col min-h-[calc(100vh-166px)]'>
       <header className="pt-10 pb-4 h-[80px] flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <InboxIcon className="w-7 h-7" strokeWidth={2} />
+            <ListIcon className="w-7 h-7" strokeWidth={2} />
             <h1 className="text-3xl font-bold text-foreground">Inbox</h1>
           </div>
           <Popover>
@@ -525,83 +419,55 @@ export default function InboxPage() {
           </Popover>
       </header>
       
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full flex-grow flex flex-col">
-        <div className="flex justify-end gap-2 mb-4">
-          <TabsList className="grid w-full grid-cols-2 h-11 rounded-[var(--radius)]">
-              <TabsTrigger value="lists">Lists</TabsTrigger>
-              <TabsTrigger value="calendar">Calendar</TabsTrigger>
-          </TabsList>
-        </div>
-      
-        <div className="relative overflow-hidden flex-grow">
-            <AnimatePresence initial={false} custom={direction} mode="wait">
-                <motion.div
-                    key={activeTab}
-                    custom={direction}
-                    variants={contentVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    transition={{
-                        type: 'tween',
-                        ease: 'easeInOut',
-                        duration: 0.25,
-                    }}
-                    className="w-full"
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <ScrollArea className="w-full whitespace-nowrap -ml-5">
+              <div className="flex gap-2 py-2 pl-5">
+                <button
+                  onClick={() => setSelectedList('all')}
+                  className={cn(
+                    'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                    selectedList === 'all'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground bg-secondary'
+                  )}
                 >
-                    {activeTab === 'lists' ? (
-                      <div>
-                        <div className="flex items-center gap-2 mb-4">
-                          <ScrollArea className="w-full whitespace-nowrap">
-                              <div className="flex gap-2 py-2 pl-5">
-                                <button
-                                  onClick={() => setSelectedList('all')}
-                                  className={cn(
-                                    'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                                    selectedList === 'all'
-                                      ? 'bg-primary text-primary-foreground'
-                                      : 'text-foreground bg-secondary'
-                                  )}
-                                >
-                                  <List className="w-4 h-4" />
-                                  <span>All</span>
-                                </button>
-                                {lists.map(list => {
-                                  const ListIcon = getIcon(list.icon as string);
-                                  const isSelected = selectedList === list.id;
-                                  return (
-                                    <button
-                                      key={list.id}
-                                      onClick={() => setSelectedList(list.id)}
-                                      className={cn(
-                                        'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
-                                        isSelected ? 'text-white' : 'text-foreground bg-secondary'
-                                      )}
-                                      style={{
-                                        backgroundColor: isSelected ? list.color : undefined,
-                                      }}
-                                    >
-                                      <ListIcon className="w-4 h-4" />
-                                      <span>{list.name}</span>
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            <ScrollBar orientation="horizontal" />
-                          </ScrollArea>
-                           <Link href="/add-list" className="flex-shrink-0 pr-2">
-                                <Button variant="ghost" size="icon" className="rounded-full bg-secondary h-9 w-9">
-                                    <Plus className="w-5 h-5"/>
-                                </Button>
-                           </Link>
-                        </div>
-                        {renderListContent()}
-                      </div>
-                    ) : renderCalendarContent()}
-                </motion.div>
-            </AnimatePresence>
+                  <ListIcon className="w-4 h-4" />
+                  <span>All</span>
+                </button>
+                {lists.map(list => {
+                  const ListIcon = getIcon(list.icon as string);
+                  const isSelected = selectedList === list.id;
+                  return (
+                    <button
+                      key={list.id}
+                      onClick={() => setSelectedList(list.id)}
+                      className={cn(
+                        'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                        isSelected ? 'text-white' : 'text-foreground bg-secondary'
+                      )}
+                      style={{
+                        backgroundColor: isSelected ? list.color : undefined,
+                      }}
+                    >
+                      <ListIcon className="w-4 h-4" />
+                      <span>{list.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+           <Link href="/add-list" className="flex-shrink-0 pr-2">
+                <Button variant="ghost" size="icon" className="rounded-full bg-secondary h-9 w-9">
+                    <Plus className="w-5 h-5"/>
+                </Button>
+           </Link>
         </div>
-      </Tabs>
+        {renderListContent()}
+      </div>
     </div>
   );
 }
+
+    

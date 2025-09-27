@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import * as React from "react";
@@ -119,20 +118,8 @@ export default function JournalPage() {
         </div>
       </header>
       
-      <div className="flex gap-2 mb-4">
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-          <Input 
-            placeholder="Search for a topic..." 
-            className="h-11 rounded-[var(--radius)] pl-10 bg-secondary border-none text-base w-full" 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-      </div>
-
       <div className="flex items-center gap-2 mb-4">
-        <ScrollArea className="w-full whitespace-nowrap">
+        <ScrollArea className="w-full whitespace-nowrap -ml-5">
             <div className="flex gap-2 py-2 pl-5">
               <button
                 onClick={() => setSelectedList('all')}
@@ -194,3 +181,5 @@ export default function JournalPage() {
     </div>
   );
 }
+
+    

@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import type { Task } from "@/lib/types";
 import { useAppContext } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getIcon } from "@/lib/icon-utils";
@@ -97,13 +96,12 @@ const EmptyState = () => (
             />
         </motion.div>
         <h3 className="text-lg font-semibold">All Done for Today!</h3>
-        <p className="text-muted-foreground mt-1">You&apos;ve completed all your tasks. Enjoy your day!</p>
+        <p className="text-muted-foreground mt-1">You've completed all your tasks. Enjoy your day!</p>
     </motion.div>
 );
 
 
 export default function TodayPage() {
-  const [view, setView] = React.useState<"compact" | "detail">("compact");
   const { tasks, setTasks, updateTask, deleteTask, currentUser } = useAppContext();
   const [isClient, setIsClient] = React.useState(false);
   const router = useRouter();
@@ -280,7 +278,7 @@ export default function TodayPage() {
   }, [leftover, isLeftoverVisible]);
 
   const cardProps = {
-    view,
+    view: 'compact' as const,
     onDelete: handleDeleteTask,
     onEdit: handleEditTask,
     onUpdate: handleUpdateTask,
@@ -344,7 +342,7 @@ export default function TodayPage() {
 
   return (
     <div className="px-5">
-      <header className="pt-10 pb-4 h-[80px] flex justify-between items-center">
+      <header className="pt-10 pb-4 mb-4 h-[80px] flex justify-between items-center">
         <div className="flex items-center gap-3">
           <Avatar className="w-10 h-10">
             <AvatarImage src={currentUser?.avatarUrl} alt={currentUser?.name} />
@@ -383,19 +381,12 @@ export default function TodayPage() {
             </motion.div>
         </div>
       </header>
-
-      <div className="flex justify-end gap-2 mb-4">
-        <Tabs value={view} onValueChange={(value) => setView(value as "compact" | "detail")} className="">
-          <TabsList className="grid w-full grid-cols-2 h-11 rounded-[var(--radius)]">
-            <TabsTrigger value="compact" disabled={isScheduling || isUpdating}>Compact</TabsTrigger>
-            <TabsTrigger value="detail" disabled={isScheduling || isUpdating}>Detail</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
       
       {renderContent()}
     </div>
   );
 }
+
+    
 
     

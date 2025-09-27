@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Inbox, BookText, Settings, Plus, Pencil, X } from "lucide-react";
+import { Home, Inbox, BookText, Settings, Plus, Pencil, X, Calendar } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import * as React from 'react';
 import { useThemeStore } from '@/store/useThemeStore';
@@ -14,6 +14,7 @@ import { generateAuroraStyle } from '@/lib/color-utils';
 const navItems = [
   { href: "/today", icon: Home, label: "Today" },
   { href: "/inbox", icon: Inbox, label: "Inbox" },
+  { href: "/calendar", icon: Calendar, label: "Calendar" },
   { href: "/journal", icon: BookText, label: "Journal" },
   { href: "/settings", icon: Settings, label: "Setting" },
 ];
@@ -73,7 +74,7 @@ export function BottomNavBar() {
               {navItems.map((item, index) => {
                 const isActive = pathname.startsWith(item.href);
                 return (
-                  <Link href={item.href} key={item.href} className="flex-auto basis-1/4 relative flex flex-col items-center justify-center gap-1">
+                  <Link href={item.href} key={item.href} className="flex-auto basis-1/5 relative flex flex-col items-center justify-center gap-1">
                     <div
                       className={cn(
                         "flex flex-col items-center justify-center gap-1 transition-colors z-10",
@@ -137,3 +138,5 @@ export function BottomNavBar() {
     </>
   );
 }
+
+    
