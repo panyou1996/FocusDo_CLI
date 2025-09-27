@@ -20,7 +20,7 @@ const pageVariants = {
     scale: 1.1,
   },
   animate: {
-    opacity: 0, // DEBUG: Keep new page invisible
+    opacity: 1,
     scale: 1,
     transition: {
       type: 'tween',
@@ -34,13 +34,21 @@ const pageVariants = {
     transition: {
       type: 'tween',
       ease: 'easeIn',
-      duration: 5, // Ensure exit animation also lasts 5 seconds
+      duration: 5,
     },
   },
 };
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [isFirstRender, setIsFirstRender] = React.useState(true);
+
+  React.useEffect(() => {
+    // After the first render, subsequent renders are transitions.
+    const timer = setTimeout(() => setIsFirstRender(false), 0);
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
 
   const isModalPage = MODAL_PATHS.includes(pathname) || EDIT_TASK_REGEX.test(pathname);
 
@@ -60,7 +68,8 @@ export default function Template({ children }: { children: React.ReactNode }) {
           exit="exit"
           className="absolute inset-0"
         >
-          {children}
+          {/* DEBUGGING: Only render the first page, then render empty divs to see exit animation clearly */}
+          {isFirstRender ? children : <div></div>}
         </motion.div>
       </AnimatePresence>
     </div>
