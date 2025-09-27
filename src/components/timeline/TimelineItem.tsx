@@ -47,14 +47,18 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
 
     const circleClasses = cn('flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center', {
       'border-2': !item.isCompleted,
-      'border-primary': !isOverdue && !item.isCompleted,
+      
       'border-dashed': item.isFixed && !item.isCompleted,
       'bg-primary': item.isCompleted,
       'border-destructive animate-slow-glow': isOverdue,
     });
 
+        const borderColor = item.isFixed && !item.isCompleted 
+      ? `hsla(var(--primary), 0.7)` 
+      : `hsl(var(--primary))`;
+
     return (
-      <div className={circleClasses}>
+      <div className={circleClasses} style={{ borderColor: isOverdue ? undefined : borderColor }}>
         {item.isCompleted && <Check className="w-3 h-3 text-primary-foreground" />}
       </div>
     );
@@ -77,7 +81,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
     }
     
     if (type === 'gap') {
-        return <div className="w-px border-l border-dashed border-slate-300 dark:border-slate-700 flex-grow" />;
+        return <div className="w-px border-l border-dashed flex-grow" style={{ borderColor: 'hsla(var(--primary), 0.4)' }} />;
     }
 
     return <div className="flex-grow w-0.5 bg-slate-300 dark:bg-slate-700" />;
