@@ -23,32 +23,22 @@ const pageVariants = {
     opacity: 1,
     scale: 1,
     transition: {
-      type: 'tween',
       ease: 'easeOut',
-      duration: 5,
+      duration: 0.3,
     },
   },
   exit: {
     opacity: 0,
     scale: 1.1,
     transition: {
-      type: 'tween',
       ease: 'easeIn',
-      duration: 5,
+      duration: 0.3,
     },
   },
 };
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [isFirstRender, setIsFirstRender] = React.useState(true);
-
-  React.useEffect(() => {
-    // After the first render, subsequent renders are transitions.
-    const timer = setTimeout(() => setIsFirstRender(false), 0);
-    return () => clearTimeout(timer);
-  }, [pathname]);
-
 
   const isModalPage = MODAL_PATHS.includes(pathname) || EDIT_TASK_REGEX.test(pathname);
 
@@ -59,7 +49,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="relative flex-grow flex flex-col">
-      <AnimatePresence mode="popLayout">
+      <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={pathname}
           variants={pageVariants}
@@ -68,8 +58,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
           exit="exit"
           className="absolute inset-0"
         >
-          {/* DEBUGGING: Only render the first page, then render empty divs to see exit animation clearly */}
-          {isFirstRender ? children : <div></div>}
+          {children}
         </motion.div>
       </AnimatePresence>
     </div>
