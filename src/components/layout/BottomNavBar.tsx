@@ -68,7 +68,7 @@ export function BottomNavBar() {
       <footer className="sticky bottom-0 h-[calc(86px+env(safe-area-inset-bottom))] bg-transparent z-40">
         <div className="relative h-full w-full max-w-lg mx-auto">
             <motion.div
-              className="custom-card absolute bottom-[env(safe-area-inset-bottom)] left-0 right-0 mx-4 mb-4 h-[70px] rounded-[20px] shadow-glass"
+              className="custom-card absolute bottom-[env(safe-area-inset-bottom)] left-0 right-0 mx-4 mb-4 h-[70px] rounded-[20px] shadow-glass bg-background/80 backdrop-blur-sm border border-border/50"
             >
             <nav className="flex items-center justify-around h-full pt-1 pb-2 px-2">
               {navItems.map((item, index) => {
