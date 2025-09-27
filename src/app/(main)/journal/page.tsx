@@ -26,9 +26,9 @@ interface FilterPopoverContentProps {
 
 const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({ sortBy, setSortBy }) => {
     return (
-        <div className="p-4 space-y-4">
-             <div>
-                 <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
+        <PopoverContent align="end" className="w-auto p-4">
+             <div className="space-y-4">
+                 <h3 className="text-sm font-medium text-muted-foreground">SORT BY</h3>
                  <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
                     <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="newest">Newest</TabsTrigger>
@@ -37,7 +37,7 @@ const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({ sortBy, set
                     </TabsList>
                 </Tabs>
             </div>
-        </div>
+        </PopoverContent>
     );
 };
 
@@ -110,15 +110,10 @@ export default function JournalPage() {
                     <Filter className="w-6 h-6" strokeWidth={1.5} />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent 
-              align="end" 
-              className="w-auto p-0"
-            >
-                <FilterPopoverContent
-                  sortBy={sortBy}
-                  setSortBy={setSortBy}
-                />
-            </PopoverContent>
+            <FilterPopoverContent
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+            />
           </Popover>
         </div>
       </header>
@@ -135,30 +130,49 @@ export default function JournalPage() {
         </div>
       </div>
 
-      <div className="-mx-5">
+      <div className="flex items-center gap-2 mb-4 -mx-5">
         <ScrollArea className="w-full whitespace-nowrap">
-          <Tabs value={selectedList} onValueChange={setSelectedList} className="w-full">
-            <TabsList className="h-auto bg-transparent p-0 px-5">
-              <TabsTrigger value="all" className="rounded-full h-9 px-4">
-                <List className="w-4 h-4 mr-2" />
-                All
-              </TabsTrigger>
+            <div className="flex gap-2 py-2 px-5">
+              <button
+                onClick={() => setSelectedList('all')}
+                className={cn(
+                  'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                  selectedList === 'all'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-foreground bg-secondary'
+                )}
+              >
+                <List className="w-4 h-4" />
+                <span>All</span>
+              </button>
               {lists.map(list => {
                 const ListIcon = getIcon(list.icon as string);
                 const isSelected = selectedList === list.id;
                 return (
-                  <TabsTrigger key={list.id} value={list.id} className="rounded-full h-9 px-4 data-[state=active]:text-white" style={{
-                    backgroundColor: isSelected ? list.color : undefined,
-                  }}>
-                    <ListIcon className="w-4 h-4 mr-2" />
-                    {list.name}
-                  </TabsTrigger>
+                  <button
+                    key={list.id}
+                    onClick={() => setSelectedList(list.id)}
+                    className={cn(
+                      'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                      isSelected ? 'text-white' : 'text-foreground bg-secondary'
+                    )}
+                    style={{
+                      backgroundColor: isSelected ? list.color : undefined,
+                    }}
+                  >
+                    <ListIcon className="w-4 h-4" />
+                    <span>{list.name}</span>
+                  </button>
                 );
               })}
-            </TabsList>
-          </Tabs>
+            </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
+         <Link href="/add-list" className="flex-shrink-0 px-2">
+              <Button variant="ghost" size="icon" className="rounded-full bg-secondary h-9 w-9">
+                  <Plus className="w-5 h-5"/>
+              </Button>
+         </Link>
       </div>
 
       <div className="space-y-4 mt-4">
@@ -179,5 +193,3 @@ export default function JournalPage() {
     </div>
   );
 }
-
-    

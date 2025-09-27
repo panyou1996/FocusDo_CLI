@@ -115,37 +115,39 @@ const FilterPopoverContent: React.FC<FilterPopoverContentProps> = ({
   setSortBy,
 }) => {
     return (
-        <div className="p-4 space-y-4">
-            <div>
-                <h3 className="text-sm font-medium text-muted-foreground mb-3">FILTER BY</h3>
-                <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-full mb-2">
-                    <TabsList className="grid grid-cols-3 w-full">
-                        <TabsTrigger value="all">All</TabsTrigger>
-                        <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
-                        <TabsTrigger value="completed">Completed</TabsTrigger>
-                    </TabsList>
-                </Tabs>
-                <Tabs value={filterImportance} onValueChange={(value) => setFilterImportance(value as any)} className="w-full">
-                    <TabsList className="grid grid-cols-3 w-full">
-                        <TabsTrigger value="all">All</TabsTrigger>
-                        <TabsTrigger value="important">Important</TabsTrigger>
-                        <TabsTrigger value="not-important">Not Important</TabsTrigger>
-                    </TabsList>
-                </Tabs>
-            </div>
+        <PopoverContent align="end" className="w-[calc(100vw-40px)] max-w-lg p-4">
+            <div className="space-y-4">
+                <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-3">FILTER BY</h3>
+                    <Tabs value={filterStatus} onValueChange={(value) => setFilterStatus(value as any)} className="w-full mb-2">
+                        <TabsList className="grid grid-cols-3 w-full">
+                            <TabsTrigger value="all">All</TabsTrigger>
+                            <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
+                            <TabsTrigger value="completed">Completed</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                    <Tabs value={filterImportance} onValueChange={(value) => setFilterImportance(value as any)} className="w-full">
+                        <TabsList className="grid grid-cols-3 w-full">
+                            <TabsTrigger value="all">All</TabsTrigger>
+                            <TabsTrigger value="important">Important</TabsTrigger>
+                            <TabsTrigger value="not-important">Not Important</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                </div>
 
-            <div>
-                 <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
-                 <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
-                    <TabsList className="grid w-full grid-cols-4">
-                        <TabsTrigger value="default">Start</TabsTrigger>
-                        <TabsTrigger value="dueDate">Due Date</TabsTrigger>
-                        <TabsTrigger value="importance">Important</TabsTrigger>
-                        <TabsTrigger value="creationDate">Created</TabsTrigger>
-                    </TabsList>
-                </Tabs>
+                <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-3">SORT BY</h3>
+                    <Tabs value={sortBy} onValueChange={(value) => setSortBy(value as any)}>
+                        <TabsList className="grid w-full grid-cols-4">
+                            <TabsTrigger value="default">Start</TabsTrigger>
+                            <TabsTrigger value="dueDate">Due Date</TabsTrigger>
+                            <TabsTrigger value="importance">Important</TabsTrigger>
+                            <TabsTrigger value="creationDate">Created</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                </div>
             </div>
-        </div>
+        </PopoverContent>
     );
 };
 
@@ -511,16 +513,14 @@ export default function InboxPage() {
                     <Filter className="w-6 h-6" strokeWidth={1.5} />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent align="end" className="w-[calc(100vw-40px)] max-w-lg p-0">
-                  <FilterPopoverContent
-                    filterStatus={filterStatus}
-                    setFilterStatus={setFilterStatus}
-                    filterImportance={filterImportance}
-                    setFilterImportance={setFilterImportance}
-                    sortBy={sortBy}
-                    setSortBy={setSortBy}
-                  />
-              </PopoverContent>
+              <FilterPopoverContent
+                filterStatus={filterStatus}
+                setFilterStatus={setFilterStatus}
+                filterImportance={filterImportance}
+                setFilterImportance={setFilterImportance}
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+              />
           </Popover>
       </header>
       
@@ -550,31 +550,50 @@ export default function InboxPage() {
                 >
                     {activeTab === 'lists' ? (
                       <div>
-                        <div className="mb-4 -mx-5">
-                            <ScrollArea className="w-full whitespace-nowrap">
-                              <Tabs value={selectedList} onValueChange={setSelectedList} className="w-full">
-                                <TabsList className="h-auto bg-transparent p-0 px-5">
-                                  <TabsTrigger value="all" className="rounded-full h-9 px-4">
-                                    <List className="w-4 h-4 mr-2" />
-                                    All
-                                  </TabsTrigger>
-                                  {lists.map(list => {
-                                    const ListIcon = getIcon(list.icon as string);
-                                    const isSelected = selectedList === list.id;
-                                    return (
-                                      <TabsTrigger key={list.id} value={list.id} className="rounded-full h-9 px-4 data-[state=active]:text-white" style={{
+                        <div className="flex items-center gap-2 mb-4 -mx-5">
+                          <ScrollArea className="w-full whitespace-nowrap">
+                              <div className="flex gap-2 py-2 px-5">
+                                <button
+                                  onClick={() => setSelectedList('all')}
+                                  className={cn(
+                                    'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                                    selectedList === 'all'
+                                      ? 'bg-primary text-primary-foreground'
+                                      : 'text-foreground bg-secondary'
+                                  )}
+                                >
+                                  <List className="w-4 h-4" />
+                                  <span>All</span>
+                                </button>
+                                {lists.map(list => {
+                                  const ListIcon = getIcon(list.icon as string);
+                                  const isSelected = selectedList === list.id;
+                                  return (
+                                    <button
+                                      key={list.id}
+                                      onClick={() => setSelectedList(list.id)}
+                                      className={cn(
+                                        'inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors h-9',
+                                        isSelected ? 'text-white' : 'text-foreground bg-secondary'
+                                      )}
+                                      style={{
                                         backgroundColor: isSelected ? list.color : undefined,
-                                      }}>
-                                        <ListIcon className="w-4 h-4 mr-2" />
-                                        {list.name}
-                                      </TabsTrigger>
-                                    );
-                                  })}
-                                </TabsList>
-                              </Tabs>
-                              <ScrollBar orientation="horizontal" />
-                            </ScrollArea>
-                          </div>
+                                      }}
+                                    >
+                                      <ListIcon className="w-4 h-4" />
+                                      <span>{list.name}</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            <ScrollBar orientation="horizontal" />
+                          </ScrollArea>
+                           <Link href="/add-list" className="flex-shrink-0 px-2">
+                                <Button variant="ghost" size="icon" className="rounded-full bg-secondary h-9 w-9">
+                                    <Plus className="w-5 h-5"/>
+                                </Button>
+                           </Link>
+                        </div>
                         {renderListContent()}
                       </div>
                     ) : renderCalendarContent()}
@@ -585,7 +604,3 @@ export default function InboxPage() {
     </div>
   );
 }
-
-    
-
-    
