@@ -4,8 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 
 import { BrainCircuit } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
-import { AddTaskSheet } from '@/components/tasks/AddTaskSheet';
-import { SmartScheduleSheet } from '@/components/ai/SmartScheduleSheet';
+
 import { Task } from '@/lib/types';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -65,8 +64,7 @@ const TodayPage: React.FC = () => {
   const router = useRouter();
   const { toast } = useToast();
   const { tasks, updateTask } = useAppContext();
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [isSmartSheetOpen, setIsSmartSheetOpen] = useState(false);
+  
   
 
   const todayTasks = useMemo(() => tasks.filter(task => {
@@ -83,7 +81,7 @@ const TodayPage: React.FC = () => {
     <div className="flex flex-col h-full bg-background">
       <header className="sticky top-0 z-20 flex items-center justify-between p-4 bg-background/80 backdrop-blur-sm border-b border-border/50">
         <h1 className="text-2xl font-bold">My Day</h1>
-        <Button variant="ghost" size="sm" onClick={() => setIsSmartSheetOpen(true)}>
+        <Button variant="ghost" size="sm" onClick={() => console.log('AI Plan clicked')}>
           <BrainCircuit className="w-5 h-5 mr-2" />
           AI Plan
         </Button>
@@ -130,8 +128,6 @@ const TodayPage: React.FC = () => {
         )}
       </main>
 
-      <AddTaskSheet isOpen={isSheetOpen} onOpenChange={setIsSheetOpen} />
-      <SmartScheduleSheet isOpen={isSmartSheetOpen} onOpenChange={setIsSmartSheetOpen} />
 
       {/* The FAB is removed in favor of the BottomNavBar as per the plan */}
     </div>
