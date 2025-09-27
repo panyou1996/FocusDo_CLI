@@ -44,7 +44,7 @@ export default function LoginPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required className="h-auto p-3 rounded-2xl" />
+            <Input id="password" type="password" placeholder="Enter your password" required className="h-auto p-3 rounded-2xl" />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
