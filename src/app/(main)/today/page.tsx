@@ -16,50 +16,16 @@ import { TimelineItem } from '@/components/timeline/TimelineItem';
 import { TimeGridBackground } from '@/components/timeline/TimeGridBackground';
 import { TimeMarker } from '@/components/timeline/TimeMarker';
 
-// Constants for timeline layout
-const PIXELS_PER_HOUR = 80;
-const PIXELS_PER_MINUTE = PIXELS_PER_HOUR / 60;
+
 
 // --- Data Processing Function ---
 const buildTimelineItems = (tasks: Task[]) => {
-  const items: any[] = [];
-  let lastTime = new Date();
-  lastTime.setHours(8, 0, 0, 0); // Start of the day for gaps
-
-  // Sort tasks by their due date/time
-  const sortedTasks = [...tasks].sort((a, b) => {
+  // Sort tasks by their due date/time for a chronological order
+  return [...tasks].sort((a, b) => {
     const timeA = a.dueDate ? new Date(a.dueDate).getTime() : 0;
     const timeB = b.dueDate ? new Date(b.dueDate).getTime() : 0;
     return timeA - timeB;
   });
-
-  sortedTasks.forEach(task => {
-    const taskTime = task.dueDate ? new Date(task.dueDate) : null;
-
-    if (taskTime) {
-      const diffMinutes = (taskTime.getTime() - lastTime.getTime()) / (1000 * 60);
-      
-      if (diffMinutes > 90) { // If gap is larger than 90 mins, insert coffee break
-        const gapBeforeCoffee = diffMinutes - 15;
-        items.push({ id: `gap-${items.length}`, type: 'gap', duration: gapBeforeCoffee });
-        items.push({ id: `coffee-${items.length}`, type: 'coffee', duration: 15 });
-      } else if (diffMinutes > 15) { // Add a normal gap if significant time between tasks
-        items.push({
-          id: `gap-${items.length}`,
-          type: 'gap',
-          duration: diffMinutes,
-        });
-      }
-    }
-    
-    items.push(task);
-
-    if (taskTime) {
-      lastTime = new Date(taskTime.getTime() + (task.duration || 0) * 60 * 1000);
-    }
-  });
-
-  return items;
 };
 
 
@@ -87,8 +53,7 @@ const TodayPage: React.FC = () => {
 
       <main className="flex-1 overflow-y-auto p-4">
         <div className="relative">
-          <TimeGridBackground />
-          <TimeMarker />
+
           
           <div className="relative z-10">
             <AnimatePresence>
