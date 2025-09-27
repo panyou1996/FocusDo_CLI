@@ -94,7 +94,7 @@ export const TimelineTaskCard: React.FC<TimelineTaskCardProps> = ({ task, isOver
               />
               <label
                 htmlFor={`subtask-${task.id}-${subtask.id}`}
-                className={cn('text-xs', subtask.isCompleted && 'line-through text-muted-foreground')}}
+                className={cn('text-xs', subtask.isCompleted && 'line-through text-muted-foreground')}
               >
                 {subtask.title}
               </label>
