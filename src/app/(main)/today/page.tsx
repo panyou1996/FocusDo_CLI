@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
 import { BrainCircuit } from 'lucide-react';
-import { useTaskStore } from '@/store/useTaskStore';
+import { useAppContext } from '@/context/AppContext';
 import { AddTaskSheet } from '@/components/tasks/AddTaskSheet';
 import { SmartScheduleSheet } from '@/components/ai/SmartScheduleSheet';
 import { Task } from '@/lib/types';
@@ -64,7 +64,7 @@ const buildTimelineItems = (tasks: Task[]) => {
 const TodayPage: React.FC = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const { tasks, isLoading } = useTaskStore();
+  const { tasks } = useAppContext();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isSmartSheetOpen, setIsSmartSheetOpen] = useState(false);
   
@@ -78,10 +78,6 @@ const TodayPage: React.FC = () => {
 
   const timelineItems = useMemo(() => buildTimelineItems(todayTasks), [todayTasks]);
 
-  if (isLoading) {
-    // A better loading state can be designed
-    return <div className="flex items-center justify-center h-full">Loading tasks...</div>;
-  }
 
   return (
     <div className="flex flex-col h-full bg-background">
