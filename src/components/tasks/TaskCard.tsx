@@ -48,15 +48,15 @@ const itemVariants = {
 
 interface TaskCardProps {
   task: Task;
-  list: TaskList;
-  view: "compact" | "detail";
-  status: 'expired' | 'upcoming' | 'done' | 'leftover';
-  onEdit: (taskId: string) => void;
   onUpdate: (taskId: string, updatedTask: Partial<Task>) => void;
-  onToggleImportant: (taskId: string) => void;
-  onToggleMyDay: (taskId: string) => void;
-  onToggleFixed: (taskId: string) => void;
   onToggleCompleted: (taskId: string) => void;
+  list?: TaskList;
+  view?: "compact" | "detail";
+  status?: 'expired' | 'upcoming' | 'done' | 'leftover';
+  onEdit?: (taskId: string) => void;
+  onToggleImportant?: (taskId: string) => void;
+  onToggleMyDay?: (taskId: string) => void;
+  onToggleFixed?: (taskId: string) => void;
 }
 
 const getEndTime = (startTime: string, duration: number): string => {
@@ -113,10 +113,12 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   
   const { handlers } = useLongPress({
     onLongPress: (e) => {
-        if (Capacitor.isPluginAvailable('Haptics')) {
-            Haptics.impact({ style: ImpactStyle.Medium });
+        if (onToggleFixed) {
+            if (Capacitor.isPluginAvailable('Haptics')) {
+                Haptics.impact({ style: ImpactStyle.Medium });
+            }
+            onToggleFixed(task.id);
         }
-        onToggleFixed(task.id);
     },
     onClick: handleToggleExpand,
   });
@@ -265,7 +267,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
   }, [task.isFixed, pinControls]);
 
 
-  const ListIcon = list.icon as React.ElementType;
+  const ListIcon = list?.icon as React.ElementType;
   const cardIsExpanded = isExpanded || view === 'detail';
   const endTime = task.startTime && task.duration ? getEndTime(task.startTime, task.duration) : null;
   const isOverdue = task.dueDate && isBefore(parseISO(task.dueDate), startOfToday()) && !task.isCompleted;
@@ -351,32 +353,12 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
 
 
   return (
-    <motion.div
-      layout
-      variants={cardVariants}
-      initial="hidden"
-      animate="show"
-      exit="exit"
-      transition={{ layout: { type: "spring", stiffness: 380, damping: 30 }, duration: 0.3 }}
-      className="relative"
-    >
-        <motion.div
-            animate={pinControls}
-            initial={{ rotate: -45 }}
-            className={cn(
-            'absolute top-1 left-1 w-5 h-5 z-10 transition-colors',
-            task.isFixed
-                ? 'text-primary'
-                : 'text-muted-foreground/30'
-            )}
-        >
-            <Pin className="w-full h-full" fill={task.isFixed ? 'currentColor' : 'none'}/>
-        </motion.div>
+
         
         <motion.div
             {...handlers}
             whileTap={{ scale: 0.98, transition: { type: "spring", duration: 0.2 } }}
-            className={'w-full rounded-2xl custom-card cursor-pointer relative overflow-hidden'}
+            className={'w-full relative'}
         >
         <motion.div 
             className="absolute left-0 top-0 bottom-0 bg-yellow-500 rounded-l-2xl"
@@ -393,7 +375,7 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             />
           </div>
 
-          {ListIcon && renderListIcon()}
+          {ListIcon && list && renderListIcon()}
 
           <div className="flex-grow ml-1 min-w-0">
             {isEditingTitle ? (

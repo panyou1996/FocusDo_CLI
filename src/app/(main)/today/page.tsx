@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 
 // New Timeline Imports
 import { TimelineItem } from '@/components/timeline/TimelineItem';
-import { TimelineTaskCard } from '@/components/timeline/TimelineTaskCard';
+import { TaskCard } from '@/components/tasks/TaskCard';
 import { TimeGridBackground } from '@/components/timeline/TimeGridBackground';
 import { TimeMarker } from '@/components/timeline/TimeMarker';
 
@@ -33,7 +33,7 @@ const buildTimelineItems = (tasks: Task[]) => {
 const TodayPage: React.FC = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const { tasks, updateTask } = useAppContext();
+  const { tasks, lists, updateTask, deleteTask, ...taskActions } = useAppContext();
   
   
 
@@ -70,11 +70,13 @@ const TodayPage: React.FC = () => {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-muted-foreground px-1">Tasks</h2>
             {tasksWithoutTime.map(task => (
-              <TimelineTaskCard 
+              <TaskCard 
                 key={task.id} 
                 task={task} 
-                isOverdue={task.dueDate && new Date(task.dueDate) < new Date() && !task.isCompleted} 
-                updateTask={updateTask} 
+                list={lists.find(l => l.id === task.listId)}
+                onUpdate={updateTask}
+                onToggleCompleted={(id) => updateTask(id, { isCompleted: !task.isCompleted })}
+                {...taskActions}
               />
             ))}
           </div>
@@ -102,6 +104,8 @@ const TodayPage: React.FC = () => {
                         isLast={index === timelineItems.length - 1}
                         isOverdue={isOverdue}
                         updateTask={updateTask}
+                        lists={lists}
+                        {...taskActions}
                       />
                     </motion.div>
                   );

@@ -1,19 +1,56 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Task } from '@/lib/types';
-import { TimelineTaskCard } from '@/components/timeline/TimelineTaskCard';
+import { Task, TaskList } from '@/lib/types';
+import { TaskCard } from '@/components/tasks/TaskCard';
+import { format, parseISO } from 'date-fns';
 
 interface TimelineItemProps {
   item: Task;
   isFirst: boolean;
   isLast: boolean;
   isOverdue: boolean;
+  lists: TaskList[];
   updateTask: (taskId: string, updatedTask: Partial<Task>) => void;
+  [key: string]: any; // Accept all other taskActions
 }
 
-export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLast, isOverdue, updateTask }) => {
+// Simplified display for collapsed view
+const CollapsedTaskView = ({ task, onToggleCompleted, onClick }: { task: Task, onToggleCompleted: () => void, onClick: () => void }) => {
+  const timeDisplay = React.useMemo(() => {
+    if (!task.startTime) return null;
+    return task.startTime;
+  }, [task.startTime]);
+
+  return (
+    <div className="w-full relative py-2 cursor-pointer" onClick={onClick}>
+      <div className="flex items-start">
+        <div onClick={(e) => e.stopPropagation()}>
+            <Checkbox
+              id={`task-collapsed-${task.id}`}
+              checked={task.isCompleted}
+              onCheckedChange={onToggleCompleted}
+              className="w-5 h-5 mt-0.5 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
+            />
+        </div>
+        <div className="flex-grow ml-3 min-w-0">
+          <p className={cn('font-medium text-foreground truncate', task.isCompleted && 'text-muted-foreground line-through')}>
+            {task.title}
+          </p>
+          {timeDisplay && (
+            <p className={cn('text-xs text-muted-foreground')}>
+              {timeDisplay}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLast, isOverdue, lists, updateTask, ...taskActions }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const containerClasses = cn('relative flex items-start', {
     'opacity-60 saturate-50': item.isCompleted,
@@ -39,8 +76,6 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
 
   const renderBottomConnector = () => {
     if (isLast) return <div className="flex-grow w-px" />;
-
-    // Always return a fixed-height connector
     return <div className="h-12 w-px bg-primary/50" />;
   };
 
@@ -51,8 +86,23 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
         {renderCircle()}
         {renderBottomConnector()}
       </div>
-      <div className="flex-grow min-h-[4rem] pt-1 pb-4">
-        <TimelineTaskCard task={item} isOverdue={isOverdue} updateTask={updateTask} />
+      <div className="flex-grow min-h-[4rem] pt-1 pb-4 w-full">
+        {isExpanded ? (
+          <TaskCard 
+            task={item} 
+            list={lists.find(l => l.id === item.listId)}
+            onUpdate={updateTask}
+            onToggleCompleted={(id) => updateTask(id, { isCompleted: !item.isCompleted })}
+            view="detail"
+            {...taskActions} 
+          />
+        ) : (
+          <CollapsedTaskView 
+            task={item} 
+            onClick={() => setIsExpanded(true)} 
+            onToggleCompleted={() => updateTask(item.id, { isCompleted: !item.isCompleted })}
+          />
+        )}
       </div>
     </motion.div>
   );
