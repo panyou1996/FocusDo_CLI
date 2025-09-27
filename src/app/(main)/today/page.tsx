@@ -39,8 +39,11 @@ const buildTimelineItems = (tasks: Task[]) => {
     if (taskTime) {
       const diffMinutes = (taskTime.getTime() - lastTime.getTime()) / (1000 * 60);
       
-      // Add a gap if there's significant time between tasks
-      if (diffMinutes > 15) {
+      if (diffMinutes > 90) { // If gap is larger than 90 mins, insert coffee break
+        const gapBeforeCoffee = diffMinutes - 15;
+        items.push({ id: `gap-${items.length}`, type: 'gap', duration: gapBeforeCoffee });
+        items.push({ id: `coffee-${items.length}`, type: 'coffee', duration: 15 });
+      } else if (diffMinutes > 15) { // Add a normal gap if significant time between tasks
         items.push({
           id: `gap-${items.length}`,
           type: 'gap',
