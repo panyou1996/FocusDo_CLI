@@ -212,8 +212,43 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
 
           {renderListIcon()}
 
-          <div className="flex-grow ml-1 min-w-0">
-             {/* Title and Time Display */}
+          <div className="flex-grow ml-3 min-w-0">
+            {isEditingTitle ? (
+              <Input
+                data-interactive
+                value={editingTitle}
+                onChange={(e) => setEditingTitle(e.target.value)}
+                onBlur={handleTitleBlur}
+                onKeyDown={handleTitleKeyDown}
+                className="h-7 p-0 text-base font-medium border-none focus-visible:ring-0 bg-transparent"
+                autoFocus
+              />
+            ) : (
+              <div className="relative">
+                <p
+                    className={cn(
+                    'text-base font-medium text-foreground truncate',
+                    task.isCompleted && 'text-muted-foreground'
+                    )}
+                    onClick={() => setIsEditingTitle(true)}
+                >
+                    {task.title}
+                </p>
+                <motion.div
+                    className="absolute top-1/2 left-0 h-0.5 bg-muted-foreground"
+                    initial={{ width: 0 }}
+                    animate={{ width: task.isCompleted ? "100%" : 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                />
+              </div>
+            )}
+
+            {!isEditingTitle && timeDisplay && (
+                <p className={cn('text-xs text-muted-foreground')}>
+                  {timeDisplay}
+                  {delayMessage && <span className={cn(isOverdue && 'text-destructive font-semibold')}>{delayMessage}</span>}
+                </p>
+              )}
           </div>
 
           {onEdit && <div data-interactive className="flex items-center gap-2 ml-2">
@@ -232,9 +267,56 @@ export function TaskCard({ task, list, view, status, onEdit, onUpdate, onToggleI
             animate="show"
             exit={{ opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="pl-12 overflow-hidden"
+            className="pl-8 pt-2 pb-2 space-y-3 overflow-hidden"
           >
-            {/* Detailed view with editable fields */}
+            <DetailRow
+              icon={FileText}
+              label="Description"
+              value={task.description || 'Add a description...'}
+              onClick={() => setIsEditingDesc(true)}
+              isEditing={isEditingDesc}
+              InputComponent={
+                <Textarea
+                  value={editingDesc}
+                  onChange={(e) => setEditingDesc(e.target.value)}
+                  onBlur={handleDescBlur}
+                  className="h-auto flex-grow border-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm bg-transparent"
+                  autoFocus
+                />
+              }
+            />
+            <DetailRow
+              icon={Calendar}
+              label="Due"
+              value={task.dueDate ? format(parseISO(task.dueDate), 'PPP') : 'Not set'}
+              onClick={() => setIsEditingDueDate(true)}
+              isEditing={isEditingDueDate}
+              InputComponent={
+                <Popover open={isEditingDueDate} onOpenChange={setIsEditingDueDate}>
+                  <PopoverTrigger asChild>
+                    <button className="text-sm text-primary">
+                      {editingDueDate ? format(editingDueDate, 'PPP') : 'Set Date'}
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent mode="single" selected={editingDueDate} onSelect={handleDueDateChange} initialFocus />
+                  </PopoverContent>
+                </Popover>
+              }
+            />
+            <DetailRow
+              icon={Hourglass}
+              label="Duration"
+              value={task.duration ? `${task.duration} min` : 'Not set'}
+              onClick={() => setIsEditingDuration(true)}
+              isEditing={isEditingDuration}
+              InputComponent={
+                <div className="flex items-center gap-1">
+                  <Input type="number" value={editingDuration} onChange={(e) => setEditingDuration(Number(e.target.value))} onBlur={handleDurationBlur} className="w-20 h-7 p-0 text-sm text-right border-none focus-visible:ring-0 bg-transparent" min="0" step="5" autoFocus />
+                  <span className="text-sm">min</span>
+                </div>
+              }
+            />
           </motion.div>
         )}
         </AnimatePresence>
