@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 
 // New Timeline Imports
 import { TimelineItem } from '@/components/timeline/TimelineItem';
+import { TimelineTaskCard } from '@/components/timeline/TimelineTaskCard';
 import { TimeGridBackground } from '@/components/timeline/TimeGridBackground';
 import { TimeMarker } from '@/components/timeline/TimeMarker';
 
@@ -38,7 +39,20 @@ const TodayPage: React.FC = () => {
 
   const todayTasks = useMemo(() => tasks.filter(task => task.isMyDay), [tasks]);
 
-  const timelineItems = useMemo(() => buildTimelineItems(todayTasks), [todayTasks]);
+  const [tasksWithoutTime, tasksWithTime] = useMemo(() => {
+    const withoutTime: Task[] = [];
+    const withTime: Task[] = [];
+    todayTasks.forEach(task => {
+      if (task.startTime) {
+        withTime.push(task);
+      } else {
+        withoutTime.push(task);
+      }
+    });
+    return [withoutTime, withTime];
+  }, [todayTasks]);
+
+  const timelineItems = useMemo(() => buildTimelineItems(tasksWithTime), [tasksWithTime]);
 
 
   return (
@@ -51,42 +65,56 @@ const TodayPage: React.FC = () => {
         </Button>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4">
-        <div className="relative">
-
-          
-          <div className="relative z-10">
-            <AnimatePresence>
-              {timelineItems.map((item, index) => {
-                const isTask = item.type !== 'gap';
-                const isOverdue = isTask && item.dueDate && new Date(item.dueDate) < new Date() && !item.isCompleted;
-
-                return (
-                  <motion.div
-                    key={item.id}
-                    layout
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
-                  >
-                    <TimelineItem
-                      item={item}
-                      isFirst={index === 0}
-                      isLast={index === timelineItems.length - 1}
-                      isOverdue={isOverdue}
-                      updateTask={updateTask}
-                    />
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
+      <main className="flex-1 overflow-y-auto p-4 space-y-8">
+        {tasksWithoutTime.length > 0 && (
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold text-muted-foreground px-1">Tasks</h2>
+            {tasksWithoutTime.map(task => (
+              <TimelineTaskCard 
+                key={task.id} 
+                task={task} 
+                isOverdue={task.dueDate && new Date(task.dueDate) < new Date() && !task.isCompleted} 
+                updateTask={updateTask} 
+              />
+            ))}
           </div>
-        </div>
+        )}
 
-        {timelineItems.length === 0 && (
+        {timelineItems.length > 0 && (
+          <div className="relative">
+            <div className="relative z-10">
+              <AnimatePresence>
+                {timelineItems.map((item, index) => {
+                  const isTask = item.type !== 'gap';
+                  const isOverdue = isTask && item.dueDate && new Date(item.dueDate) < new Date() && !item.isCompleted;
+
+                  return (
+                    <motion.div
+                      key={item.id}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
+                    >
+                      <TimelineItem
+                        item={item}
+                        isFirst={index === 0}
+                        isLast={index === timelineItems.length - 1}
+                        isOverdue={isOverdue}
+                        updateTask={updateTask}
+                      />
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
+
+        {todayTasks.length === 0 && (
           <div className="text-center text-muted-foreground mt-20">
             <p>No tasks for today.</p>
-            <p>Click the + to add one!</p>
+            <p>Add one to get started!</p>
           </div>
         )}
       </main>
