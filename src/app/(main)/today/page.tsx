@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 
-import { BrainCircuit } from 'lucide-react';
+import { BrainCircuit, PlusCircle } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 
 import { Task } from '@/lib/types';
@@ -67,7 +67,7 @@ const TodayPage: React.FC = () => {
 
       <main className="flex-1 overflow-y-auto p-4 space-y-8">
         {tasksWithoutTime.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-4">
             <h2 className="text-lg font-semibold text-muted-foreground px-1">Tasks</h2>
             {tasksWithoutTime.map(task => (
               <TimelineTaskCard 
@@ -117,6 +117,17 @@ const TodayPage: React.FC = () => {
             <p>Add one to get started!</p>
           </div>
         )}
+
+        <div className="pl-4">
+            <button 
+                onClick={() => router.push('/add-task')}
+                className="flex items-center gap-4 text-muted-foreground hover:text-primary transition-colors"
+            >
+                <PlusCircle className="w-5 h-5" />
+                <span className="text-base font-medium">Add Task</span>
+            </button>
+        </div>
+
       </main>
 
 

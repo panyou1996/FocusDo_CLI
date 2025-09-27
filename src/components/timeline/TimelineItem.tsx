@@ -20,9 +20,8 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
   });
 
   const renderCircle = () => {
-    const circleClasses = cn('flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center', {
-      'border-2': !item.isCompleted,
-      'border-dashed': item.isFixed && !item.isCompleted,
+    const circleClasses = cn('flex-shrink-0 w-3.5 h-3.5 rounded-full flex items-center justify-center', {
+      'border': !item.isCompleted,
       'bg-primary': item.isCompleted,
       'border-destructive animate-slow-glow': isOverdue,
     });
@@ -39,16 +38,16 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
   };
 
   const renderBottomConnector = () => {
-    if (isLast) return <div className="flex-grow w-0.5" />;
+    if (isLast) return <div className="flex-grow w-px" />;
 
     // Always return a fixed-height connector
-    return <div className="h-8 w-0.5 bg-slate-300 dark:bg-slate-700" />;
+    return <div className="h-12 w-px bg-primary/50" />;
   };
 
   return (
     <motion.div className={containerClasses}>
       <div className="flex flex-col items-center self-stretch w-12 mr-4 z-10">
-        <div className={cn('flex-grow w-0.5 bg-slate-300 dark:bg-slate-700', { 'opacity-0': isFirst })} />
+        <div className={cn('flex-grow w-px bg-primary/50', { 'opacity-0': isFirst })} />
         {renderCircle()}
         {renderBottomConnector()}
       </div>

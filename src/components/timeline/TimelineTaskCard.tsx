@@ -6,7 +6,7 @@ import { Task } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { motion } from 'framer-motion';
-import { format, parseISO, isBefore, startOfToday, differenceInDays } from 'date-fns';
+import { format, parseISO, isBefore, startOfToday, differenceInDays, addMinutes, parse } from 'date-fns';
 
 interface TimelineTaskCardProps {
   task: Task;
@@ -23,7 +23,26 @@ export const TimelineTaskCard: React.FC<TimelineTaskCardProps> = ({ task, isOver
     updateTask(task.id, { subtasks: newSubtasks });
   };
 
-  const timeDisplay = task.dueDate ? format(parseISO(task.dueDate), 'HH:mm') : '--:--';
+  const timeDisplay = React.useMemo(() => {
+    if (!task.startTime) {
+      return null; // No start time, display nothing
+    }
+
+    if (task.duration && task.duration > 0) {
+      try {
+        const startDate = parse(task.startTime, 'HH:mm', new Date());
+        const endDate = addMinutes(startDate, task.duration);
+        const endTimeString = format(endDate, 'HH:mm');
+        return `${task.startTime} - ${endTimeString}`;
+      } catch (e) {
+        console.error('Error parsing time:', e);
+        return task.startTime; // Fallback to just start time on error
+      }
+    }
+
+    return task.startTime;
+  }, [task.startTime, task.duration]);
+
   let delayMessage = '';
 
   if (isOverdue) {
@@ -34,7 +53,7 @@ export const TimelineTaskCard: React.FC<TimelineTaskCardProps> = ({ task, isOver
   }
 
   return (
-    <div className="w-full rounded-lg custom-card-bg border border-border/50 p-3 pr-4 relative overflow-hidden">
+    <div className="w-full relative py-2">
       <div className="flex items-start">
         <Checkbox
           id={`task-${task.id}`}
@@ -54,10 +73,12 @@ export const TimelineTaskCard: React.FC<TimelineTaskCardProps> = ({ task, isOver
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             />
           </div>
-          <p className={cn('text-sm', isOverdue && !task.isCompleted ? 'font-semibold text-destructive' : 'text-muted-foreground')}>
-            {timeDisplay}
-            {delayMessage && <span className="font-normal">{delayMessage}</span>}
-          </p>
+          {timeDisplay && (
+            <p className={cn('text-xs text-muted-foreground')}>
+              {timeDisplay}
+              {delayMessage && <span className={cn(isOverdue && 'text-destructive font-semibold')}>{delayMessage}</span>}
+            </p>
+          )}
         </div>
       </div>
 
@@ -73,7 +94,7 @@ export const TimelineTaskCard: React.FC<TimelineTaskCardProps> = ({ task, isOver
               />
               <label
                 htmlFor={`subtask-${task.id}-${subtask.id}`}
-                className={cn('text-sm', subtask.isCompleted && 'line-through text-muted-foreground')}
+                className={cn('text-xs', subtask.isCompleted && 'line-through text-muted-foreground')}}
               >
                 {subtask.title}
               </label>
