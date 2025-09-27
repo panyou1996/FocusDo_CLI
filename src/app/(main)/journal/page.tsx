@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import * as React from "react";
@@ -130,9 +131,9 @@ export default function JournalPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mb-4 -mx-5">
+      <div className="flex items-center gap-2 mb-4">
         <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex gap-2 py-2 px-5">
+            <div className="flex gap-2 py-2 pl-5">
               <button
                 onClick={() => setSelectedList('all')}
                 className={cn(
@@ -168,7 +169,7 @@ export default function JournalPage() {
             </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
-         <Link href="/add-list" className="flex-shrink-0 px-2">
+         <Link href="/add-list" className="flex-shrink-0 pr-2">
               <Button variant="ghost" size="icon" className="rounded-full bg-secondary h-9 w-9">
                   <Plus className="w-5 h-5"/>
               </Button>
