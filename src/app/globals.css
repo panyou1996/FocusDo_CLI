@@ -152,6 +152,15 @@
 }
 
 @layer utilities {
+  @keyframes slow-glow {
+    0%, 100% { box-shadow: 0 0 5px 0px hsla(var(--destructive), 0.3); }
+    50% { box-shadow: 0 0 15px 3px hsla(var(--destructive), 0.7); }
+  }
+
+  .animate-slow-glow {
+    animation: slow-glow 3s ease-in-out infinite;
+  }
+
   @keyframes shimmer {
     0% {
       transform: translateX(-150%) skewX(-30deg);
