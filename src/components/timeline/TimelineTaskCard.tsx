@@ -11,11 +11,17 @@ import { format, parseISO, isBefore, startOfToday, differenceInDays } from 'date
 interface TimelineTaskCardProps {
   task: Task;
   isOverdue: boolean;
+  updateTask: (taskId: string, updatedTask: Partial<Task>) => void;
 }
 
-export const TimelineTaskCard: React.FC<TimelineTaskCardProps> = ({ task, isOverdue }) => {
+export const TimelineTaskCard: React.FC<TimelineTaskCardProps> = ({ task, isOverdue, updateTask }) => {
 
-  const timeDisplay = task.dueDate ? format(parseISO(task.dueDate), 'HH:mm') : '--:--';
+  const toggleSubtask = (subtaskId: string) => {
+    const newSubtasks = task.subtasks?.map(sub => 
+      sub.id === subtaskId ? { ...sub, isCompleted: !sub.isCompleted } : sub
+    );
+    updateTask(task.id, { subtasks: newSubtasks });
+  };
   let delayMessage = '';
 
   if (isOverdue) {
@@ -31,7 +37,7 @@ export const TimelineTaskCard: React.FC<TimelineTaskCardProps> = ({ task, isOver
         <Checkbox
           id={`task-${task.id}`}
           checked={task.isCompleted}
-          // onCheckedChange={() => onToggleCompleted(task.id)} // Zustand logic should be handled here
+          onCheckedChange={() => updateTask(task.id, { isCompleted: !task.isCompleted })}
           className="w-5 h-5 mt-0.5 rounded-full data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
         />
         <div className="flex-grow ml-3 min-w-0">
@@ -60,7 +66,7 @@ export const TimelineTaskCard: React.FC<TimelineTaskCardProps> = ({ task, isOver
               <Checkbox
                 id={`subtask-${task.id}-${subtask.id}`}
                 checked={subtask.isCompleted}
-                // onCheckedChange={() => toggleSubtask(subtask.id)} // Zustand logic here
+                onCheckedChange={() => toggleSubtask(subtask.id)}
                 className="w-4 h-4 rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/40"
               />
               <label

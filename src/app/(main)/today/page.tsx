@@ -64,7 +64,7 @@ const buildTimelineItems = (tasks: Task[]) => {
 const TodayPage: React.FC = () => {
   const router = useRouter();
   const { toast } = useToast();
-  const { tasks } = useAppContext();
+  const { tasks, updateTask } = useAppContext();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isSmartSheetOpen, setIsSmartSheetOpen] = useState(false);
   
@@ -113,6 +113,7 @@ const TodayPage: React.FC = () => {
                       isFirst={index === 0}
                       isLast={index === timelineItems.length - 1}
                       isOverdue={isOverdue}
+                      updateTask={updateTask}
                     />
                   </motion.div>
                 );

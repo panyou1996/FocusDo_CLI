@@ -13,9 +13,10 @@ interface TimelineItemProps {
   isFirst: boolean;
   isLast: boolean;
   isOverdue: boolean;
+  updateTask: (taskId: string, updatedTask: Partial<Task>) => void;
 }
 
-export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLast, isOverdue }) => {
+export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLast, isOverdue, updateTask }) => {
   const isTask = 'title' in item;
   const { type } = 'type' in item ? item : { type: null };
 
@@ -84,7 +85,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
 
   const renderContent = () => {
     if (isTask) {
-      return <TimelineTaskCard task={item} isOverdue={isOverdue} />;
+      return <TimelineTaskCard task={item} isOverdue={isOverdue} updateTask={updateTask} />;
     }
     if (type === 'coffee') {
       return <div style={{ height: '4rem' }} />;
