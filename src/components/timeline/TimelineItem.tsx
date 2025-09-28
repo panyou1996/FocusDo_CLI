@@ -18,7 +18,7 @@ interface TimelineItemProps {
 
 export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLast, lists, updateTask }) => {
 
-  const longPressHandlers = useLongPress({
+  const { handlers, isLongPressActive } = useLongPress({
     onLongPress: (e) => {
       e.stopPropagation();
       updateTask(item.id, { isFixed: !item.isFixed });
@@ -68,9 +68,9 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
     return (
       <motion.div 
         className={circleClasses}
-        {...longPressHandlers.handlers}
-        whileTap={{ scale: 1.2 }} // Pop animation on tap/press
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        {...handlers}
+        animate={{ scale: isLongPressActive ? 1.5 : 1 }}
+        transition={{ type: "spring", stiffness: 500, damping: 17 }}
       >
           <AnimatePresence mode="wait">
             {item.isCompleted && (
@@ -80,7 +80,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
                     initial="initial"
                     animate="animate"
                     exit="exit"
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.3 }}
                 >
                     <Check className="w-4 h-4 text-white" />
                 </motion.div>
@@ -93,7 +93,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
                     initial="initial"
                     animate="animate"
                     exit="exit"
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.3 }}
                     className="w-3 h-3 rounded-full border-2 border-dashed border-gray-500"
                  />
             )}
