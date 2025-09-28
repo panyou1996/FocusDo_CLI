@@ -79,28 +79,10 @@ const TodayPage: React.FC = () => {
 
   const views = {
     yesterday: (
-      <div className="space-y-4 pb-20 pt-4 px-5">
+      <div className="space-y-3 pb-20 pt-4 px-5">
         {yesterdayTasks.length > 0 ? (
           yesterdayTasks.map(task => (
-            <div key={task.id} className="flex items-start">
-              <div 
-                  className="w-9 flex-shrink-0 flex justify-center pt-2.5"
-                  onPointerDown={(e) => e.stopPropagation()} // Prevent drag conflict
-              >
-                  <Checkbox
-                      id={`task-cb-${task.id}`}
-                      checked={task.isCompleted}
-                      onCheckedChange={() => updateTask(task.id, { isCompleted: !task.isCompleted })}
-                      className="w-6 h-6 rounded-md data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
-                  />
-              </div>
-              <div 
-                  className="flex-grow"
-                  onPointerDown={(e) => e.stopPropagation()} // Prevent drag conflict
-              >
-                  <TaskCard task={task} list={lists.find(l => l.id === task.listId)} onUpdate={updateTask} />
-              </div>
-            </div>
+            <TaskCard key={task.id} task={task} list={lists.find(l => l.id === task.listId)} onUpdate={updateTask} />
           ))
         ) : (
           <div className="text-center text-muted-foreground mt-20">
@@ -130,28 +112,10 @@ const TodayPage: React.FC = () => {
         </div>
     ),
     'not-scheduled': (
-        <div className="space-y-4 pb-20 pt-4 px-5">
+        <div className="space-y-3 pb-20 pt-4 px-5">
             {tasksWithoutTime.length > 0 ? (
                 tasksWithoutTime.map(task => (
-                    <div key={task.id} className="flex items-start">
-                        <div 
-                            className="w-9 flex-shrink-0 flex justify-center pt-2.5"
-                            onPointerDown={(e) => e.stopPropagation()} // Prevent drag conflict
-                        >
-                            <Checkbox
-                                id={`task-cb-${task.id}`}
-                                checked={task.isCompleted}
-                                onCheckedChange={() => updateTask(task.id, { isCompleted: !task.isCompleted })}
-                                className="w-6 h-6 rounded-md data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
-                            />
-                        </div>
-                        <div 
-                            className="flex-grow"
-                            onPointerDown={(e) => e.stopPropagation()} // Prevent drag conflict
-                        >
-                            <TaskCard task={task} list={lists.find(l => l.id === task.listId)} onUpdate={updateTask} />
-                        </div>
-                    </div>
+                     <TaskCard key={task.id} task={task} list={lists.find(l => l.id === task.listId)} onUpdate={updateTask} />
                 ))
             ) : (
                 <div className="text-center text-muted-foreground mt-20">
