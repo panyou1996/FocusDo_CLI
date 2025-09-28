@@ -8,11 +8,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Clock, Calendar, Hourglass, Pencil } from "lucide-react";
 import { format, parseISO, differenceInDays, isToday, isPast } from 'date-fns';
 import { getIcon } from "@/lib/icon-utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TaskCardProps {
   task: Task;
   onUpdate: (taskId: string, updatedTask: Partial<Task>) => void;
   list?: TaskList;
+  isFoldable?: boolean;
 }
 
 const formatDueDate = (dueDate: string) => {
@@ -32,7 +34,7 @@ const formatDueDate = (dueDate: string) => {
     return format(date, 'M/d');
 };
 
-export function TaskCard({ task, list, onUpdate }: TaskCardProps) {
+export function TaskCard({ task, list, onUpdate, isFoldable }: TaskCardProps) {
   const router = useRouter();
 
   const handleCardClick = () => {
@@ -55,51 +57,68 @@ export function TaskCard({ task, list, onUpdate }: TaskCardProps) {
   );
 
   const ListIcon = list ? getIcon(list.icon) : Pencil;
+  const showDetails = !isFoldable || !task.isCompleted;
 
   return (
     <div className={'w-full relative cursor-pointer'} onClick={handleCardClick}>
-      <div className="flex items-start py-1">
-        <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-          {ListIcon && <ListIcon className="w-6 h-6" style={{ color: list?.color }} strokeWidth={1.5} />}
+        {/* Align icon and title */}
+        <div className="flex items-center py-1">
+            <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+                {ListIcon && <ListIcon className="w-6 h-6" style={{ color: list?.color }} strokeWidth={1.5} />}
+            </div>
+            <div className="flex-grow ml-2 min-w-0">
+                <p className={cn('text-lg font-medium text-foreground truncate', task.isCompleted && 'text-muted-foreground line-through')}>
+                    {task.title}
+                </p>
+            </div>
         </div>
 
-        <div className="flex-grow ml-2 min-w-0 pt-1.5">
-          <p className={cn('text-base font-medium text-foreground truncate', task.isCompleted && 'text-muted-foreground line-through')}>
-              {task.title}
-          </p>
-          <p className="text-sm text-muted-foreground truncate min-h-[20px]">{task.description}</p>
+        {/* Indented details */}
+        <AnimatePresence initial={false}>
+        {showDetails && (
+          <motion.div
+            key="task-details"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1, transition: { duration: 0.3, ease: 'easeInOut' } }}
+            exit={{ height: 0, opacity: 0, transition: { duration: 0.2, ease: 'easeInOut' } }}
+            className="pl-12 pr-4 pb-1 overflow-hidden"
+          >
+                {task.description && (
+                    <p className="text-sm text-muted-foreground truncate">{task.description}</p>
+                )}
 
-          <div className="flex items-center gap-4 mt-1">
-              {task.duration && task.duration > 0 && (
-                  <DetailRow icon={Hourglass}>
-                      <span>{`${task.duration} min`}</span>
-                  </DetailRow>
-              )}
-              {task.dueDate && (
-                  <DetailRow icon={Calendar}>
-                      <span>{formatDueDate(task.dueDate)}</span>
-                  </DetailRow>
-              )}
-          </div>
+                <div className="flex items-center gap-4 mt-1">
+                    {task.duration && task.duration > 0 && (
+                        <DetailRow icon={Hourglass}>
+                            <span>{`${task.duration} min`}</span>
+                        </DetailRow>
+                    )}
+                    {task.dueDate && (
+                        <DetailRow icon={Calendar}>
+                            <span>{formatDueDate(task.dueDate)}</span>
+                        </DetailRow>
+                    )}
+                </div>
 
-          {task.subtasks && task.subtasks.length > 0 && (
-              <div className="space-y-1 mt-2">
-                  {task.subtasks.map(subtask => (
-                      <div key={subtask.id} className="flex items-center gap-2 cursor-default" data-interactive onClick={(e) => handleSubtaskToggle(e, subtask.id)}>
-                          <Checkbox 
-                              id={`subtask-cb-${subtask.id}`}
-                              checked={subtask.isCompleted}
-                              className="w-4 h-4 rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
-                          />
-                          <label htmlFor={`subtask-cb-${subtask.id}`} className={cn("text-sm", subtask.isCompleted && "line-through text-muted-foreground")}>
-                              {subtask.title}
-                          </label>
-                      </div>
-                  ))}
-              </div>
-          )}
-        </div>
-      </div>
+                {task.subtasks && task.subtasks.length > 0 && (
+                    <div className="space-y-1 mt-2">
+                        {task.subtasks.map(subtask => (
+                            <div key={subtask.id} className="flex items-center gap-2 cursor-default" data-interactive onClick={(e) => handleSubtaskToggle(e, subtask.id)}>
+                                <Checkbox 
+                                    id={`subtask-cb-${subtask.id}`}
+                                    checked={subtask.isCompleted}
+                                    className="w-4 h-4 rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
+                                />
+                                <label htmlFor={`subtask-cb-${subtask.id}`} className={cn("text-sm", subtask.isCompleted && "line-through text-muted-foreground")}>
+                                    {subtask.title}
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </motion.div>
+        )}
+        </AnimatePresence>
     </div>
   );
 }

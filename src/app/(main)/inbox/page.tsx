@@ -68,12 +68,11 @@ const TaskGroup = ({
           {tasks.map(task => {
             const list = lists.find(l => l.id === task.listId);
             if (!list) return null;
-            const ListIcon = getIcon(list.icon as string);
             return (
               <TaskCard
                 key={task.id}
                 task={task}
-                list={{ ...list, icon: ListIcon }}
+                list={list}
                 status={status}
                 {...props}
               />
@@ -469,5 +468,3 @@ export default function InboxPage() {
     </div>
   );
 }
-
-    

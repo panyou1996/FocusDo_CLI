@@ -157,14 +157,13 @@ export default function CalendarPage() {
             {tasksForSelectedDate.map(task => {
               const list = lists.find(l => l.id === task.listId);
               if (!list) return null;
-              const ListIcon = getIcon(list.icon as string);
               const status = task.isCompleted ? 'done' : 'upcoming';
 
               return (
                 <TaskCard
                   key={task.id}
                   task={task}
-                  list={{ ...list, icon: ListIcon }}
+                  list={list}
                   {...cardProps}
                   status={status}
                 />
