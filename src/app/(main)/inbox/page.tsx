@@ -344,7 +344,7 @@ export default function InboxPage() {
   const renderListContent = () => {
     if (!isClient) {
       return (
-        <div className="space-y-3 mt-4">
+        <div className="space-y-3">
           <TaskCardSkeleton />
           <TaskCardSkeleton />
           <TaskCardSkeleton />
@@ -364,7 +364,7 @@ export default function InboxPage() {
       if(filterImportance === 'important') title = "Important Tasks";
 
       return (
-        <div className="space-y-3 mt-4">
+        <div className="space-y-3">
           <TaskGroup
             title={title}
             tasks={processedTasks}
@@ -376,7 +376,7 @@ export default function InboxPage() {
     }
     
     return (
-      <div className="space-y-4 mt-4">
+      <div className="space-y-4">
         <TaskGroup
           title="Expired"
           tasks={expired}
