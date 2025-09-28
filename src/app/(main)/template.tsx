@@ -6,46 +6,38 @@ import { usePathname } from 'next/navigation';
 import * as React from 'react';
 
 const MODAL_PATHS = [
-    '/add-task', 
-    '/journal/new', 
-    '/add-list',
-    '/settings/appearance',
-    '/settings/profile'
+    '/today', 
+    '/journal', 
+    '/setting',
+    '/inbox',
 ];
 const EDIT_TASK_REGEX = /^\/edit-task\/.+/;
 
 const pageVariants = {
   initial: {
     opacity: 0,
-    scale: 1.1,
+    scale: 1.01,
   },
   animate: {
     opacity: 1,
     scale: 1,
     transition: {
       ease: 'easeOut',
-      duration: 5,
+      duration: 0.2,
     },
   },
   exit: {
     opacity: 0,
-    scale: 1.1,
+    scale: 1.01,
     transition: {
       ease: 'easeIn',
-      duration: 5,
+      duration: 0.2,
     },
   },
 };
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
-  const isModalPage = MODAL_PATHS.includes(pathname) || EDIT_TASK_REGEX.test(pathname);
-
-  // Do not apply transition animations to modal-like pages
-  if (isModalPage) {
-    return <div>{children}</div>;
-  }
 
   return (
     <div className="relative flex-grow flex flex-col">
@@ -62,5 +54,4 @@ export default function Template({ children }: { children: React.ReactNode }) {
         </motion.div>
       </AnimatePresence>
     </div>
-  );
-}
+  );}
