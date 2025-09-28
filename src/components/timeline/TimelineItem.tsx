@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
@@ -49,12 +50,12 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
 
   const renderBottomConnector = () => {
     if (isLast) return <div className="flex-grow w-px" />;
-    return <div className="h-4 w-px bg-primary/30" />;
+    return <div className="flex-grow w-px bg-primary/30" />;
   };
 
   return (
     <motion.div className={containerClasses} layout>
-      <div className="flex flex-col items-center self-stretch w-12 mr-4 z-10 pt-1">
+      <div className="flex flex-col items-center self-stretch w-12 mr-4 z-10 pt-4">
         {renderCircle()}
         {renderBottomConnector()}
       </div>
@@ -65,6 +66,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
             onUpdate={updateTask}
             onToggleCompleted={(id) => updateTask(id, { isCompleted: !item.isCompleted })}
             view={isExpanded ? "detail" : "compact"}
+            hideCheckbox={true}
             {...taskActions} 
           />
       </div>

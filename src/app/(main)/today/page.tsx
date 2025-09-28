@@ -21,11 +21,12 @@ import { TimeMarker } from '@/components/timeline/TimeMarker';
 
 // --- Data Processing Function ---
 const buildTimelineItems = (tasks: Task[]) => {
-  // Sort tasks by their due date/time for a chronological order
+  // Sort tasks by their start time for a chronological order
   return [...tasks].sort((a, b) => {
-    const timeA = a.dueDate ? new Date(a.dueDate).getTime() : 0;
-    const timeB = b.dueDate ? new Date(b.dueDate).getTime() : 0;
-    return timeA - timeB;
+    if (!a.startTime || !b.startTime) return 0; // Should not happen with tasksWithTime
+    const [hoursA, minutesA] = a.startTime.split(':').map(Number);
+    const [hoursB, minutesB] = b.startTime.split(':').map(Number);
+    return hoursA * 60 + minutesA - (hoursB * 60 + minutesB);
   });
 };
 
@@ -68,7 +69,7 @@ const TodayPage: React.FC = () => {
       <main className="flex-1 overflow-y-auto p-4 space-y-8">
         {tasksWithoutTime.length > 0 && (
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-muted-foreground px-1">Tasks</h2>
+            <h2 className="text-lg font-semibold text-muted-foreground px-1">Not Scheduled</h2>
             {tasksWithoutTime.map(task => (
               <TaskCard 
                 key={task.id} 

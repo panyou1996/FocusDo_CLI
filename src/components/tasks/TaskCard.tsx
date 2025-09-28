@@ -20,9 +20,10 @@ interface TaskCardProps {
   onToggleCompleted: (taskId: string) => void;
   list?: TaskList;
   view?: "compact" | "detail";
+  hideCheckbox?: boolean;
 }
 
-export function TaskCard({ task, list, view, onUpdate, onToggleCompleted }: TaskCardProps) {
+export function TaskCard({ task, list, view, onUpdate, onToggleCompleted, hideCheckbox }: TaskCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(view === "detail");
   
   const [isEditingTitle, setIsEditingTitle] = React.useState(false);
@@ -85,16 +86,15 @@ export function TaskCard({ task, list, view, onUpdate, onToggleCompleted }: Task
 
   return (
     <div className={'w-full relative'}>
-        <div className="flex items-center py-2">
-          {/* This checkbox is part of the card content, not the timeline dot */}
-          <div data-interactive onClick={(e) => e.stopPropagation()}>
+        <div className="flex py-2">
+          {!hideCheckbox && <div data-interactive onClick={(e) => e.stopPropagation()}>
             <Checkbox
               id={`task-card-cb-${task.id}`}
               checked={task.isCompleted}
               onCheckedChange={() => onToggleCompleted(task.id)}
               className="w-5 h-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
             />
-          </div>
+          </div>}
 
           {ListIcon && <div className="w-8 h-8 flex items-center justify-center">
             <ListIcon className="w-5 h-5" style={{ color: list?.color }} strokeWidth={1.5} />
