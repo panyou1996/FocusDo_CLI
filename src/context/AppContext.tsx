@@ -44,6 +44,13 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [uiSize, setUiSize] = usePersistentState<number>('ui-size', 2); // Default to M (14px in new scale)
   const [cardStyle, setCardStyle] = usePersistentState<CardStyle>('card-style', 'glass');
 
+  const [isLoaded, setIsLoaded] = React.useState(false); // New state
+
+  // New useEffect to set isLoaded to true after initial load
+  React.useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
   React.useEffect(() => {
     const root = window.document.documentElement;
     const newSize = UI_SIZES[uiSize] || 14;
@@ -129,7 +136,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AppContext.Provider value={appContextValue}>
-      {children}
+      {isLoaded ? children : null} {/* Only render children after hydration */}
     </AppContext.Provider>
   );
 };

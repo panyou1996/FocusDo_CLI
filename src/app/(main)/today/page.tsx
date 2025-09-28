@@ -79,12 +79,12 @@ const TodayPage: React.FC = () => {
 
   const views = {
     yesterday: (
-      <div className="space-y-4 pb-20 pt-4">
+      <div className="space-y-4 pb-20 pt-4 px-5">
         {yesterdayTasks.length > 0 ? (
           yesterdayTasks.map(task => (
             <div key={task.id} className="flex items-start">
               <div 
-                  className="w-14 flex-shrink-0 flex justify-center pt-2.5"
+                  className="w-9 flex-shrink-0 flex justify-center pt-2.5"
                   onPointerDown={(e) => e.stopPropagation()} // Prevent drag conflict
               >
                   <Checkbox
@@ -110,7 +110,7 @@ const TodayPage: React.FC = () => {
       </div>
     ),
     timeline: (
-        <div className="relative pb-20 pt-4">
+        <div className="relative pb-20 pt-4 px-5">
             {timelineItems.length > 0 ? (
                 timelineItems.map((item, index) => (
                     <TimelineItem
@@ -130,12 +130,12 @@ const TodayPage: React.FC = () => {
         </div>
     ),
     'not-scheduled': (
-        <div className="space-y-4 pb-20 pt-4">
+        <div className="space-y-4 pb-20 pt-4 px-5">
             {tasksWithoutTime.length > 0 ? (
                 tasksWithoutTime.map(task => (
                     <div key={task.id} className="flex items-start">
                         <div 
-                            className="w-14 flex-shrink-0 flex justify-center pt-2.5"
+                            className="w-9 flex-shrink-0 flex justify-center pt-2.5"
                             onPointerDown={(e) => e.stopPropagation()} // Prevent drag conflict
                         >
                             <Checkbox
@@ -209,7 +209,7 @@ const TodayPage: React.FC = () => {
                     ))}
                 </div>
             </div>
-            <main className="flex-1 relative px-5">
+            <main className="flex-1 relative">
                 <AnimatePresence initial={false} custom={direction}>
                     <motion.div
                         key={page}
@@ -233,7 +233,7 @@ const TodayPage: React.FC = () => {
                     </motion.div>
                 </AnimatePresence>
             </main>
-             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20">
+             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 px-5">
                 <button 
                     onClick={() => router.push('/add-task')}
                     className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors bg-background/80 backdrop-blur-sm rounded-full p-3 border shadow-md"
