@@ -105,10 +105,10 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
   const renderLineSegment = (position: 'top' | 'bottom') => {
     const segmentClasses = cn('absolute w-1 -z-10', lineColorClass);
     if (position === 'top') {
-        return <div className={segmentClasses} style={{ left: '26px', top: 0, height: '10px' }} />;
+        return <div className={segmentClasses} style={{ left: '10px', top: 0, height: '10px' }} />;
     }
     if (position === 'bottom') {
-        return <div className={segmentClasses} style={{ left: '26px', top: '34px', bottom: 0 }} />;
+        return <div className={segmentClasses} style={{ left: '10px', top: '34px', bottom: 0 }} />;
     }
     return null;
   };
@@ -119,7 +119,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLas
             {!isFirst && renderLineSegment('top')}
             {!isLast && renderLineSegment('bottom')}
 
-            <div className="absolute top-2.5 left-[15px]">
+            <div className="absolute top-2.5 left-[0px]">
               {renderCircle()}
             </div>
 
