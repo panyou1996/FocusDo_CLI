@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -13,61 +13,62 @@ interface TimelineItemProps {
   isOverdue: boolean;
   lists: TaskList[];
   updateTask: (taskId: string, updatedTask: Partial<Task>) => void;
-  [key: string]: any; // Accept all other taskActions
 }
 
-export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLast, isOverdue, lists, updateTask, ...taskActions }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+export const TimelineItem: React.FC<TimelineItemProps> = ({ item, isFirst, isLast, isOverdue, lists, updateTask }) => {
 
-  const containerClasses = cn('relative flex items-start', {
+  const containerClasses = cn('relative flex', {
     'opacity-60 saturate-50': item.isCompleted,
   });
 
   const renderCircle = () => {
-    const circleClasses = cn('flex-shrink-0 w-3.5 h-3.5 rounded-full flex items-center justify-center cursor-pointer', {
-      'border': !item.isCompleted,
-      'bg-primary': item.isCompleted,
-      'border-destructive animate-slow-glow': isOverdue,
-    });
-
-    const borderColor = item.isFixed && !item.isCompleted 
-      ? `hsla(var(--primary), 0.7)` 
-      : `hsl(var(--primary))`;
+    const circleClasses = cn(
+      'flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer',
+      {
+        'border-2': !item.isCompleted,
+        'bg-primary': item.isCompleted,
+        'border-destructive animate-slow-glow': isOverdue && !item.isCompleted,
+        'border-primary': !isOverdue && !item.isCompleted,
+      }
+    );
 
     return (
       <div 
         className={circleClasses}
-        style={{ borderColor: isOverdue ? undefined : borderColor }}
         onClick={(e) => {
           e.stopPropagation();
           updateTask(item.id, { isCompleted: !item.isCompleted });
         }}
       >
-        {item.isCompleted && <Check className="w-3 h-3 text-primary-foreground" />}
+        {item.isCompleted && <Check className="w-4 h-4 text-primary-foreground" />}
       </div>
     );
   };
 
-  const renderBottomConnector = () => {
-    if (isLast) return <div className="flex-grow w-px" />;
-    return <div className="flex-grow w-px bg-primary/30" />;
-  };
+  const renderLine = () => {
+      const lineClasses = cn("absolute w-0.5 h-full left-[27px] -z-10", {
+        'bg-primary/30': !isOverdue,
+        'bg-destructive/30': isOverdue
+    });
+    return <div className={lineClasses} />
+  }
 
   return (
     <motion.div className={containerClasses} layout>
-      <div className="flex flex-col items-center self-stretch w-12 mr-4 z-10 pt-4">
-        {renderCircle()}
-        {renderBottomConnector()}
-      </div>
-      <div className="flex-grow pb-6 w-full" onClick={() => setIsExpanded(!isExpanded)}>
+        <div className="w-24 flex-shrink-0 flex items-start justify-start relative">
+            {renderLine()}
+            <div className="absolute top-2.5 left-[16px]">
+              {renderCircle()}
+            </div>
+            {item.startTime && 
+                <span className="text-sm text-muted-foreground absolute top-3 left-[52px]">{item.startTime}</span>
+            }
+        </div>
+      <div className="flex-grow pb-6 w-full">
           <TaskCard 
             task={item} 
             list={lists.find(l => l.id === item.listId)}
             onUpdate={updateTask}
-            onToggleCompleted={(id) => updateTask(id, { isCompleted: !item.isCompleted })}
-            view={isExpanded ? "detail" : "compact"}
-            hideCheckbox={true}
-            {...taskActions} 
           />
       </div>
     </motion.div>

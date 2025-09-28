@@ -1,177 +1,105 @@
 'use client';
 
 import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import type { Task, TaskList } from "@/lib/types";
+import type { Task, TaskList, Subtask } from "@/lib/types";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Clock, Calendar, Hourglass, FileText, Pencil } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { format, parseISO, addMinutes, parse } from 'date-fns';
-import { Button } from "../ui/button";
+import { Clock, Calendar, Hourglass, Pencil } from "lucide-react";
+import { format, parseISO, differenceInDays, isToday, isPast } from 'date-fns';
 import { getIcon } from "@/lib/icon-utils";
 
 interface TaskCardProps {
   task: Task;
   onUpdate: (taskId: string, updatedTask: Partial<Task>) => void;
-  onToggleCompleted: (taskId: string) => void;
   list?: TaskList;
-  view?: "compact" | "detail";
-  hideCheckbox?: boolean;
 }
 
-export function TaskCard({ task, list, view, onUpdate, onToggleCompleted, hideCheckbox }: TaskCardProps) {
-  const [isExpanded, setIsExpanded] = React.useState(view === "detail");
-  
-  const [isEditingTitle, setIsEditingTitle] = React.useState(false);
-  const [editingTitle, setEditingTitle] = React.useState(task.title);
+const formatDueDate = (dueDate: string) => {
+    const date = parseISO(dueDate);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Normalize now to the start of the day
+    const daysDiff = differenceInDays(date, now);
 
-  const [isEditingDesc, setIsEditingDesc] = React.useState(false);
-  const [editingDesc, setEditingDesc] = React.useState(task.description || "");
+    if (isPast(date) && !isToday(date)) {
+        const pastDays = Math.abs(daysDiff);
+        return <span className="text-destructive">{pastDays} {pastDays === 1 ? 'day ago' : 'days ago'}</span>;
+    }
+    if (daysDiff === 0) return 'Today';
+    if (daysDiff > 0 && daysDiff <= 7) {
+        return `in ${daysDiff} ${daysDiff === 1 ? 'day' : 'days'}`;
+    }
+    return format(date, 'M/d');
+};
 
-  const [isEditingStartTime, setIsEditingStartTime] = React.useState(false);
-  const [editingStartTime, setEditingStartTime] = React.useState(task.startTime || "");
+export function TaskCard({ task, list, onUpdate }: TaskCardProps) {
+  const router = useRouter();
 
-  const [isEditingDueDate, setIsEditingDueDate] = React.useState(false);
-  const [editingDueDate, setEditingDueDate] = React.useState<Date | undefined>(
-    task.dueDate ? parseISO(task.dueDate) : undefined
-  );
-
-  const [isEditingDuration, setIsEditingDuration] = React.useState(false);
-  const [editingDuration, setEditingDuration] = React.useState(task.duration || 0);
-
-  const handleTitleBlur = () => {
-    onUpdate(task.id, { title: editingTitle });
-    setIsEditingTitle(false);
+  const handleCardClick = () => {
+    router.push(`/edit-task/${task.id}`);
   };
 
-  const handleDescBlur = () => {
-    onUpdate(task.id, { description: editingDesc });
-    setIsEditingDesc(false);
+  const handleSubtaskToggle = (e: React.MouseEvent, subtaskId: string) => {
+    e.stopPropagation();
+    const updatedSubtasks = task.subtasks?.map(st => 
+        st.id === subtaskId ? { ...st, isCompleted: !st.isCompleted } : st
+    );
+    onUpdate(task.id, { subtasks: updatedSubtasks });
   };
 
-  const handleStartTimeBlur = () => {
-    onUpdate(task.id, { startTime: editingStartTime });
-    setIsEditingStartTime(false);
-  };
-
-  const handleDueDateChange = (date: Date | undefined) => {
-    onUpdate(task.id, { dueDate: date ? format(date, 'yyyy-MM-dd') : undefined });
-    setIsEditingDueDate(false);
-  };
-  
-  const handleDurationBlur = () => {
-      onUpdate(task.id, { duration: editingDuration });
-      setIsEditingDuration(false);
-  };
-
-  const DetailRow = ({ icon: Icon, isEditing, InputComponent, children }: any) => (
-    <div className="flex items-center text-sm text-muted-foreground min-h-[24px] gap-2">
-      <Icon className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />
-      {isEditing ? 
-        <div data-interactive className="flex-grow">{InputComponent}</div> :
-        <div data-interactive className="flex-grow">{children}</div>
-      }
+  const DetailRow = ({ icon: Icon, children }: { icon?: React.ElementType, children: React.ReactNode }) => (
+    <div className="flex items-center text-sm text-muted-foreground min-h-[20px] gap-2">
+      {Icon && <Icon className="w-4 h-4 flex-shrink-0" strokeWidth={1.5} />}
+      <div className="flex-grow">{children}</div>
     </div>
   );
-
-  React.useEffect(() => {
-    setIsExpanded(view === "detail");
-  }, [view]);
 
   const ListIcon = list ? getIcon(list.icon) : Pencil;
 
   return (
-    <div className={'w-full relative'}>
-        <div className="flex py-2">
-          {!hideCheckbox && <div data-interactive onClick={(e) => e.stopPropagation()}>
-            <Checkbox
-              id={`task-card-cb-${task.id}`}
-              checked={task.isCompleted}
-              onCheckedChange={() => onToggleCompleted(task.id)}
-              className="w-5 h-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
-            />
-          </div>}
-
-          {ListIcon && <div className="w-8 h-8 flex items-center justify-center">
-            <ListIcon className="w-5 h-5" style={{ color: list?.color }} strokeWidth={1.5} />
-          </div>}
-
-          <div className="flex-grow ml-2 min-w-0">
-            <p className={cn('text-base font-medium text-foreground truncate', task.isCompleted && 'text-muted-foreground line-through')}>
-                {task.title}
-            </p>
-          </div>
+    <div className={'w-full relative cursor-pointer'} onClick={handleCardClick}>
+      <div className="flex items-start py-1">
+        <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+          {ListIcon && <ListIcon className="w-6 h-6" style={{ color: list?.color }} strokeWidth={1.5} />}
         </div>
 
-        <AnimatePresence initial={false}>
-        {isExpanded && (
-          <motion.div 
-            key="content"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1, transition: { duration: 0.3, ease: 'easeInOut' } }}
-            exit={{ height: 0, opacity: 0, transition: { duration: 0.2, ease: 'easeInOut' } }}
-            className="pl-12 pr-4 pb-2 space-y-3 overflow-hidden"
-          >
-            <DetailRow
-              icon={FileText}
-              isEditing={isEditingDesc}
-              InputComponent={
-                <Textarea value={editingDesc} onChange={(e) => setEditingDesc(e.target.value)} onBlur={handleDescBlur} className="h-auto flex-grow border-none focus-visible:ring-0 p-0 text-sm bg-transparent" autoFocus />
-              }
-            >
-                <span onClick={() => setIsEditingDesc(true)} className="cursor-text">{task.description || 'Add a description...'}</span>
-            </DetailRow>
+        <div className="flex-grow ml-2 min-w-0 pt-1.5">
+          <p className={cn('text-base font-medium text-foreground truncate', task.isCompleted && 'text-muted-foreground line-through')}>
+              {task.title}
+          </p>
+          <p className="text-sm text-muted-foreground truncate min-h-[20px]">{task.description}</p>
 
-            <div className="flex items-center gap-4">
-                <DetailRow
-                  icon={Clock}
-                  isEditing={isEditingStartTime}
-                  InputComponent={
-                    <Input type="time" value={editingStartTime} onChange={(e) => setEditingStartTime(e.target.value)} onBlur={handleStartTimeBlur} className="h-7 p-0 text-sm border-none focus-visible:ring-0 bg-transparent" autoFocus />
-                  }
-                >
-                    <span onClick={() => setIsEditingStartTime(true)}>{task.startTime || 'Set Start'}</span>
-                </DetailRow>
-                <DetailRow
-                  icon={Hourglass}
-                  isEditing={isEditingDuration}
-                  InputComponent={
-                    <div className="flex items-center gap-1">
-                      <Input type="number" value={editingDuration} onChange={(e) => setEditingDuration(Number(e.target.value))} onBlur={handleDurationBlur} className="w-16 h-7 p-0 text-sm border-none focus-visible:ring-0 bg-transparent" min="0" step="5" autoFocus />
-                      <span>min</span>
-                    </div>
-                  }
-                >
-                    <span onClick={() => setIsEditingDuration(true)}>{task.duration ? `${task.duration} min` : 'Set Duration'}</span>
-                </DetailRow>
-            </div>
+          <div className="flex items-center gap-4 mt-1">
+              {task.duration && task.duration > 0 && (
+                  <DetailRow icon={Hourglass}>
+                      <span>{`${task.duration} min`}</span>
+                  </DetailRow>
+              )}
+              {task.dueDate && (
+                  <DetailRow icon={Calendar}>
+                      <span>{formatDueDate(task.dueDate)}</span>
+                  </DetailRow>
+              )}
+          </div>
 
-            <DetailRow
-              icon={Calendar}
-              isEditing={isEditingDueDate}
-              InputComponent={
-                <Popover open={isEditingDueDate} onOpenChange={setIsEditingDueDate}>
-                  <PopoverTrigger asChild>
-                    <button className="text-sm text-primary">
-                      {editingDueDate ? format(editingDueDate, 'PPP') : 'Set Date'}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent mode="single" selected={editingDueDate} onSelect={handleDueDateChange} initialFocus />
-                  </PopoverContent>
-                </Popover>
-              }
-            >
-                <span onClick={() => setIsEditingDueDate(true)}>{task.dueDate ? format(parseISO(task.dueDate), 'PPP') : 'Set Due Date'}</span>
-            </DetailRow>
-
-          </motion.div>
-        )}
-        </AnimatePresence>
+          {task.subtasks && task.subtasks.length > 0 && (
+              <div className="space-y-1 mt-2">
+                  {task.subtasks.map(subtask => (
+                      <div key={subtask.id} className="flex items-center gap-2 cursor-default" data-interactive onClick={(e) => handleSubtaskToggle(e, subtask.id)}>
+                          <Checkbox 
+                              id={`subtask-cb-${subtask.id}`}
+                              checked={subtask.isCompleted}
+                              className="w-4 h-4 rounded-sm data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
+                          />
+                          <label htmlFor={`subtask-cb-${subtask.id}`} className={cn("text-sm", subtask.isCompleted && "line-through text-muted-foreground")}>
+                              {subtask.title}
+                          </label>
+                      </div>
+                  ))}
+              </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

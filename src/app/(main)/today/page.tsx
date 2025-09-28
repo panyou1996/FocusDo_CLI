@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
 import { BrainCircuit, PlusCircle } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
@@ -9,15 +9,11 @@ import { Task } from '@/lib/types';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
 
 // New Timeline Imports
 import { TimelineItem } from '@/components/timeline/TimelineItem';
 import { TaskCard } from '@/components/tasks/TaskCard';
-import { TimeGridBackground } from '@/components/timeline/TimeGridBackground';
-import { TimeMarker } from '@/components/timeline/TimeMarker';
-
-
 
 // --- Data Processing Function ---
 const buildTimelineItems = (tasks: Task[]) => {
@@ -33,10 +29,7 @@ const buildTimelineItems = (tasks: Task[]) => {
 
 const TodayPage: React.FC = () => {
   const router = useRouter();
-  const { toast } = useToast();
-  const { tasks, lists, updateTask, deleteTask, ...taskActions } = useAppContext();
-  
-  
+  const { tasks, lists, updateTask } = useAppContext();
 
   const todayTasks = useMemo(() => tasks.filter(task => task.isMyDay), [tasks]);
 
@@ -71,14 +64,23 @@ const TodayPage: React.FC = () => {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-muted-foreground px-1">Not Scheduled</h2>
             {tasksWithoutTime.map(task => (
-              <TaskCard 
-                key={task.id} 
-                task={task} 
-                list={lists.find(l => l.id === task.listId)}
-                onUpdate={updateTask}
-                onToggleCompleted={(id) => updateTask(id, { isCompleted: !task.isCompleted })}
-                {...taskActions}
-              />
+                <div key={task.id} className="flex items-start">
+                    <div className="w-14 flex-shrink-0 flex justify-center pt-2.5">
+                        <Checkbox
+                            id={`task-cb-${task.id}`}
+                            checked={task.isCompleted}
+                            onCheckedChange={() => updateTask(task.id, { isCompleted: !task.isCompleted })}
+                            className="w-6 h-6 rounded-md data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-primary/50"
+                        />
+                    </div>
+                    <div className="flex-grow">
+                        <TaskCard 
+                            task={task} 
+                            list={lists.find(l => l.id === task.listId)}
+                            onUpdate={updateTask}
+                        />
+                    </div>
+              </div>
             ))}
           </div>
         )}
@@ -88,8 +90,7 @@ const TodayPage: React.FC = () => {
             <div className="relative z-10">
               <AnimatePresence>
                 {timelineItems.map((item, index) => {
-                  const isTask = item.type !== 'gap';
-                  const isOverdue = isTask && item.dueDate && new Date(item.dueDate) < new Date() && !item.isCompleted;
+                  const isOverdue = item.dueDate && new Date(item.dueDate) < new Date() && !item.isCompleted;
 
                   return (
                     <motion.div
@@ -106,7 +107,6 @@ const TodayPage: React.FC = () => {
                         isOverdue={isOverdue}
                         updateTask={updateTask}
                         lists={lists}
-                        {...taskActions}
                       />
                     </motion.div>
                   );
@@ -134,9 +134,6 @@ const TodayPage: React.FC = () => {
         </div>
 
       </main>
-
-
-      {/* The FAB is removed in favor of the BottomNavBar as per the plan */}
     </div>
   );
 };
